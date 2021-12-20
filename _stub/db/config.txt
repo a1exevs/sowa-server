@@ -1,0 +1,12 @@
+For start DB You must:
+    install mysql-server on your server;
+    create mysql user with name sowa-server and database sowa_db;
+    use backup from ./backup.db.sql.gz;
+    create files .production.env and .development.env with content shown below.
+
+PORT=7000
+MYSQL_HOST=localhost
+MYSQL_USER=sowa-server
+MYSQL_DB=sowa_db
+MYSQL_PASSWORD=<PASSWORK>
+MYSQL_PORT=3306
