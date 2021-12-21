@@ -1,7 +1,8 @@
 import {Module} from "@nestjs/common";
-import {TypeOrmModule} from '@nestjs/typeorm';
 import {UsersModule} from './users/users.module';
 import {ConfigModule} from "@nestjs/config";
+import { SequelizeModule } from "@nestjs/sequelize";
+import { User } from "./users/users.model";
 
 @Module({
   controllers: [],
@@ -10,15 +11,15 @@ import {ConfigModule} from "@nestjs/config";
     ConfigModule.forRoot({
       envFilePath: `.${process.env.NODE_ENV}.env`
     }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
+    SequelizeModule.forRoot({
+      dialect: 'mysql',
       host: process.env.MYSQL_HOST,
       port: Number(process.env.MYSQL_PORT),
       username: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DB,
-      entities: [],
-      synchronize: true,
+      models: [User],
+      autoLoadModels: true,
     }),
     UsersModule,
   ],
