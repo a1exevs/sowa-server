@@ -9,7 +9,7 @@
 			"name": "users",
 			"item": [
 				{
-					"name": "Создать пользователя",
+					"name": "Создать Пользователя",
 					"event": [
 						{
 							"listen": "test",
@@ -49,7 +49,7 @@
 					"response": []
 				},
 				{
-					"name": "Получить пользователей",
+					"name": "Получить Пользователей",
 					"event": [
 						{
 							"listen": "test",
@@ -65,7 +65,13 @@
 					],
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJlZ2lzdHJhdGlvbl9vZl91c2VyQHlhbmRleC5ydSIsImlkIjoxMSwicm9sZXMiOlt7ImlkIjoxLCJ2YWx1ZSI6InVzZXIiLCJkZXNjcmlwdGlvbiI6IlNpbXBsZSB1c2VyIiwiY3JlYXRlZEF0IjoiMjAyMS0xMi0yNVQxNTowOTowOC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMS0xMi0yNVQxNTowOTowOC4wMDBaIiwiVXNlcnNSb2xlcyI6eyJpZCI6NywidXNlcl9pZCI6MTEsInJvbGVfaWQiOjF9fV0sImlhdCI6MTY0MDUzMjUwOSwiZXhwIjoxNjQwNjE4OTA5fQ.rqXpW_YlT-geciJ9VUH1Jjrrmjqg26tYi3h2ODU9os0",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{baseDevUrl}}{{usersEndpoint}}",
 							"host": [
@@ -81,7 +87,7 @@
 			"name": "roles",
 			"item": [
 				{
-					"name": "Создать роль",
+					"name": "Создать Роль",
 					"event": [
 						{
 							"listen": "test",
@@ -132,7 +138,7 @@
 					"response": []
 				},
 				{
-					"name": "Получить роли по значению",
+					"name": "Получить Роли по значению",
 					"event": [
 						{
 							"listen": "test",
@@ -172,7 +178,7 @@
 			"name": "auth",
 			"item": [
 				{
-					"name": "Зарегистрировать пользователя",
+					"name": "Зарегистрировать Пользователя",
 					"event": [
 						{
 							"listen": "test",
@@ -194,7 +200,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"registration3_of_user11@yandex.ru\",\n    \"password\": \"registration3_password\"\n}",
+							"raw": "{\n    \"email\": \"registration_of_user@yandex.ru\",\n    \"password\": \"registration_password\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -208,6 +214,48 @@
 							],
 							"path": [
 								"registration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Авторизация Пользователя",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Авторизация Пользователя: Успешно\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"В ответе содержится токен\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"registration_of_user@yandex.ru\",\n    \"password\": \"registration_password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseDevUrl}}{{authEndpoint}}/login",
+							"host": [
+								"{{baseDevUrl}}{{authEndpoint}}"
+							],
+							"path": [
+								"login"
 							]
 						}
 					},
