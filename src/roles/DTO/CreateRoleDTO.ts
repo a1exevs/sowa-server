@@ -1,7 +1,6 @@
 import {ApiProperty} from "@nestjs/swagger";
-import { Column, DataType } from "sequelize-typescript";
 
-export class CreateRoleDto {
+export class CreateRoleDTO {
   @ApiProperty({example: "admin", description: "Уникальная Роль"})
   value: string;
 

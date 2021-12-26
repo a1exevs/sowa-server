@@ -1,21 +1,22 @@
-import { HttpStatus, HttpException, Injectable } from "@nestjs/common";
-import { CreateUserDto } from "../users/DTO/CreateUser";
+import { HttpStatus, HttpException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { CreateUserDTO } from "../users/DTO/CreateUserDTO";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs"
 import { User } from "../users/users.model";
-import { RegisterResponseDto } from "./DTO/Register";
+import { AuthDataResponseDTO } from "./DTO/AuthDataResponseDTO";
 
 @Injectable()
 export class AuthService {
   constructor(private userService: UsersService,
               private jwtService: JwtService) {}
 
-  async login(dto: CreateUserDto) {
-
+  async login(dto: CreateUserDTO) {
+    const user = await this.validateUser(dto);
+    return this.generateToken(user);
   }
 
-  async registration(dto: CreateUserDto) {
+  async registration(dto: CreateUserDTO) {
     const candidate = await this.userService.getUserByEmail(dto.email);
     if(candidate)
       throw new HttpException("Пользователь уже существуют", HttpStatus.BAD_REQUEST);
@@ -24,11 +25,22 @@ export class AuthService {
     return this.generateToken(user);
   }
 
-  async generateToken(user: User)
+  private async generateToken(user: User)
   {
     const payload = {email: user.email, id: user.id, roles: user.roles};
-    const response = new RegisterResponseDto;
+    const response = new AuthDataResponseDTO;
     response.token = this.jwtService.sign(payload);
     return response;
+  }
+
+  private async validateUser(dto: CreateUserDTO)
+  {
+    const user = await this.userService.getUserByEmail(dto.email);
+    if(user) {
+      const passwordsEqual = await bcrypt.compare(dto.password, user.password);
+      if (passwordsEqual)
+        return user;
+    }
+    throw new UnauthorizedException({message: 'Неверный email или пароль'});
   }
 }
