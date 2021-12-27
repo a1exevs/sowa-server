@@ -1,0 +1,313 @@
+{
+	"info": {
+		"_postman_id": "4990016a-0ec9-4eaa-9dc0-eef55d695ae4",
+		"name": "sowa-server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "Создать Пользователя",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Создание Пользователя: Успешно\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Response has field id\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"userID\", jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"evssffrtafeiadi@yandex.ru\",\n    \"password\": \"4815162342\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseDevUrl}}{{usersEndpoint}}",
+							"host": [
+								"{{baseDevUrl}}{{usersEndpoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получить Пользователей",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получить Пользователей: Успешно\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJlZ2lzdHJhdGlvbl9vZl91c2VyQHlhbmRleC5ydSIsImlkIjoxMSwicm9sZXMiOlt7ImlkIjoxLCJ2YWx1ZSI6InVzZXIiLCJkZXNjcmlwdGlvbiI6IlNpbXBsZSB1c2VyIiwiY3JlYXRlZEF0IjoiMjAyMS0xMi0yNVQxNTowOTowOC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMS0xMi0yNVQxNTowOTowOC4wMDBaIiwiVXNlcnNSb2xlcyI6eyJpZCI6NywidXNlcl9pZCI6MTEsInJvbGVfaWQiOjF9fV0sImlhdCI6MTY0MDUzMjUwOSwiZXhwIjoxNjQwNjE4OTA5fQ.rqXpW_YlT-geciJ9VUH1Jjrrmjqg26tYi3h2ODU9os0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseDevUrl}}{{usersEndpoint}}",
+							"host": [
+								"{{baseDevUrl}}{{usersEndpoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "roles",
+			"item": [
+				{
+					"name": "Создать Роль",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Создание Роли: Успешно\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Ответ содержит значение Роли, равное значению Роли в запросе\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    const requestValue = pm.collectionVariables.get(\"roleValue\");",
+									"    pm.expect(jsonData.value).to.eql(requestValue);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"roleValue\", \"test1\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"value\": \"{{roleValue}}\",\n    \"description\": \"Administrator of system\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseDevUrl}}{{rolesEndpoint}}",
+							"host": [
+								"{{baseDevUrl}}{{rolesEndpoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получить Роли по значению",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Создание Пользователя: Успешно\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Request value equils response value\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    const requestValue = pm.collectionVariables.get(\"roleValue\");",
+									"    pm.expect(jsonData.value).to.eql(requestValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseDevUrl}}{{rolesEndpoint}}/{{roleValue}}",
+							"host": [
+								"{{baseDevUrl}}{{rolesEndpoint}}"
+							],
+							"path": [
+								"{{roleValue}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "Зарегистрировать Пользователя",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Регистрация Пользователя: Успешно\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"В ответе содержится токен\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"registration_of_user@yandex.ru\",\n    \"password\": \"registration_password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseDevUrl}}{{authEndpoint}}/registration",
+							"host": [
+								"{{baseDevUrl}}{{authEndpoint}}"
+							],
+							"path": [
+								"registration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Авторизация Пользователя",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Авторизация Пользователя: Успешно\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"В ответе содержится токен\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"registration_of_user@yandex.ru\",\n    \"password\": \"registration_password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseDevUrl}}{{authEndpoint}}/login",
+							"host": [
+								"{{baseDevUrl}}{{authEndpoint}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseDevUrl",
+			"value": "localhost:5000"
+		},
+		{
+			"key": "usersEndpoint",
+			"value": "/users"
+		},
+		{
+			"key": "rolesEndpoint",
+			"value": "/roles"
+		},
+		{
+			"key": "userID",
+			"value": ""
+		},
+		{
+			"key": "roleValue",
+			"value": ""
+		},
+		{
+			"key": "authEndpoint",
+			"value": "/auth"
+		}
+	]
+}
