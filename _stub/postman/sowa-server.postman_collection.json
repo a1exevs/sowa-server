@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4990016a-0ec9-4eaa-9dc0-eef55d695ae4",
+		"_postman_id": "5c837370-b330-4217-a895-18dd07fd0b5a",
 		"name": "sowa-server",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -32,7 +32,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"evssffrtafeiadi@yandex.ru\",\n    \"password\": \"4815162342\"\n}",
+							"raw": "{\n    \"email\": \"adsmi1n@yandex.ru\",\n    \"password\": \"4815162342\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -64,6 +64,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjE5LCJyb2xlcyI6W3siaWQiOjIsInZhbHVlIjoiYWRtaW4iLCJkZXNjcmlwdGlvbiI6IkFkbWluaXN0cmF0b3Igb2Ygc3lzdGVtIiwiY3JlYXRlZEF0IjoiMjAyMS0xMi0yNVQxNjoxODoyMS4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMS0xMi0yNVQxNjoxODoyMS4wMDBaIiwiVXNlcnNSb2xlcyI6eyJpZCI6MTQsInVzZXJfaWQiOjE5LCJyb2xlX2lkIjoyfX1dLCJpYXQiOjE2NDA4ODU5NDUsImV4cCI6MTY0MDk3MjM0NX0.QA3qtv3_Tm3sJ5JkeDqUecoLeNgUPvfaLVN0pU59jjs",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [
 							{
@@ -76,6 +86,78 @@
 							"raw": "{{baseDevUrl}}{{usersEndpoint}}",
 							"host": [
 								"{{baseDevUrl}}{{usersEndpoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Выдать роль пользователю",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjE5LCJyb2xlcyI6W3siaWQiOjIsInZhbHVlIjoiYWRtaW4iLCJkZXNjcmlwdGlvbiI6IkFkbWluaXN0cmF0b3Igb2Ygc3lzdGVtIiwiY3JlYXRlZEF0IjoiMjAyMS0xMi0yNVQxNjoxODoyMS4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMS0xMi0yNVQxNjoxODoyMS4wMDBaIiwiVXNlcnNSb2xlcyI6eyJpZCI6MTQsInVzZXJfaWQiOjE5LCJyb2xlX2lkIjoyfX1dLCJpYXQiOjE2NDA4ODU5NDUsImV4cCI6MTY0MDk3MjM0NX0.QA3qtv3_Tm3sJ5JkeDqUecoLeNgUPvfaLVN0pU59jjs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"value\": \"development\",\n    \"userID\": \"17\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseDevUrl}}{{usersEndpoint}}/role",
+							"host": [
+								"{{baseDevUrl}}{{usersEndpoint}}"
+							],
+							"path": [
+								"role"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Бан пользователя",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjE5LCJyb2xlcyI6W3siaWQiOjIsInZhbHVlIjoiYWRtaW4iLCJkZXNjcmlwdGlvbiI6IkFkbWluaXN0cmF0b3Igb2Ygc3lzdGVtIiwiY3JlYXRlZEF0IjoiMjAyMS0xMi0yNVQxNjoxODoyMS4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMS0xMi0yNVQxNjoxODoyMS4wMDBaIiwiVXNlcnNSb2xlcyI6eyJpZCI6MTQsInVzZXJfaWQiOjE5LCJyb2xlX2lkIjoyfX1dLCJpYXQiOjE2NDA4ODU5NDUsImV4cCI6MTY0MDk3MjM0NX0.QA3qtv3_Tm3sJ5JkeDqUecoLeNgUPvfaLVN0pU59jjs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userID\": \"17\",\n    \"banReason\": \"Spammer\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseDevUrl}}{{usersEndpoint}}/ban",
+							"host": [
+								"{{baseDevUrl}}{{usersEndpoint}}"
+							],
+							"path": [
+								"ban"
 							]
 						}
 					},
@@ -110,7 +192,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.collectionVariables.set(\"roleValue\", \"test1\");"
+									"pm.collectionVariables.set(\"roleValue\", \"development\");"
 								],
 								"type": "text/javascript"
 							}
@@ -200,7 +282,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"registration_of_user@yandex.ru\",\n    \"password\": \"registration_password\"\n}",
+							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"admin\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -242,7 +324,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"registration_of_user@yandex.ru\",\n    \"password\": \"registration_password\"\n}",
+							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"admin\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

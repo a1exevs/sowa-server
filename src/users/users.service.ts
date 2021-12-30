@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpCode, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { User } from './users.model';
 import { CreateUserDTO } from "./DTO/CreateUserDTO";
 import { RolesService } from "../roles/roles.service";
+import { AddUserRoleDTO } from "./DTO/AddUserRoleDTO";
+import { BanUserDTO } from "./DTO/BanUserDTO";
 
 @Injectable()
 export class UsersService {
@@ -25,5 +27,30 @@ export class UsersService {
   async getUserByEmail(email: string){
     const user = await this.userRepository.findOne({where: {email},include: {all: true}});
     return user;
+  }
+
+  async addRole(dto: AddUserRoleDTO) {
+    const user = await this.userRepository.findByPk(dto.userID, {include: {all: true}});
+    const hasRole = user.roles.some(role => role.value == dto.value);
+    if(hasRole)
+      throw new HttpException(`Пользователь уже имеет роль ${dto.value}`, HttpStatus.NOT_ACCEPTABLE);
+    const role = await this.roleService.getRoleByValue(dto.value);
+    if(user && role) {
+      await user.$add('roles', role.id);
+      return user;
+    }
+    throw new HttpException('Не удалось найти пользователя или роль', HttpStatus.NOT_FOUND);
+  }
+
+  async ban(dto: BanUserDTO) {
+    const user = await this.userRepository.findByPk(dto.userID);
+    if(user)
+    {
+      user.banned = true;
+      user.banReason = dto.banReason;
+      await user.save();
+      return user;
+    }
+    throw new HttpException('Не удалось найти пользователя', HttpStatus.NOT_FOUND);
   }
 }
