@@ -12,7 +12,13 @@ export class UsersService {
               private roleService: RolesService) {}
 
   async createUser(DTO: CreateUserDTO){
-    const user = await this.userRepository.create(DTO);
+    let user;
+    try {
+      user = await this.userRepository.create(DTO);
+    }
+    catch (e) {
+      throw new HttpException(`Не удалось создать пользователя. ${e.message}`, HttpStatus.BAD_REQUEST);
+    }
     const role = await this.roleService.getRoleByValue('user');
     await user.$set('roles', [role.id]);
     user.roles = [role];
