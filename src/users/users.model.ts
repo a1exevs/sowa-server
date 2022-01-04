@@ -1,14 +1,15 @@
-import {BelongsToMany, Column, DataType, Model, Table} from "sequelize-typescript";
+import { BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import {ApiProperty} from "@nestjs/swagger";
 import {Role} from "../roles/roles.model";
 import {UsersRoles} from "./users_roles.model";
+import {Post} from "../posts/posts.model"
 
 interface IUser {
     email: string,
     password: string
 }
 
-@Table({ tableName: 'users'})
+@Table({ tableName: 'users', createdAt: false, updatedAt: false})
 export class User extends Model<User, IUser> {
     @ApiProperty({example: "1", description: "Уникальный идентификатор Пользователя"})
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
@@ -32,4 +33,7 @@ export class User extends Model<User, IUser> {
 
     @BelongsToMany(() => Role, () => UsersRoles)
     roles: Role[];
+
+    @HasMany(() => Post)
+    posts: Post[];
 }

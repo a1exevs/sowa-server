@@ -32,7 +32,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"adsmi1n@yandex.ru\",\n    \"password\": \"4815162342\"\n}",
+							"raw": "{\n    \"email\": \"aaaadsmi1n@yandex.ru\",\n    \"password\": \"41111\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -69,7 +69,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjE5LCJyb2xlcyI6W3siaWQiOjIsInZhbHVlIjoiYWRtaW4iLCJkZXNjcmlwdGlvbiI6IkFkbWluaXN0cmF0b3Igb2Ygc3lzdGVtIiwiY3JlYXRlZEF0IjoiMjAyMS0xMi0yNVQxNjoxODoyMS4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMS0xMi0yNVQxNjoxODoyMS4wMDBaIiwiVXNlcnNSb2xlcyI6eyJpZCI6MTQsInVzZXJfaWQiOjE5LCJyb2xlX2lkIjoyfX1dLCJpYXQiOjE2NDA4ODU5NDUsImV4cCI6MTY0MDk3MjM0NX0.QA3qtv3_Tm3sJ5JkeDqUecoLeNgUPvfaLVN0pU59jjs",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjE5LCJyb2xlcyI6W3siaWQiOjIsInZhbHVlIjoiYWRtaW4iLCJkZXNjcmlwdGlvbiI6IkFkbWluaXN0cmF0b3Igb2Ygc3lzdGVtIiwiY3JlYXRlZEF0IjoiMjAyMS0xMi0yNVQxNjoxODoyMS4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMS0xMi0yNVQxNjoxODoyMS4wMDBaIiwiVXNlcnNSb2xlcyI6eyJpZCI6MTQsInVzZXJfaWQiOjE5LCJyb2xlX2lkIjoyfX1dLCJpYXQiOjE2NDEzMDk1MTEsImV4cCI6MTY0MTM5NTkxMX0.TPSDxy1VaHL7KJRfpTo_vwdBwTPHuWhEuq_5ehUUCGQ",
 									"type": "string"
 								}
 							]
@@ -172,6 +172,15 @@
 					"name": "Создать Роль",
 					"event": [
 						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"roleValue\", \"development2\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
 							"listen": "test",
 							"script": {
 								"exec": [
@@ -184,15 +193,6 @@
 									"    pm.expect(jsonData.value).to.eql(requestValue);",
 									"",
 									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.collectionVariables.set(\"roleValue\", \"development\");"
 								],
 								"type": "text/javascript"
 							}
@@ -344,6 +344,61 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "posts",
+			"item": [
+				{
+					"name": "Создать пост",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Заголовок поста",
+									"type": "text"
+								},
+								{
+									"key": "content",
+									"value": "Контент",
+									"type": "text"
+								},
+								{
+									"key": "user_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/home/alexevs/Изображения/sowa.jpg"
+								},
+								{
+									"key": "",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseDevUrl}}{{postsEndpoint}}",
+							"host": [
+								"{{baseDevUrl}}{{postsEndpoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -390,6 +445,10 @@
 		{
 			"key": "authEndpoint",
 			"value": "/auth"
+		},
+		{
+			"key": "postsEndpoint",
+			"value": "/posts"
 		}
 	]
 }
