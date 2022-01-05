@@ -5,11 +5,11 @@ import { User } from "../users/users.model";
 interface IPost {
     title: string,
     content: string,
-    user_id: number,
+    userId: number,
     image: string
 }
 
-@Table({ tableName: 'posts', createdAt: false, updatedAt: false})
+@Table({ tableName: 'posts', createdAt: false, updatedAt: false, underscored: true, charset: 'utf8', collate: 'utf8_general_ci'})
 export class Post extends Model<Post, IPost> {
     @ApiProperty({example: "1", description: "Уникальный идентификатор Поста"})
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
@@ -30,7 +30,7 @@ export class Post extends Model<Post, IPost> {
     @ForeignKey(() => User)
     @ApiProperty({example: "1", description: "Идентификатор Пользователя"})
     @Column({type: DataType.INTEGER, allowNull: false})
-    user_id: number;
+    userId: number;
 
     @BelongsTo(() => User)
     author: User;

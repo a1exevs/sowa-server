@@ -12,5 +12,5 @@ export class CreatePostDTO {
 
   @ApiProperty({example: "1", description: "Идентификатор Пользователя"})
   //@IsNumber({}, {message: "Должно быть числом"})
-  readonly user_id: number;
+  readonly userId: number;
 }

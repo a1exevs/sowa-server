@@ -9,7 +9,7 @@ interface IUser {
     password: string
 }
 
-@Table({ tableName: 'users', createdAt: false, updatedAt: false})
+@Table({ tableName: 'users', createdAt: false, updatedAt: false, underscored: true, charset: 'utf8', collate: 'utf8_general_ci'})
 export class User extends Model<User, IUser> {
     @ApiProperty({example: "1", description: "Уникальный идентификатор Пользователя"})
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})

@@ -8,7 +8,7 @@ interface IRole {
     description: string
 }
 
-@Table({ tableName: 'roles'})
+@Table({ tableName: 'roles', createdAt: false, updatedAt: false, underscored: true, charset: 'utf8', collate: 'utf8_general_ci'})
 export class Role extends Model<Role, IRole> {
     @ApiProperty({example: "1", description: "Уникальный идентификатор Роли"})
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
