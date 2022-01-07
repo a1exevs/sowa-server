@@ -5,6 +5,7 @@ import { ValidationPipe } from "./pipes/validation.pipe";
 
 async function start() {
   const PORT = process.env.PORT || 5000;
+  const CLIENT_URL = process.env.CLIENT_URL || undefined;
   const app = await NestFactory.create(AppModule);
 
   const docConfig = new DocumentBuilder()
@@ -17,6 +18,23 @@ async function start() {
   SwaggerModule.setup('/api/docs', app, document);
 
   app.useGlobalPipes(new ValidationPipe());
+
+  const whitelist = [CLIENT_URL];
+
+  app.enableCors({
+    origin: function (origin, callback) {
+      if (!origin || whitelist.indexOf(origin) !== -1) {
+        console.log("allowed cors for:", origin)
+        callback(null, true)
+      } else {
+        console.log("blocked cors for:", origin)
+        callback(new Error('Not allowed by CORS'), false)
+      }
+    },
+    allowedHeaders: 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
+    methods: "GET,PUT,POST,DELETE,UPDATE,OPTIONS",
+    credentials: true,
+  });
 
   await app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 }
