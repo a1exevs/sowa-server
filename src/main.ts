@@ -34,6 +34,7 @@ async function start() {
     allowedHeaders: 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
     methods: "GET,PUT,POST,DELETE,UPDATE,OPTIONS",
     credentials: true,
+    maxAge: 600
   });
 
   await app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
