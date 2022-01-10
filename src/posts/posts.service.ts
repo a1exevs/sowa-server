@@ -9,11 +9,11 @@ export class PostsService {
   constructor(@InjectModel(Post) private postRepository: typeof Post,
               private fileService: FilesService) {}
 
-  async createPost(DTO: CreatePostDTO, image: any) {
+  async createPost(DTO: CreatePostDTO, image: any, userID: number) {
     let post;
     const fileName = await this.fileService.createFile(image);
     try {
-      post = await this.postRepository.create({...DTO, image: fileName});
+      post = await this.postRepository.create({...DTO, userId: userID, image: fileName});
     }
     catch (e) {
       throw new HttpException(`Не удалось создать пост. ${e.message}`, HttpStatus.BAD_REQUEST);
