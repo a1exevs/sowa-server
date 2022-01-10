@@ -69,7 +69,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjE5LCJyb2xlcyI6W3siaWQiOjIsInZhbHVlIjoiYWRtaW4iLCJkZXNjcmlwdGlvbiI6IkFkbWluaXN0cmF0b3Igb2Ygc3lzdGVtIiwiY3JlYXRlZEF0IjoiMjAyMS0xMi0yNVQxNjoxODoyMS4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMS0xMi0yNVQxNjoxODoyMS4wMDBaIiwiVXNlcnNSb2xlcyI6eyJpZCI6MTQsInVzZXJfaWQiOjE5LCJyb2xlX2lkIjoyfX1dLCJpYXQiOjE2NDEzMDk1MTEsImV4cCI6MTY0MTM5NTkxMX0.TPSDxy1VaHL7KJRfpTo_vwdBwTPHuWhEuq_5ehUUCGQ",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjEsInJvbGVzIjpbeyJpZCI6MSwidmFsdWUiOiJhZG1pbiIsImRlc2NyaXB0aW9uIjoi0JDQtNC80LjQvdC40YHRgtGA0LDRgtC-0YAg0YHQuNGB0YLQtdC80YsiLCJVc2Vyc1JvbGVzIjp7ImlkIjoxLCJ1c2VySWQiOjEsInJvbGVJZCI6MX19XSwiaWF0IjoxNjQxNTY0NTYzLCJleHAiOjE2NDE2NTA5NjN9.KzMcS3YQnJPN6iIzw6RQ0vBjfhbAkugXXr_7Qgm33m8",
 									"type": "string"
 								}
 							]
@@ -79,6 +79,11 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJlZ2lzdHJhdGlvbl9vZl91c2VyQHlhbmRleC5ydSIsImlkIjoxMSwicm9sZXMiOlt7ImlkIjoxLCJ2YWx1ZSI6InVzZXIiLCJkZXNjcmlwdGlvbiI6IlNpbXBsZSB1c2VyIiwiY3JlYXRlZEF0IjoiMjAyMS0xMi0yNVQxNTowOTowOC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMS0xMi0yNVQxNTowOTowOC4wMDBaIiwiVXNlcnNSb2xlcyI6eyJpZCI6NywidXNlcl9pZCI6MTEsInJvbGVfaWQiOjF9fV0sImlhdCI6MTY0MDUzMjUwOSwiZXhwIjoxNjQwNjE4OTA5fQ.rqXpW_YlT-geciJ9VUH1Jjrrmjqg26tYi3h2ODU9os0",
+								"type": "text"
+							},
+							{
+								"key": "origin",
+								"value": "",
 								"type": "text"
 							}
 						],
@@ -175,7 +180,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.collectionVariables.set(\"roleValue\", \"development2\");"
+									"pm.collectionVariables.set(\"roleValue\", \"admin\");"
 								],
 								"type": "text/javascript"
 							}
@@ -200,10 +205,22 @@
 					],
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "origin",
+								"value": "http://localhost:3000",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "l",
+								"type": "text",
+								"disabled": true
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"value\": \"{{roleValue}}\",\n    \"description\": \"Administrator of system\"\n}",
+							"raw": "{\n    \"value\": \"test2\",\n    \"description\": \"Пользователь\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -239,16 +256,38 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjEsInJvbGVzIjpbeyJpZCI6MSwidmFsdWUiOiJhZG1pbiIsImRlc2NyaXB0aW9uIjoi0JDQtNC80LjQvdC40YHRgtGA0LDRgtC-0YAg0YHQuNGB0YLQtdC80YsiLCJVc2Vyc1JvbGVzIjp7ImlkIjoxLCJ1c2VySWQiOjEsInJvbGVJZCI6MX19XSwiaWF0IjoxNjQxODQ0MzIzLCJleHAiOjE2NDE5MzA3MjN9.WMCl5o2PAZpDdh4YdDVPDm_Udi1eFX3LtXk12pvub_o",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"test\":\"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{baseDevUrl}}{{rolesEndpoint}}/{{roleValue}}",
+							"raw": "{{baseDevUrl}}{{rolesEndpoint}}/admin",
 							"host": [
 								"{{baseDevUrl}}{{rolesEndpoint}}"
 							],
 							"path": [
-								"{{roleValue}}"
+								"admin"
 							]
 						}
 					},
@@ -282,7 +321,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"admin\"\n}",
+							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"11111\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -324,7 +363,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"admin\"\n}",
+							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"11111\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -351,6 +390,16 @@
 				{
 					"name": "Создать пост",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjEsInJvbGVzIjpbeyJpZCI6MSwidmFsdWUiOiJhZG1pbiIsImRlc2NyaXB0aW9uIjoi0JDQtNC80LjQvdC40YHRgtGA0LDRgtC-0YAg0YHQuNGB0YLQtdC80YsiLCJVc2Vyc1JvbGVzIjp7ImlkIjoxLCJ1c2VySWQiOjEsInJvbGVJZCI6MX19XSwiaWF0IjoxNjQxODQ0MzIzLCJleHAiOjE2NDE5MzA3MjN9.WMCl5o2PAZpDdh4YdDVPDm_Udi1eFX3LtXk12pvub_o",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -358,36 +407,20 @@
 							"formdata": [
 								{
 									"key": "title",
-									"value": "Заголовок поста",
+									"value": "title",
 									"type": "text"
 								},
 								{
 									"key": "content",
-									"value": "Контент",
-									"type": "text"
-								},
-								{
-									"key": "user_id",
-									"value": "1",
+									"value": "content",
 									"type": "text"
 								},
 								{
 									"key": "image",
 									"type": "file",
 									"src": "/home/alexevs/Изображения/sowa.jpg"
-								},
-								{
-									"key": "",
-									"type": "file",
-									"src": [],
-									"disabled": true
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{baseDevUrl}}{{postsEndpoint}}",
@@ -440,7 +473,7 @@
 		},
 		{
 			"key": "roleValue",
-			"value": ""
+			"value": "admin"
 		},
 		{
 			"key": "authEndpoint",
