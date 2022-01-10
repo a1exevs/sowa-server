@@ -1,8 +1,6 @@
-import { Controller, Get, Post, Body, Injectable, Param } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param } from "@nestjs/common";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import { RolesService } from "./roles.service";
-import { User } from "../users/users.model";
-import { CreateUserDTO } from "../users/DTO/CreateUserDTO";
 import { Role } from "./roles.model";
 import { CreateRoleDTO } from "./DTO/CreateRoleDTO";
 
@@ -14,14 +12,14 @@ export class RolesController {
   @ApiOperation({summary: "Создание роли"})
   @ApiResponse({status: 201, type: Role})
   @Post()
-  create(@Body() dto: CreateRoleDTO) {
+  create(@Body() dto: CreateRoleDTO) : Promise<Role> {
     return this.roleService.createRole(dto);
   }
 
   @ApiOperation({summary: "Получение роли по значению"})
   @ApiResponse({status: 200, type: Role})
   @Get('/:value')
-  getByValue(@Param('value') value: string) {
+  getByValue(@Param('value') value: string) : Promise<Role> {
     return this.roleService.getRoleByValue(value);
   }
 }
