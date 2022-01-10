@@ -9,8 +9,4 @@ export class CreatePostDTO {
   @ApiProperty({example: "Здесь текст данного поста", description: "Контентная часть Поста"})
   @IsString({message: "Должно быть строкой"})
   readonly content: string;
-
-  @ApiProperty({example: "1", description: "Идентификатор Пользователя"})
-  //@IsNumber({}, {message: "Должно быть числом"})
-  readonly userId: number;
 }
