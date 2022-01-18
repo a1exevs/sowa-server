@@ -58,7 +58,7 @@ export class TokensService {
       throw new UnprocessableEntityException('Refresh token not found')
     }
 
-    if (token.is_revoked) {
+    if (token.isRevoked) {
       throw new UnprocessableEntityException('Refresh token revoked')
     }
 

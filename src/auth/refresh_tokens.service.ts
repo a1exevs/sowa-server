@@ -7,8 +7,8 @@ export class RefreshTokensService {
   public async createRefreshToken (user: User, ttl: number): Promise<RefreshToken> {
     const token = new RefreshToken()
 
-    token.user_id = user.id
-    token.is_revoked = false
+    token.userId = user.id
+    token.isRevoked = false
 
     const expiration = new Date()
     expiration.setTime(expiration.getTime() + ttl)

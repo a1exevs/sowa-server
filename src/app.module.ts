@@ -12,6 +12,7 @@ import { Post } from "./posts/posts.model";
 import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from "@nestjs/serve-static";
 import * as path from "path"
+import {RefreshToken} from "./auth/refresh_tokens.model";
 
 @Module({
   controllers: [],
@@ -30,7 +31,7 @@ import * as path from "path"
       username: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DB,
-      models: [User, Role, UsersRoles, Post],
+      models: [User, Role, UsersRoles, Post, RefreshToken],
       autoLoadModels: true,
     }),
     UsersModule,
