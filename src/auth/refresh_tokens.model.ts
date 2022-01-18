@@ -8,7 +8,7 @@ export class RefreshToken extends Model<RefreshToken> {
   id: number;
 
   @ApiProperty({example: 1, description: "Уникальный идентификатор Пользователя"})
-  @Column({type: DataType.NUMBER, allowNull: false})
+  @Column({type: DataType.INTEGER, allowNull: false})
   userId: number
 
   @ApiProperty({example: true, description: "Отозван ли токен"})
