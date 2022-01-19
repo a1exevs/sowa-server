@@ -7,8 +7,8 @@ import { UsersService } from '../users/users.service'
 import { RefreshTokensService } from './refresh_tokens.service'
 
 const BASE_OPTIONS: SignOptions = {
-  issuer: 'https://my-app.com',
-  audience:'https://my-app.com',
+  issuer: 'https://sowa-api.com',
+  audience:'https://sowa-api.com',
 }
 
 export interface RefreshTokenPayload {
@@ -29,17 +29,19 @@ export class TokensService {
   }
 
   public async generateAccessToken (user: User): Promise<string> {
+    const payload = {email: user.email, id: user.id, roles: user.roles};
     const opts: SignOptions = {
       ...BASE_OPTIONS,
       subject: String(user.id),
     }
 
-    return this.jwtService.signAsync({}, opts)
+    return await this.jwtService.signAsync(payload, opts);
   }
 
   public async generateRefreshToken (user: User, expiresIn: number): Promise<string> {
     const token = await this.refreshTokensService.createRefreshToken(user, expiresIn)
 
+    //const payload = {email: user.email, id: user.id, roles: user.roles};
     const opts: SignOptions = {
       ...BASE_OPTIONS,
       expiresIn,
@@ -50,8 +52,16 @@ export class TokensService {
     return this.jwtService.signAsync({}, opts)
   }
 
-  public async resolveRefreshToken (encoded: string): Promise<{ user: User, token: RefreshToken }> {
-    const payload = await this.decodeRefreshToken(encoded)
+  public async createAccessTokenFromRefreshToken (refresh: string): Promise<{ token: string, user: User }> {
+    const { user } = await this.resolveRefreshToken(refresh)
+
+    const token = await this.generateAccessToken(user)
+
+    return { user, token }
+  }
+
+  private async resolveRefreshToken (encoded: string): Promise<{ user: User, token: RefreshToken }> {
+    const payload = await this.decodeRefreshToken(encoded);
     const token = await this.getStoredTokenFromRefreshTokenPayload(payload)
 
     if (!token) {
@@ -67,14 +77,6 @@ export class TokensService {
     if (!user) {
       throw new UnprocessableEntityException('Refresh token malformed')
     }
-
-    return { user, token }
-  }
-
-  public async createAccessTokenFromRefreshToken (refresh: string): Promise<{ token: string, user: User }> {
-    const { user } = await this.resolveRefreshToken(refresh)
-
-    const token = await this.generateAccessToken(user)
 
     return { user, token }
   }
@@ -98,7 +100,7 @@ export class TokensService {
       throw new UnprocessableEntityException('Refresh token malformed')
     }
 
-    return this.usersService.getUserBuId(subId)
+    return this.usersService.getUserById(subId)
   }
 
   private async getStoredTokenFromRefreshTokenPayload (payload: RefreshTokenPayload): Promise<RefreshToken | null> {

@@ -14,7 +14,7 @@ export interface AuthenticationPayload {
   user: User
   payload: {
     type: string
-    token: string
+    access_token: string
     refresh_token?: string
   }
 }
@@ -71,20 +71,12 @@ export class AuthService {
 
   public async me(userId: number)
   {
-    const user = await this.userService.getUserBuId(userId)
+    const user = await this.userService.getUserById(userId)
 
     return {
       status: 'success',
       data: user,
     }
-  }
-
-  private async generateToken(user: User)
-  {
-    const payload = {email: user.email, id: user.id, roles: user.roles};
-    const response = new AuthDataResponseDTO;
-    response.token = this.jwtService.sign(payload);
-    return response;
   }
 
   private async validateUser(dto: CreateUserDTO)
@@ -103,7 +95,7 @@ export class AuthService {
       user: user,
       payload: {
         type: 'bearer',
-        token: accessToken,
+        access_token: accessToken,
         ...(refreshToken ? { refresh_token: refreshToken } : {}),
       }
     }

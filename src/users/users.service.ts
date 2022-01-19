@@ -35,8 +35,8 @@ export class UsersService {
     return user;
   }
 
-  async getUserBuId(id: number){
-    return await this.userRepository.findOne({ where: {id}})
+  async getUserById(id: number){
+    return await this.userRepository.findOne({ where: {id}, include: {all: true}})
   }
 
   async addRole(dto: AddUserRoleDTO) {

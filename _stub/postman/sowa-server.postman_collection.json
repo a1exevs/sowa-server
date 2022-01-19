@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5c837370-b330-4217-a895-18dd07fd0b5a",
+		"_postman_id": "44e972bc-d763-484c-9a52-40b5162385e7",
 		"name": "sowa-server",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -204,12 +204,23 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjEsImlhdCI6MTY0MjU3NjgyOSwiZXhwIjoxNjQyNTc2ODI5LCJhdWQiOiJodHRwczovL3Nvd2EtYXBpLmNvbSIsImlzcyI6Imh0dHBzOi8vc293YS1hcGkuY29tIiwic3ViIjoiMSJ9.dT4ETAf11AsGlLvH7vLTo_PEPGDG0rj4zLlnIqp4B7s",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
 								"key": "origin",
 								"value": "http://localhost:3000",
-								"type": "text"
+								"type": "text",
+								"disabled": true
 							},
 							{
 								"key": "",
@@ -321,7 +332,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"11111\"\n}",
+							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"admin\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -363,7 +374,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"11111\"\n}",
+							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"admin\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -377,6 +388,59 @@
 							],
 							"path": [
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновить access-token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjEsInJvbGVzIjpbeyJpZCI6MiwidmFsdWUiOiJ1c2VyIiwiZGVzY3JpcHRpb24iOiLQn9GA0L7RgdGC0L7QuSDQv9C-0LvRjNC30L7QstCw0YLQtdC70YwiLCJVc2Vyc1JvbGVzIjp7ImlkIjoxLCJ1c2VySWQiOjEsInJvbGVJZCI6Mn19XSwiaWF0IjoxNjQyNTc1OTg4LCJleHAiOjE2NDUxNjc5ODgsImF1ZCI6Imh0dHBzOi8vc293YS1hcGkuY29tIiwiaXNzIjoiaHR0cHM6Ly9zb3dhLWFwaS5jb20iLCJzdWIiOiIxIiwianRpIjoiMiJ9.pVIchZPWmq4FGseUQ04EcBzv48E8uFToZgNzNlg31j0\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseDevUrl}}{{authEndpoint}}/refresh",
+							"host": [
+								"{{baseDevUrl}}{{authEndpoint}}"
+							],
+							"path": [
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получить текущего пользователя",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjEsInJvbGVzIjpbeyJpZCI6MiwidmFsdWUiOiJ1c2VyIiwiZGVzY3JpcHRpb24iOiLQn9GA0L7RgdGC0L7QuSDQv9C-0LvRjNC30L7QstCw0YLQtdC70YwiLCJVc2Vyc1JvbGVzIjp7ImlkIjoxLCJ1c2VySWQiOjEsInJvbGVJZCI6Mn19XSwiaWF0IjoxNjQyNTc5ODc3LCJleHAiOjE2NDI1Nzk5MzcsImF1ZCI6Imh0dHBzOi8vc293YS1hcGkuY29tIiwiaXNzIjoiaHR0cHM6Ly9zb3dhLWFwaS5jb20iLCJzdWIiOiIxIn0.qfnv4Lup9tjmmpwPrEpyKnJyi1U2msbeYoeOyTrYhOo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseDevUrl}}{{authEndpoint}}/me",
+							"host": [
+								"{{baseDevUrl}}{{authEndpoint}}"
+							],
+							"path": [
+								"me"
 							]
 						}
 					},

@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Post, Req, UnauthorizedException } from "@nestjs/common";
+import {Body, Controller, Get, Post, Req, UnauthorizedException, UseGuards} from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { AuthDataResponseDTO } from "./DTO/AuthDataResponseDTO";
 import { LoginDto } from "./DTO/LoginDto";
 import { RefreshDto } from "./DTO/RefreshDto";
 import { RegisterDto } from "./DTO/RegisterDto";
+import {RolesGuard} from "./guards/roles.quard";
+import {JwtAuthGuard} from "./guards/jwtAuth.guard";
 
 @ApiTags("Авторизация")
 @Controller('auth')
@@ -32,14 +34,29 @@ export class AuthController {
   @Post('/refresh')
   refresh(@Body() dto: RefreshDto)
   {
+    /**
+     * @todo Доставать refresh-token из Куки
+     */
     return this.authService.refresh(dto);
   }
 
   @ApiOperation({summary: "Возвращает данные текущего пользователя"})
   @ApiResponse({status: 200})
+  @UseGuards(JwtAuthGuard)
   @Get('/me')
-  public async getUser (@Req() request) {
+  me(@Req() request) {
     const userId = request.user.id
     return this.authService.me(userId);
+  }
+
+  @ApiOperation({summary: "Закрывает сессию"})
+  @ApiResponse({status: 200, type: Boolean})
+  @UseGuards(JwtAuthGuard)
+  @Get('/logout')
+  logout(@Req() request) {
+    /**
+     * @todo Реалижовать метод
+     */
+    return true;
   }
 }

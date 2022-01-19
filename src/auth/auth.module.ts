@@ -16,7 +16,7 @@ import { RefreshToken } from "./refresh_tokens.model";
     JwtModule.register({
       secret: process.env.SECRET_KEY || 'SECRET',
       signOptions: {
-        expiresIn: '24h'
+        expiresIn: '60s'
       }
     }),
     SequelizeModule.forFeature([RefreshToken])
