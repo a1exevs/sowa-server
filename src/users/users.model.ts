@@ -11,7 +11,7 @@ interface IUser {
 
 @Table({ tableName: 'users', createdAt: false, updatedAt: false, underscored: true, charset: 'utf8', collate: 'utf8_general_ci'})
 export class User extends Model<User, IUser> {
-    @ApiProperty({example: "1", description: "Уникальный идентификатор Пользователя"})
+    @ApiProperty({example: 1, description: "Уникальный идентификатор Пользователя"})
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
     id: number;
 
@@ -23,7 +23,7 @@ export class User extends Model<User, IUser> {
     @Column({type: DataType.STRING, allowNull: false})
     password: string;
 
-    @ApiProperty({example: "false", description: "Забанен ли Пользователь"})
+    @ApiProperty({example: false, description: "Забанен ли Пользователь"})
     @Column({type: DataType.BOOLEAN, defaultValue: false})
     banned: boolean;
 
