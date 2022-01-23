@@ -60,6 +60,11 @@ export class TokensService {
     return { user, token }
   }
 
+  public async removeRefreshToken(refresh_token: string): Promise<number> {
+    const payload = await this.decodeRefreshToken(refresh_token);
+    return await this.refreshTokensService.removeTokenById(payload.jti);
+  }
+
   private async resolveRefreshToken (encoded: string): Promise<{ user: User, token: RefreshToken }> {
     const payload = await this.decodeRefreshToken(encoded);
     const token = await this.getStoredTokenFromRefreshTokenPayload(payload)

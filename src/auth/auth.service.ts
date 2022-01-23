@@ -1,14 +1,12 @@
-import { HttpStatus, HttpException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
 import { CreateUserDTO } from "../users/DTO/CreateUserDTO";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
-import * as bcrypt from "bcryptjs"
+import * as bcrypt from "bcryptjs";
 import { User } from "../users/users.model";
-import { AuthDataResponseDTO } from "./DTO/AuthDataResponseDTO";
 import { TokensService } from "./tokens.service";
 import { RegisterDto } from "./DTO/RegisterDto";
 import { LoginDto } from "./DTO/LoginDto";
-import { RefreshDto } from "./DTO/RefreshDto";
 
 export interface AuthenticationPayload {
   user: User
@@ -57,9 +55,9 @@ export class AuthService {
     }
   }
 
-  public async refresh(dto: RefreshDto)
+  public async refresh(refresh_token: string)
   {
-    const { user, token } = await this.tokensService.createAccessTokenFromRefreshToken(dto.refresh_token)
+    const { user, token } = await this.tokensService.createAccessTokenFromRefreshToken(refresh_token)
 
     const payload = this.buildResponsePayload(user, token)
 
@@ -77,6 +75,11 @@ export class AuthService {
       status: 'success',
       data: user,
     }
+  }
+
+  public async logout(refresh_token: string)
+  {
+    return await this.tokensService.removeRefreshToken(refresh_token);
   }
 
   private async validateUser(dto: CreateUserDTO)

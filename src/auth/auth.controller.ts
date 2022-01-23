@@ -1,12 +1,11 @@
-import {Body, Controller, Get, Post, Req, UnauthorizedException, UseGuards} from "@nestjs/common";
+import { Body, Controller, Delete, Get, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { AuthDataResponseDTO } from "./DTO/AuthDataResponseDTO";
 import { LoginDto } from "./DTO/LoginDto";
-import { RefreshDto } from "./DTO/RefreshDto";
 import { RegisterDto } from "./DTO/RegisterDto";
-import {RolesGuard} from "./guards/roles.quard";
 import {JwtAuthGuard} from "./guards/jwtAuth.guard";
+import { Response, Request } from "express";
 
 @ApiTags("Авторизация")
 @Controller('auth')
@@ -16,28 +15,33 @@ export class AuthController {
   @ApiOperation({summary: "Регистрация пользователя"})
   @ApiResponse({status: 201, type: AuthDataResponseDTO})
   @Post('/registration')
-  registration(@Body() dto: RegisterDto)
+  async registration(@Body() dto: RegisterDto, @Res() response: Response)
   {
-    return this.authService.registration(dto);
+    const registerData = await this.authService.registration(dto);
+    if("refresh_token" in registerData.data.payload)
+      response.cookie("refresh_token", registerData.data.payload.refresh_token, {httpOnly: true});
+    response.send(registerData);
   }
 
   @ApiOperation({summary: "Авторизация пользователя"})
   @ApiResponse({status: 201, type: AuthDataResponseDTO})
   @Post('/login')
-  login(@Body() dto: LoginDto)
+  async login(@Body() dto: LoginDto, @Res() response: Response)
   {
-    return this.authService.login(dto);
+    const loginData = await this.authService.login(dto);
+    if("refresh_token" in loginData.data.payload)
+      response.cookie("refresh_token", loginData.data.payload.refresh_token, {httpOnly: true});
+    response.send(loginData);
   }
 
   @ApiOperation({summary: "Обновление данных пользователя"})
   @ApiResponse({status: 201, type: AuthDataResponseDTO})
   @Post('/refresh')
-  refresh(@Body() dto: RefreshDto)
+  refresh(@Req() request: Request)
   {
-    /**
-     * @todo Доставать refresh-token из Куки
-     */
-    return this.authService.refresh(dto);
+    if("refresh_token" in request.cookies)
+      return this.authService.refresh(request.cookies.refresh_token);
+    throw new UnauthorizedException({message: 'Пользователь не авторизован'});
   }
 
   @ApiOperation({summary: "Возвращает данные текущего пользователя"})
@@ -52,11 +56,13 @@ export class AuthController {
   @ApiOperation({summary: "Закрывает сессию"})
   @ApiResponse({status: 200, type: Boolean})
   @UseGuards(JwtAuthGuard)
-  @Get('/logout')
-  logout(@Req() request) {
-    /**
-     * @todo Реалижовать метод
-     */
-    return true;
+  @Delete('/logout')
+  async logout(@Req() request: Request, @Res() response: Response) {
+    if(!("refresh_token" in request.cookies))
+      throw new UnauthorizedException({message: 'Пользователь не авторизован'});
+    const result = await this.authService.logout(request.cookies.refresh_token);
+    response.clearCookie("refresh_token");
+    const res = Boolean(result);
+    response.send({result: res});
   }
 }

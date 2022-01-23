@@ -21,4 +21,8 @@ export class RefreshTokensService {
   public async findTokenById (id: number): Promise<RefreshToken | null> {
     return RefreshToken.findOne({ where: { id, } })
   }
+
+  public async removeTokenById(id: number): Promise<number> {
+    return RefreshToken.destroy({ where: { id } });
+  }
 }

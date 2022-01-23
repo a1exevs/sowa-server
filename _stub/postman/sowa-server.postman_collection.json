@@ -332,7 +332,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"admin\"\n}",
+							"raw": "{\n    \"email\": \"test@yandex.ru\",\n    \"password\": \"test\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -374,7 +374,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"admin\"\n}",
+							"raw": "{\n    \"email\": \"test@yandex.ru\",\n    \"password\": \"test\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -398,15 +398,6 @@
 					"request": {
 						"method": "POST",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjEsInJvbGVzIjpbeyJpZCI6MiwidmFsdWUiOiJ1c2VyIiwiZGVzY3JpcHRpb24iOiLQn9GA0L7RgdGC0L7QuSDQv9C-0LvRjNC30L7QstCw0YLQtdC70YwiLCJVc2Vyc1JvbGVzIjp7ImlkIjoxLCJ1c2VySWQiOjEsInJvbGVJZCI6Mn19XSwiaWF0IjoxNjQyNTc1OTg4LCJleHAiOjE2NDUxNjc5ODgsImF1ZCI6Imh0dHBzOi8vc293YS1hcGkuY29tIiwiaXNzIjoiaHR0cHM6Ly9zb3dhLWFwaS5jb20iLCJzdWIiOiIxIiwianRpIjoiMiJ9.pVIchZPWmq4FGseUQ04EcBzv48E8uFToZgNzNlg31j0\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "{{baseDevUrl}}{{authEndpoint}}/refresh",
 							"host": [
@@ -427,7 +418,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjEsInJvbGVzIjpbeyJpZCI6MiwidmFsdWUiOiJ1c2VyIiwiZGVzY3JpcHRpb24iOiLQn9GA0L7RgdGC0L7QuSDQv9C-0LvRjNC30L7QstCw0YLQtdC70YwiLCJVc2Vyc1JvbGVzIjp7ImlkIjoxLCJ1c2VySWQiOjEsInJvbGVJZCI6Mn19XSwiaWF0IjoxNjQyNTc5ODc3LCJleHAiOjE2NDI1Nzk5MzcsImF1ZCI6Imh0dHBzOi8vc293YS1hcGkuY29tIiwiaXNzIjoiaHR0cHM6Ly9zb3dhLWFwaS5jb20iLCJzdWIiOiIxIn0.qfnv4Lup9tjmmpwPrEpyKnJyi1U2msbeYoeOyTrYhOo",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAeWFuZGV4LnJ1IiwiaWQiOjMsInJvbGVzIjpbeyJpZCI6MiwidmFsdWUiOiJ1c2VyIiwiZGVzY3JpcHRpb24iOiLQn9GA0L7RgdGC0L7QuSDQv9C-0LvRjNC30L7QstCw0YLQtdC70YwiLCJVc2Vyc1JvbGVzIjp7ImlkIjozLCJ1c2VySWQiOjMsInJvbGVJZCI6Mn19XSwiaWF0IjoxNjQyOTY3NDg4LCJleHAiOjE2NDI5NjgwODgsImF1ZCI6Imh0dHBzOi8vc293YS1hcGkuY29tIiwiaXNzIjoiaHR0cHM6Ly9zb3dhLWFwaS5jb20iLCJzdWIiOiIzIn0.7eWZQgLz37TsD8zQKpd6zl5aiGVVjmBdW38N_wwxmww",
 									"type": "string"
 								}
 							]
@@ -441,6 +432,33 @@
 							],
 							"path": [
 								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Вылогиниться",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAeWFuZGV4LnJ1IiwiaWQiOjMsInJvbGVzIjpbeyJpZCI6MiwidmFsdWUiOiJ1c2VyIiwiZGVzY3JpcHRpb24iOiLQn9GA0L7RgdGC0L7QuSDQv9C-0LvRjNC30L7QstCw0YLQtdC70YwiLCJVc2Vyc1JvbGVzIjp7ImlkIjozLCJ1c2VySWQiOjMsInJvbGVJZCI6Mn19XSwiaWF0IjoxNjQyOTY3ODg2LCJleHAiOjE2NDI5Njg0ODYsImF1ZCI6Imh0dHBzOi8vc293YS1hcGkuY29tIiwiaXNzIjoiaHR0cHM6Ly9zb3dhLWFwaS5jb20iLCJzdWIiOiIzIn0.fzKaYpza41FIiA4rid1JdIBBx5ZveiG-yjbUDeEm72A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseDevUrl}}{{authEndpoint}}/logout",
+							"host": [
+								"{{baseDevUrl}}{{authEndpoint}}"
+							],
+							"path": [
+								"logout"
 							]
 						}
 					},
