@@ -66,6 +66,18 @@ export class TokensService {
   }
 
   private async resolveRefreshToken (encoded: string): Promise<{ user: User, token: RefreshToken }> {
+
+    /**
+     * @todo Обновлять RefreshToken
+     * 1)Сервер получает запись рефреш-сессии по UUID'у рефреш токена
+       2) Сохраняет текущую рефреш-сессию в переменную и удаляет ее из таблицы
+       3) Проверяет текущую рефреш-сессию:
+        Не истекло ли время жизни
+        На соответствие старого fingerprint'a полученного из текущей рефреш-сессии с новым полученным из тела запроса
+       4) В случае негативного результата бросает ошибку TOKEN_EXPIRED/INVALID_REFRESH_SESSION
+       5) В случае успеха создает новую рефреш-сессию и записывает ее в БД
+     */
+
     const payload = await this.decodeRefreshToken(encoded);
     const token = await this.getStoredTokenFromRefreshTokenPayload(payload)
 

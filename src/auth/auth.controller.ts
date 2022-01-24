@@ -28,6 +28,14 @@ export class AuthController {
   @Post('/login')
   async login(@Body() dto: LoginDto, @Res() response: Response)
   {
+    /**
+     * @todo
+     * maxAge куки ставим равную expiresIn из созданной сессии
+     * В path ставим корневой роут auth контроллера (/auth) это важно,
+     * таким образом токен получат только те хендлеры которым он нужен(/auth/logout и /auth/rerfesh-tokens),
+     * остальные обойдутся(нечего зря почём отправлять sensitive data).
+     */
+
     const loginResult = await this.authService.login(dto);
     if("refresh_token" in loginResult.data.payload)
       response.cookie("refresh_token", loginResult.data.payload.refresh_token, {httpOnly: true});
