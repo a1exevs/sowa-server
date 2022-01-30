@@ -1,13 +1,13 @@
-import {HttpException, HttpStatus, Injectable, UnauthorizedException} from "@nestjs/common";
-import {CreateUserDTO} from "../users/DTO/CreateUserDTO";
-import {UsersService} from "../users/users.service";
-import {JwtService} from "@nestjs/jwt";
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
+import { CreateUserDTO } from "../users/DTO/CreateUserDTO";
+import { UsersService } from "../users/users.service";
+import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
-import {User} from "../users/users.model";
-import {TokensService} from "./tokens.service";
-import {RegisterDto} from "./DTO/RegisterDto";
-import {LoginDto} from "./DTO/LoginDto";
-import {AuthenticationResponse} from "./DTO/AuthenticationResponse";
+import { User } from "../users/users.model";
+import { TokensService } from "./tokens.service";
+import { RegisterDto } from "./DTO/RegisterDto";
+import { LoginDto } from "./DTO/LoginDto";
+import { AuthenticationResponse } from "./DTO/AuthenticationResponse";
 
 @Injectable()
 export class AuthService {
@@ -19,9 +19,9 @@ export class AuthService {
     const user = await this.validateUser(dto);
 
     const token = await this.tokensService.generateAccessToken(user)
-    const refresh = await this.tokensService.generateRefreshToken(user, 60 * 60 * 24 * 30)
+    const refresh = await this.tokensService.generateRefreshToken(user, TokensService.getRefreshTokenExpiresIn())
 
-    return this.buildResponsePayload(user, token, refresh);
+    return this.buildResponsePayload(user, token, refresh, this.tokensService.getRefreshTokenExpiration());
   }
 
   async registration(dto: RegisterDto) {
@@ -32,15 +32,15 @@ export class AuthService {
     const user = await this.userService.createUser({...dto, password: hashPassword});
 
     const token = await this.tokensService.generateAccessToken(user)
-    const refresh = await this.tokensService.generateRefreshToken(user, 60 * 60 * 24 * 30)
+    const refresh = await this.tokensService.generateRefreshToken(user, TokensService.getRefreshTokenExpiresIn())
 
-    return this.buildResponsePayload(user, token, refresh)
+    return this.buildResponsePayload(user, token, refresh, this.tokensService.getRefreshTokenExpiration())
   }
 
-  public async refresh(refresh_token: string)
+  public async refresh(currentRefreshToken: string)
   {
-    const { user, token } = await this.tokensService.createAccessTokenFromRefreshToken(refresh_token)
-    return this.buildResponsePayload(user, token)
+    const { user, access_token, refresh_token } = await this.tokensService.updateAccessRefreshTokensFromRefreshToken(currentRefreshToken)
+    return this.buildResponsePayload(user, access_token, refresh_token, this.tokensService.getRefreshTokenExpiration())
   }
 
   public async me(userId: number)
@@ -53,9 +53,9 @@ export class AuthService {
     }
   }
 
-  public async logout(refresh_token: string)
+  public async logout(refreshToken: string)
   {
-    return await this.tokensService.removeRefreshToken(refresh_token);
+    return await this.tokensService.removeRefreshToken(refreshToken);
   }
 
   private async validateUser(dto: CreateUserDTO)
@@ -69,7 +69,7 @@ export class AuthService {
     throw new UnauthorizedException({message: 'Неверный email или пароль'});
   }
 
-  private buildResponsePayload (user: User, accessToken: string, refreshToken?: string): AuthenticationResponse {
+  private buildResponsePayload (user: User, accessToken: string, refreshToken: string, expiration: Date): AuthenticationResponse {
     const resp = new AuthenticationResponse;
     resp.status = "success";
     resp.data = {
@@ -77,7 +77,8 @@ export class AuthService {
       payload: {
         type: 'bearer',
         access_token: accessToken,
-        ...(refreshToken ? { refresh_token: refreshToken } : {}),
+        refresh_token: refreshToken,
+        refresh_token_expiration: expiration
       }
     }
     return resp;

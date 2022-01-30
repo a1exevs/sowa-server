@@ -7,8 +7,10 @@ import {JwtAuthGuard} from "./guards/jwtAuth.guard";
 import { Response, Request } from "express";
 import {AuthenticationResponse} from "./DTO/AuthenticationResponse";
 
+const AUTH_PATH: string = "auth"
+
 @ApiTags("Авторизация")
-@Controller('auth')
+@Controller(AUTH_PATH)
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -18,8 +20,7 @@ export class AuthController {
   async registration(@Body() dto: RegisterDto, @Res() response: Response)
   {
     const registerResult = await this.authService.registration(dto);
-    if("refresh_token" in registerResult.data.payload)
-      response.cookie("refresh_token", registerResult.data.payload.refresh_token, {httpOnly: true});
+    this.setupCookies(response, registerResult);
     response.send(registerResult);
   }
 
@@ -28,27 +29,21 @@ export class AuthController {
   @Post('/login')
   async login(@Body() dto: LoginDto, @Res() response: Response)
   {
-    /**
-     * @todo
-     * maxAge куки ставим равную expiresIn из созданной сессии
-     * В path ставим корневой роут auth контроллера (/auth) это важно,
-     * таким образом токен получат только те хендлеры которым он нужен(/auth/logout и /auth/rerfesh-tokens),
-     * остальные обойдутся(нечего зря почём отправлять sensitive data).
-     */
-
     const loginResult = await this.authService.login(dto);
-    if("refresh_token" in loginResult.data.payload)
-      response.cookie("refresh_token", loginResult.data.payload.refresh_token, {httpOnly: true});
+    this.setupCookies(response, loginResult);
     response.send(loginResult);
   }
 
   @ApiOperation({summary: "Обновление данных пользователя"})
   @ApiResponse({status: 201, type: AuthenticationResponse})
   @Post('/refresh')
-  refresh(@Req() request: Request)
+  async refresh(@Req() request: Request, @Res() response: Response)
   {
-    if("refresh_token" in request.cookies)
-      return this.authService.refresh(request.cookies.refresh_token);
+    if("refresh_token" in request.cookies) {
+      const refreshResult = await this.authService.refresh(request.cookies.refresh_token);
+      this.setupCookies(response, refreshResult);
+      response.send(refreshResult);
+    }
     throw new UnauthorizedException({message: 'Пользователь не авторизован'});
   }
 
@@ -57,6 +52,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('/me')
   me(@Req() request) {
+    if(!("refresh_token" in request.cookies))
+      throw new UnauthorizedException({message: 'Пользователь не авторизован'});
     const userId = request.user.id
     return this.authService.me(userId);
   }
@@ -71,5 +68,13 @@ export class AuthController {
     const result = await this.authService.logout(request.cookies.refresh_token);
     response.clearCookie("refresh_token");
     response.send(Boolean(result));
+  }
+
+  private setupCookies(response: Response, data: AuthenticationResponse)
+  {
+    if("refresh_token" in data.data.payload)
+      response.cookie("refresh_token",
+        data.data.payload.refresh_token,
+        {httpOnly: true, expires: data.data.payload.refresh_token_expiration}); //path: AUTH_PATH
   }
 }

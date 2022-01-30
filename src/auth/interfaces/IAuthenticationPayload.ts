@@ -5,6 +5,7 @@ export interface IAuthenticationPayload {
     payload: {
         type: string
         access_token: string
-        refresh_token?: string
+        refresh_token: string,
+        refresh_token_expiration: Date
     }
 }

@@ -41,7 +41,6 @@ export class TokensService {
   public async generateRefreshToken (user: User, expiresIn: number): Promise<string> {
     const token = await this.refreshTokensService.createRefreshToken(user, expiresIn)
 
-    //const payload = {email: user.email, id: user.id, roles: user.roles};
     const opts: SignOptions = {
       ...BASE_OPTIONS,
       expiresIn,
@@ -52,34 +51,35 @@ export class TokensService {
     return this.jwtService.signAsync({}, opts)
   }
 
-  public async createAccessTokenFromRefreshToken (refresh: string): Promise<{ token: string, user: User }> {
-    const { user } = await this.resolveRefreshToken(refresh)
+  public async updateAccessRefreshTokensFromRefreshToken (refresh: string): Promise<{ refresh_token: string, access_token: string, user: User }> {
+    const { user, newRefreshToken } = await this.updateRefreshToken(refresh)
+    const access_token = await this.generateAccessToken(user)
 
-    const token = await this.generateAccessToken(user)
-
-    return { user, token }
+    return { user, access_token, refresh_token: newRefreshToken }
   }
 
-  public async removeRefreshToken(refresh_token: string): Promise<number> {
-    const payload = await this.decodeRefreshToken(refresh_token);
+  public async removeRefreshToken(refreshToken: string): Promise<number> {
+    const payload = await this.decodeRefreshToken(refreshToken);
     return await this.refreshTokensService.removeTokenById(payload.jti);
   }
 
-  private async resolveRefreshToken (encoded: string): Promise<{ user: User, token: RefreshToken }> {
+  public static getRefreshTokenExpiresIn() : number
+  {
+    return 60 * 60 * 24 * 30 * 1000;
+  }
 
-    /**
-     * @todo Обновлять RefreshToken
-     * 1)Сервер получает запись рефреш-сессии по UUID'у рефреш токена
-       2) Сохраняет текущую рефреш-сессию в переменную и удаляет ее из таблицы
-       3) Проверяет текущую рефреш-сессию:
-        Не истекло ли время жизни
-        На соответствие старого fingerprint'a полученного из текущей рефреш-сессии с новым полученным из тела запроса
-       4) В случае негативного результата бросает ошибку TOKEN_EXPIRED/INVALID_REFRESH_SESSION
-       5) В случае успеха создает новую рефреш-сессию и записывает ее в БД
-     */
+  public getRefreshTokenExpiration() : Date
+  {
+    const expiration = new Date()
+    expiration.setTime(expiration.getTime() + TokensService.getRefreshTokenExpiresIn())
+    return expiration;
+  }
 
+  private async updateRefreshToken (encoded: string): Promise<{ user: User, newRefreshToken: string }> {
     const payload = await this.decodeRefreshToken(encoded);
     const token = await this.getStoredTokenFromRefreshTokenPayload(payload)
+
+    await this.removeRefreshToken(encoded);
 
     if (!token) {
       throw new UnprocessableEntityException('Refresh token not found')
@@ -95,7 +95,9 @@ export class TokensService {
       throw new UnprocessableEntityException('Refresh token malformed')
     }
 
-    return { user, token }
+    const newRefreshToken = await this.generateRefreshToken(user, TokensService.getRefreshTokenExpiresIn())
+
+    return { user, newRefreshToken }
   }
 
   private async decodeRefreshToken (token: string): Promise<RefreshTokenPayload> {
