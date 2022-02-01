@@ -1,15 +1,21 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from "@nestjs/common";
 import { User } from '../users/users.model'
 import { RefreshToken } from './refresh_tokens.model'
 
 @Injectable()
 export class RefreshTokensService {
   public async createRefreshToken (user: User, ttl: number): Promise<RefreshToken> {
+    const maxLoginsCount: number = 5;
+
     const token = new RefreshToken()
+
+    const loginsCount: number = await RefreshToken.count({ where: {userId: user.id} })
+
+    if(loginsCount >= maxLoginsCount)
+      await this.removeAllTokensByUserId(user.id);
 
     token.userId = user.id
     token.isRevoked = false
-
     const expiration = new Date()
     expiration.setTime(expiration.getTime() + ttl)
 
@@ -24,5 +30,9 @@ export class RefreshTokensService {
 
   public async removeTokenByUUId(uuid: number): Promise<number> {
     return RefreshToken.destroy({ where: { uuid } });
+  }
+
+  private async removeAllTokensByUserId(userId: number): Promise<number> {
+    return  RefreshToken.destroy({ where: { userId } });
   }
 }
