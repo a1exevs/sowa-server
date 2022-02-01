@@ -6,6 +6,7 @@ import { RegisterDto } from "./DTO/RegisterDto";
 import {JwtAuthGuard} from "./guards/jwtAuth.guard";
 import { Response, Request } from "express";
 import {AuthenticationResponse} from "./DTO/AuthenticationResponse";
+import { RefreshTokenGuard } from "./guards/refreshToken.guard";
 
 const AUTH_PATH: string = "auth"
 
@@ -36,35 +37,29 @@ export class AuthController {
 
   @ApiOperation({summary: "Обновление данных пользователя"})
   @ApiResponse({status: 201, type: AuthenticationResponse})
+  @UseGuards(RefreshTokenGuard)
   @Post('/refresh')
   async refresh(@Req() request: Request, @Res() response: Response)
   {
-    if("refresh_token" in request.cookies) {
-      const refreshResult = await this.authService.refresh(request.cookies.refresh_token);
-      this.setupCookies(response, refreshResult);
-      response.send(refreshResult);
-    }
-    throw new UnauthorizedException({message: 'Пользователь не авторизован'});
+    const refreshResult = await this.authService.refresh(request.cookies.refresh_token);
+    this.setupCookies(response, refreshResult);
+    response.send(refreshResult);
   }
 
   @ApiOperation({summary: "Получение данные текущего пользователя"})
   @ApiResponse({status: 200})
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Get('/me')
   me(@Req() request) {
-    if(!("refresh_token" in request.cookies))
-      throw new UnauthorizedException({message: 'Пользователь не авторизован'});
     const userId = request.user.id
     return this.authService.me(userId);
   }
 
   @ApiOperation({summary: "Закрытие сессии"})
   @ApiResponse({status: 200, type: Boolean})
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Delete('/logout')
   async logout(@Req() request: Request, @Res() response: Response) {
-    if(!("refresh_token" in request.cookies))
-      throw new UnauthorizedException({message: 'Пользователь не авторизован'});
     const result = await this.authService.logout(request.cookies.refresh_token);
     response.clearCookie("refresh_token");
     response.send(Boolean(result));
