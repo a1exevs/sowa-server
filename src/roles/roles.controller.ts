@@ -6,6 +6,7 @@ import { CreateRoleDTO } from "./DTO/CreateRoleDTO";
 import {JwtAuthGuard} from "../auth/guards/jwtAuth.guard";
 import {Roles} from "../auth/decorators/authRoles.decorator";
 import {RolesGuard} from "../auth/guards/roles.quard";
+import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
 
 @ApiTags("Роли")
 @Controller('roles')
@@ -15,7 +16,7 @@ export class RolesController {
   @ApiOperation({summary: "Создание роли"})
   @ApiResponse({status: 201, type: Role})
   @Roles('admin')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, RefreshTokenGuard)
   @Post()
   create(@Body() dto: CreateRoleDTO) : Promise<Role> {
     return this.roleService.createRole(dto);
@@ -24,7 +25,7 @@ export class RolesController {
   @ApiOperation({summary: "Получение роли по значению"})
   @ApiResponse({status: 200, type: Role})
   @Roles('admin')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, RefreshTokenGuard)
   @Get('/:value')
   getByValue(@Param('value') value: string) : Promise<Role> {
     return this.roleService.getRoleByValue(value);
