@@ -18,11 +18,11 @@ export class RefreshTokensService {
     return token.save()
   }
 
-  public async findTokenById (id: number): Promise<RefreshToken | null> {
-    return RefreshToken.findOne({ where: { id, } })
+  public async findTokenByUUId (uuid: number): Promise<RefreshToken | null> {
+    return RefreshToken.findOne({ where: { uuid, } })
   }
 
-  public async removeTokenById(id: number): Promise<number> {
-    return RefreshToken.destroy({ where: { id } });
+  public async removeTokenByUUId(uuid: number): Promise<number> {
+    return RefreshToken.destroy({ where: { uuid } });
   }
 }

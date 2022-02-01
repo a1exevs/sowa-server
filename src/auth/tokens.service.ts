@@ -45,7 +45,7 @@ export class TokensService {
       ...BASE_OPTIONS,
       expiresIn,
       subject: String(user.id),
-      jwtid: String(token.id),
+      jwtid: String(token.uuid),
     }
 
     return this.jwtService.signAsync({}, opts)
@@ -60,7 +60,7 @@ export class TokensService {
 
   public async removeRefreshToken(refreshToken: string): Promise<number> {
     const payload = await this.decodeRefreshToken(refreshToken);
-    return await this.refreshTokensService.removeTokenById(payload.jti);
+    return await this.refreshTokensService.removeTokenByUUId(payload.jti);
   }
 
   public static getRefreshTokenExpiresIn() : number
@@ -129,6 +129,6 @@ export class TokensService {
       throw new UnprocessableEntityException('Refresh token malformed')
     }
 
-    return this.refreshTokensService.findTokenById(tokenId)
+    return this.refreshTokensService.findTokenByUUId(tokenId)
   }
 }
