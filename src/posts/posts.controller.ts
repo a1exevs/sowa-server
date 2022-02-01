@@ -6,6 +6,7 @@ import { CreatePostDTO } from "./DTO/CreatePostDTO";
 import { FileInterceptor} from "@nestjs/platform-express";
 import { JwtAuthGuard } from "../auth/guards/jwtAuth.guard";
 import { REQUEST } from "@nestjs/core";
+import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
 
 @ApiTags("Посты")
 @Controller('posts')
@@ -16,7 +17,7 @@ export class PostsController {
   @ApiOperation({summary: "Создание поста"})
   @ApiResponse({status: 201, type: post})
   @UseInterceptors(FileInterceptor('image'))
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Post()
   create(@Body() dto: CreatePostDTO, @UploadedFile() image) {
     const userID = this.request.user.id;

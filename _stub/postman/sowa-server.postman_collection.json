@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5c837370-b330-4217-a895-18dd07fd0b5a",
+		"_postman_id": "8e3f481f-60a3-47fa-b06d-e4ca7214eb14",
 		"name": "sowa-server",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -204,12 +204,23 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjEsImlhdCI6MTY0MjU3NjgyOSwiZXhwIjoxNjQyNTc2ODI5LCJhdWQiOiJodHRwczovL3Nvd2EtYXBpLmNvbSIsImlzcyI6Imh0dHBzOi8vc293YS1hcGkuY29tIiwic3ViIjoiMSJ9.dT4ETAf11AsGlLvH7vLTo_PEPGDG0rj4zLlnIqp4B7s",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
 								"key": "origin",
 								"value": "http://localhost:3000",
-								"type": "text"
+								"type": "text",
+								"disabled": true
 							},
 							{
 								"key": "",
@@ -321,7 +332,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"11111\"\n}",
+							"raw": "{\n    \"email\": \"satan6@yandex.ru\",\n    \"password\": \"satan\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -363,7 +374,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"alexevs@yandex.ru\",\n    \"password\": \"11111\"\n}",
+							"raw": "{\n    \"email\": \"satan6@yandex.ru\",\n    \"password\": \"satan\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -377,6 +388,77 @@
 							],
 							"path": [
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновить access-token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseDevUrl}}{{authEndpoint}}/refresh",
+							"host": [
+								"{{baseDevUrl}}{{authEndpoint}}"
+							],
+							"path": [
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получить текущего пользователя",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNhdGFuNkB5YW5kZXgucnUiLCJpZCI6Niwicm9sZXMiOlt7ImlkIjoyLCJ2YWx1ZSI6InVzZXIiLCJkZXNjcmlwdGlvbiI6ItCf0YDQvtGB0YLQvtC5INC_0L7Qu9GM0LfQvtCy0LDRgtC10LvRjCIsIlVzZXJzUm9sZXMiOnsiaWQiOjYsInVzZXJJZCI6Niwicm9sZUlkIjoyfX1dLCJpYXQiOjE2NDM3MzczODUsImV4cCI6MTY0MzczNzk4NSwiYXVkIjoiaHR0cHM6Ly9zb3dhLWFwaS5jb20iLCJpc3MiOiJodHRwczovL3Nvd2EtYXBpLmNvbSIsInN1YiI6IjYifQ.k0KrXGPmcuNmptgY7eqxq1B171JD6Ci9vNVNLJPyu3Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseDevUrl}}{{authEndpoint}}/me",
+							"host": [
+								"{{baseDevUrl}}{{authEndpoint}}"
+							],
+							"path": [
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Вылогиниться",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNhdGFuNkB5YW5kZXgucnUiLCJpZCI6Niwicm9sZXMiOlt7ImlkIjoyLCJ2YWx1ZSI6InVzZXIiLCJkZXNjcmlwdGlvbiI6ItCf0YDQvtGB0YLQvtC5INC_0L7Qu9GM0LfQvtCy0LDRgtC10LvRjCIsIlVzZXJzUm9sZXMiOnsiaWQiOjYsInVzZXJJZCI6Niwicm9sZUlkIjoyfX1dLCJpYXQiOjE2NDM3Mzc1NzYsImV4cCI6MTY0MzczODE3NiwiYXVkIjoiaHR0cHM6Ly9zb3dhLWFwaS5jb20iLCJpc3MiOiJodHRwczovL3Nvd2EtYXBpLmNvbSIsInN1YiI6IjYifQ.JEE-Z30xY0NJdPDmpznAwKKAQEXFa9GRKs6l5Kzj9Lk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseDevUrl}}{{authEndpoint}}/logout",
+							"host": [
+								"{{baseDevUrl}}{{authEndpoint}}"
+							],
+							"path": [
+								"logout"
 							]
 						}
 					},
@@ -432,6 +514,379 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "getProfile",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "41a301f3-1510-488a-b73d-f4713384558e",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://social-network.samuraijs.com/api/1.0/profile/16064",
+					"protocol": "https",
+					"host": [
+						"social-network",
+						"samuraijs",
+						"com"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"profile",
+						"16064"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "putProfile",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "41a301f3-1510-488a-b73d-f4713384558e",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": 22220,\n    \"lookingForAJob\": false,\n    \"lookingForAJobDescription\": \"test\",\n    \"fullName\": \"Alex_Evs\",\n    \"aboutMe\": \"sdf\",\n    \"contacts\": {\n        \"github\": \"\",\n        \"vk\": \"\",\n        \"facebook\": \"\",\n        \"instagram\": \"\",\n        \"twitter\": \"\",\n        \"website\": \"\",\n        \"youtube\": \"\",\n        \"mainLink\": \"\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://social-network.samuraijs.com/api/1.0/profile",
+					"protocol": "https",
+					"host": [
+						"social-network",
+						"samuraijs",
+						"com"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "putProfilePhoto",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "41a301f3-1510-488a-b73d-f4713384558e",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "",
+							"type": "file",
+							"src": "/home/alexevs/Изображения/sowa.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://social-network.samuraijs.com/api/1.0/profile/photo",
+					"protocol": "https",
+					"host": [
+						"social-network",
+						"samuraijs",
+						"com"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"profile",
+						"photo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getCaptchaURL",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "41a301f3-1510-488a-b73d-f4713384558e",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://social-network.samuraijs.com/api/1.0/security/get-captcha-url",
+					"protocol": "https",
+					"host": [
+						"social-network",
+						"samuraijs",
+						"com"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"security",
+						"get-captcha-url"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getStatus",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "41a301f3-1510-488a-b73d-f4713384558e",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://social-network.samuraijs.com/api/1.0/profile/status/16064",
+					"protocol": "https",
+					"host": [
+						"social-network",
+						"samuraijs",
+						"com"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"profile",
+						"status",
+						"16064"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "putStatus",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "41a301f3-1510-488a-b73d-f4713384558e",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"status\": \"newsdfsdf\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://social-network.samuraijs.com/api/1.0/profile/status",
+					"protocol": "https",
+					"host": [
+						"social-network",
+						"samuraijs",
+						"com"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"profile",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getUsers",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "41a301f3-1510-488a-b73d-f4713384558e",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://social-network.samuraijs.com/api/1.0/users?pages=1&count=3",
+					"protocol": "https",
+					"host": [
+						"social-network",
+						"samuraijs",
+						"com"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"users"
+					],
+					"query": [
+						{
+							"key": "pages",
+							"value": "1"
+						},
+						{
+							"key": "count",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getCurrentUser",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://social-network.samuraijs.com/api/1.0/auth/me",
+					"protocol": "https",
+					"host": [
+						"social-network",
+						"samuraijs",
+						"com"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"auth",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"sdf\",\n    \"password\": \"fsdf\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://social-network.samuraijs.com/api/1.0/auth/login",
+					"protocol": "https",
+					"host": [
+						"social-network",
+						"samuraijs",
+						"com"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://social-network.samuraijs.com/api/1.0/auth/login",
+					"protocol": "https",
+					"host": [
+						"social-network",
+						"samuraijs",
+						"com"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "follow",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://social-network.samuraijs.com/api/1.0/follow/22208",
+					"protocol": "https",
+					"host": [
+						"social-network",
+						"samuraijs",
+						"com"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"follow",
+						"22208"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "unfollow",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://social-network.samuraijs.com/api/1.0/follow/22212",
+					"protocol": "https",
+					"host": [
+						"social-network",
+						"samuraijs",
+						"com"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"follow",
+						"22212"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [

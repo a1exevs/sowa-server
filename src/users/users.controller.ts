@@ -8,23 +8,17 @@ import {RolesGuard} from "../auth/guards/roles.quard";
 import {Roles} from "../auth/decorators/authRoles.decorator";
 import { AddUserRoleDTO } from "./DTO/AddUserRoleDTO";
 import { BanUserDTO } from "./DTO/BanUserDTO";
+import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
 
 @ApiTags("Пользователи")
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @ApiOperation({summary: "Создание пользователя"})
-  @ApiResponse({status: 201, type: User})
-  @Post()
-  create(@Body() dto: CreateUserDTO) {
-    return this.usersService.createUser(dto);
-  }
-
   @ApiOperation({summary: "Получение всех пользователей"})
   @ApiResponse({status: 200, type: [User]})
   @Roles('admin')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, RefreshTokenGuard)
   @Get()
   getAll() {
     return this.usersService.getAllUsers();
@@ -33,7 +27,7 @@ export class UsersController {
   @ApiOperation({summary: "Выдача роли пользователю"})
   @ApiResponse({status: 201, type: User})
   @Roles('admin')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, RefreshTokenGuard)
   @Post('/role')
   addRole(@Body() dto: AddUserRoleDTO) {
     return this.usersService.addRole(dto);
@@ -42,7 +36,7 @@ export class UsersController {
   @ApiOperation({summary: "Бан пользователя"})
   @ApiResponse({status: 201, type: User})
   @Roles('admin')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, RefreshTokenGuard)
   @Post('/ban')
   ban(@Body() dto: BanUserDTO) {
     return this.usersService.ban(dto);

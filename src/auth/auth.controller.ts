@@ -1,28 +1,75 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
-import { CreateUserDTO } from "../users/DTO/CreateUserDTO";
-import { Role } from "../roles/roles.model";
-import { AuthDataResponseDTO } from "./DTO/AuthDataResponseDTO";
+import { LoginDto } from "./DTO/LoginDto";
+import { RegisterDto } from "./DTO/RegisterDto";
+import {JwtAuthGuard} from "./guards/jwtAuth.guard";
+import { Response, Request } from "express";
+import {AuthenticationResponse} from "./DTO/AuthenticationResponse";
+import { RefreshTokenGuard } from "./guards/refreshToken.guard";
+
+const AUTH_PATH: string = "auth"
 
 @ApiTags("Авторизация")
-@Controller('auth')
+@Controller(AUTH_PATH)
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @ApiOperation({summary: "Авторизация пользователя"})
-  @ApiResponse({status: 201, type: AuthDataResponseDTO})
-  @Post('/login')
-  login(@Body() dto: CreateUserDTO)
+  @ApiOperation({summary: "Регистрация пользователя"})
+  @ApiResponse({status: 201, type: AuthenticationResponse})
+  @Post('/registration')
+  async registration(@Body() dto: RegisterDto, @Res() response: Response)
   {
-    return this.authService.login(dto);
+    const registerResult = await this.authService.registration(dto);
+    this.setupCookies(response, registerResult);
+    response.send(registerResult);
   }
 
-  @ApiOperation({summary: "Регистрация пользователя"})
-  @ApiResponse({status: 201, type: AuthDataResponseDTO})
-  @Post('/registration')
-  registration(@Body() dto: CreateUserDTO)
+  @ApiOperation({summary: "Авторизация пользователя"})
+  @ApiResponse({status: 201, type: AuthenticationResponse})
+  @Post('/login')
+  async login(@Body() dto: LoginDto, @Res() response: Response)
   {
-    return this.authService.registration(dto);
+    const loginResult = await this.authService.login(dto);
+    this.setupCookies(response, loginResult);
+    response.send(loginResult);
+  }
+
+  @ApiOperation({summary: "Обновление данных пользователя"})
+  @ApiResponse({status: 201, type: AuthenticationResponse})
+  @UseGuards(RefreshTokenGuard)
+  @Post('/refresh')
+  async refresh(@Req() request: Request, @Res() response: Response)
+  {
+    const refreshResult = await this.authService.refresh(request.cookies.refresh_token);
+    this.setupCookies(response, refreshResult);
+    response.send(refreshResult);
+  }
+
+  @ApiOperation({summary: "Получение данные текущего пользователя"})
+  @ApiResponse({status: 200})
+  @UseGuards(JwtAuthGuard, RefreshTokenGuard)
+  @Get('/me')
+  me(@Req() request) {
+    const userId = request.user.id
+    return this.authService.me(userId);
+  }
+
+  @ApiOperation({summary: "Закрытие сессии"})
+  @ApiResponse({status: 200, type: Boolean})
+  @UseGuards(JwtAuthGuard, RefreshTokenGuard)
+  @Delete('/logout')
+  async logout(@Req() request: Request, @Res() response: Response) {
+    const result = await this.authService.logout(request.cookies.refresh_token);
+    response.clearCookie("refresh_token");
+    response.send(Boolean(result));
+  }
+
+  private setupCookies(response: Response, data: AuthenticationResponse)
+  {
+    if("refresh_token" in data.data.payload)
+      response.cookie("refresh_token",
+        data.data.payload.refresh_token,
+        {httpOnly: true, expires: data.data.payload.refresh_token_expiration}); //path: AUTH_PATH
   }
 }
