@@ -10,6 +10,26 @@
 //npx sequelize-cli db:migrate:undo
 //npx sequelize-cli db:migrate:undo:all --to XXXXXXXXXXXXXX-create-posts.js
 
+module.exports = {
+  up: function(queryInterface, Sequelize) {
+    // logic for transforming into the new state
+    return queryInterface.addColumn(
+      'users',
+      'status',
+      Sequelize.STRING
+    );
+
+  },
+
+  down: function(queryInterface, Sequelize) {
+    // logic for reverting the changes
+    return queryInterface.removeColumn(
+      'users',
+      'status'
+    );
+  }
+}
+
 // module.exports = {
 //   up: async (queryInterface, Sequelize) => {
 //     return queryInterface.createTable('test', {

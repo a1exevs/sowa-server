@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards } from "@nestjs/common";
+import { Controller, Get, Post, Body, UseGuards, Param, Put, Req } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDTO } from "./DTO/CreateUserDTO";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
@@ -9,6 +9,7 @@ import {Roles} from "../auth/decorators/authRoles.decorator";
 import { AddUserRoleDTO } from "./DTO/AddUserRoleDTO";
 import { BanUserDTO } from "./DTO/BanUserDTO";
 import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
+import { SetUserStatusDTO } from "./DTO/SetUserStatusDTO";
 
 @ApiTags("Пользователи")
 @Controller('users')
@@ -40,5 +41,22 @@ export class UsersController {
   @Post('/ban')
   ban(@Body() dto: BanUserDTO) {
     return this.usersService.ban(dto);
+  }
+
+  @ApiOperation({summary: "Статус пользователя"})
+  @ApiResponse({status: 200, type: String})
+  @UseGuards(JwtAuthGuard, RefreshTokenGuard)
+  @Get('/status/:userId')
+  getStatus(@Param('userId') userId: number): Promise<User>{
+    return this.usersService.getStatus(userId);
+  }
+
+  @ApiOperation({summary: "Установить статус пользователю"})
+  @ApiResponse({status: 201, type: Boolean})
+  @UseGuards(JwtAuthGuard, RefreshTokenGuard)
+  @Put('/status')
+  async setStatus(@Req() request, @Body() dto: SetUserStatusDTO) {
+     await this.usersService.setStatus(dto, request.user.id);
+     return true;
   }
 }

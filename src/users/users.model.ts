@@ -36,4 +36,8 @@ export class User extends Model<User, IUser> {
 
     @HasMany(() => Post)
     posts: Post[];
+
+    @ApiProperty({example: "Все OK", description: "Статус Пользователя"})
+    @Column({type: DataType.STRING, allowNull: false})
+    status: string;
 }
