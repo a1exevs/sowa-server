@@ -29,7 +29,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhldnNAeWFuZGV4LnJ1IiwiaWQiOjEsInJvbGVzIjpbeyJpZCI6MSwidmFsdWUiOiJhZG1pbiIsImRlc2NyaXB0aW9uIjoi0JDQtNC80LjQvdC40YHRgtGA0LDRgtC-0YAg0YHQuNGB0YLQtdC80YsiLCJVc2Vyc1JvbGVzIjp7ImlkIjoxLCJ1c2VySWQiOjEsInJvbGVJZCI6MX19XSwiaWF0IjoxNjQxNTY0NTYzLCJleHAiOjE2NDE2NTA5NjN9.KzMcS3YQnJPN6iIzw6RQ0vBjfhbAkugXXr_7Qgm33m8",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNhdGFuNkB5YW5kZXgucnUiLCJpZCI6Niwicm9sZXMiOlt7ImlkIjoyLCJ2YWx1ZSI6InVzZXIiLCJkZXNjcmlwdGlvbiI6ItCf0YDQvtGB0YLQvtC5INC_0L7Qu9GM0LfQvtCy0LDRgtC10LvRjCIsIlVzZXJzUm9sZXMiOnsiaWQiOjYsInVzZXJJZCI6Niwicm9sZUlkIjoyfX1dLCJpYXQiOjE2NDQzMjIzMzYsImV4cCI6MTY0NDMyOTUzNiwiYXVkIjoiaHR0cHM6Ly9zb3dhLWFwaS5jb20iLCJpc3MiOiJodHRwczovL3Nvd2EtYXBpLmNvbSIsInN1YiI6IjYifQ.gI3ts36jtghI1UUNfEvNuVr8de-jAxyMnabFkx_3tww",
 									"type": "string"
 								}
 							]
@@ -38,7 +38,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJlZ2lzdHJhdGlvbl9vZl91c2VyQHlhbmRleC5ydSIsImlkIjoxMSwicm9sZXMiOlt7ImlkIjoxLCJ2YWx1ZSI6InVzZXIiLCJkZXNjcmlwdGlvbiI6IlNpbXBsZSB1c2VyIiwiY3JlYXRlZEF0IjoiMjAyMS0xMi0yNVQxNTowOTowOC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMS0xMi0yNVQxNTowOTowOC4wMDBaIiwiVXNlcnNSb2xlcyI6eyJpZCI6NywidXNlcl9pZCI6MTEsInJvbGVfaWQiOjF9fV0sImlhdCI6MTY0MDUzMjUwOSwiZXhwIjoxNjQwNjE4OTA5fQ.rqXpW_YlT-geciJ9VUH1Jjrrmjqg26tYi3h2ODU9os0",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNhdGFuNkB5YW5kZXgucnUiLCJpZCI6Niwicm9sZXMiOlt7ImlkIjoyLCJ2YWx1ZSI6InVzZXIiLCJkZXNjcmlwdGlvbiI6ItCf0YDQvtGB0YLQvtC5INC_0L7Qu9GM0LfQvtCy0LDRgtC10LvRjCIsIlVzZXJzUm9sZXMiOnsiaWQiOjYsInVzZXJJZCI6Niwicm9sZUlkIjoyfX1dLCJpYXQiOjE2NDQzMTgyMjMsImV4cCI6MTY0NDMxODgyMywiYXVkIjoiaHR0cHM6Ly9zb3dhLWFwaS5jb20iLCJpc3MiOiJodHRwczovL3Nvd2EtYXBpLmNvbSIsInN1YiI6IjYifQ.x03QHkwlRgrtzYqZ_VaW08HfuYBnxeaVYSF7scwEql0",
 								"type": "text"
 							},
 							{
@@ -48,9 +48,19 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseDevUrl}}{{usersEndpoint}}",
+							"raw": "{{baseDevUrl}}{{usersEndpoint}}?page=1&count=5",
 							"host": [
 								"{{baseDevUrl}}{{usersEndpoint}}"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "count",
+									"value": "5"
+								}
 							]
 						}
 					},
@@ -754,7 +764,7 @@
 					}
 				],
 				"url": {
-					"raw": "https://social-network.samuraijs.com/api/1.0/users?pages=1&count=3",
+					"raw": "https://social-network.samuraijs.com/api/1.0/users?page=2&count=-3",
 					"protocol": "https",
 					"host": [
 						"social-network",
@@ -768,12 +778,12 @@
 					],
 					"query": [
 						{
-							"key": "pages",
-							"value": "1"
+							"key": "page",
+							"value": "2"
 						},
 						{
 							"key": "count",
-							"value": "3"
+							"value": "-3"
 						}
 					]
 				}

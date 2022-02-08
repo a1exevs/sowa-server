@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, UseGuards, Param, Put, Req } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Param,
+  Put,
+  Req,
+  Query,
+  ValidationPipe,
+  HttpException, HttpStatus
+} from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDTO } from "./DTO/CreateUserDTO";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
@@ -10,19 +22,22 @@ import { AddUserRoleDTO } from "./DTO/AddUserRoleDTO";
 import { BanUserDTO } from "./DTO/BanUserDTO";
 import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
 import { SetUserStatusDTO } from "./DTO/SetUserStatusDTO";
+import { GetUsersQuery } from "./queries/GetUsersQuery"
 
 @ApiTags("Пользователи")
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @ApiOperation({summary: "Получение всех пользователей"})
+  @ApiOperation({summary: "Получение пользователей"})
   @ApiResponse({status: 200, type: [User]})
-  @Roles('admin')
-  @UseGuards(RolesGuard, RefreshTokenGuard)
+  @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Get()
-  getAll() {
-    return this.usersService.getAllUsers();
+  getUsers(@Query() queryParams: GetUsersQuery) {
+    if((queryParams.page && queryParams.page < 0) || (queryParams.count && queryParams.count < 0))
+      throw new HttpException("An error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+    return this.usersService.getUsers(queryParams.page && queryParams.page > 0 ? queryParams.page : 1,
+                                      queryParams.count && queryParams.count > 0 ? queryParams.count : 10);
   }
 
   @ApiOperation({summary: "Выдача роли пользователю"})

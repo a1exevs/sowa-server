@@ -26,8 +26,8 @@ export class UsersService {
     return user;
   }
 
-  async getAllUsers() {
-    return await this.userRepository.findAll({ include: { all: true } });
+  async getUsers(page: number = 1, count: number = 10) {
+    return await this.userRepository.findAll({ include: { all: true }, offset: Number(((page-1)*count)), limit: Number(count)});
   }
 
   async getUserByEmail(email: string) {
