@@ -38,6 +38,6 @@ export class User extends Model<User, IUser> {
     posts: Post[];
 
     @ApiProperty({example: "Все OK", description: "Статус Пользователя"})
-    @Column({type: DataType.STRING, allowNull: false})
+    @Column({type: DataType.STRING, allowNull: true})
     status: string;
 }
