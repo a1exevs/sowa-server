@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import {HttpCode, HttpException, HttpStatus, Injectable} from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { User } from "./users.model";
 import { CreateUserDTO } from "./DTO/CreateUserDTO";
@@ -27,6 +27,8 @@ export class UsersService {
   }
 
   async getUsers(page: number = 1, count: number = 10) {
+    if(count > 100)
+      throw new HttpException("Максимальный размер страницы - 100 пользователей", HttpStatus.INTERNAL_SERVER_ERROR);
     return await this.userRepository.findAll({ include: { all: true }, offset: Number(((page-1)*count)), limit: Number(count)});
   }
 
