@@ -27,7 +27,7 @@ export class User extends Model<User, IUser> {
     @Column({type: DataType.BOOLEAN, defaultValue: false})
     banned: boolean;
 
-    @ApiProperty({example: "Машенничество", description: "Причина попадания в бан Пользователя"})
+    @ApiProperty({example: "Мошенничество", description: "Причина попадания в бан Пользователя"})
     @Column({type: DataType.STRING, allowNull: true})
     banReason: string;
 

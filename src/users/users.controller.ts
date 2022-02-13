@@ -8,21 +8,20 @@ import {
   Put,
   Req,
   Query,
-  ValidationPipe,
   HttpException, HttpStatus
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { CreateUserDTO } from "./DTO/CreateUserDTO";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import { User } from "./users.model";
 import { JwtAuthGuard } from "../auth/guards/jwtAuth.guard";
 import {RolesGuard} from "../auth/guards/roles.quard";
 import {Roles} from "../auth/decorators/authRoles.decorator";
-import { AddUserRoleDTO } from "./DTO/AddUserRoleDTO";
-import { BanUserDTO } from "./DTO/BanUserDTO";
+import { AddUserRoleDTO } from "./ReqDTO/AddUserRoleDTO";
+import { BanUserDTO } from "./ReqDTO/BanUserDTO";
 import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
-import { SetUserStatusDTO } from "./DTO/SetUserStatusDTO";
+import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
 import { GetUsersQuery } from "./queries/GetUsersQuery"
+import { GetUsersResDto } from "./ResDTO/GetUsersResDto";
 
 @ApiTags("Пользователи")
 @Controller('users')
@@ -30,7 +29,7 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @ApiOperation({summary: "Получение пользователей"})
-  @ApiResponse({status: 200, type: [User]})
+  @ApiResponse({status: 200, type: GetUsersResDto})
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Get()
   getUsers(@Query() queryParams: GetUsersQuery) {
