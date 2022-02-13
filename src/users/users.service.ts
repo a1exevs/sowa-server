@@ -1,11 +1,12 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Get, HttpCode, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { User } from "./users.model";
-import { CreateUserDTO } from "./DTO/CreateUserDTO";
+import { CreateUserDTO } from "./ReqDTO/CreateUserDTO";
 import { RolesService } from "../roles/roles.service";
-import { AddUserRoleDTO } from "./DTO/AddUserRoleDTO";
-import { BanUserDTO } from "./DTO/BanUserDTO";
-import { SetUserStatusDTO } from "./DTO/SetUserStatusDTO";
+import { AddUserRoleDTO } from "./ReqDTO/AddUserRoleDTO";
+import { BanUserDTO } from "./ReqDTO/BanUserDTO";
+import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
+import { GetUsersResDto } from "./ResDTO/GetUsersResDto";
 
 @Injectable()
 export class UsersService {
@@ -26,8 +27,18 @@ export class UsersService {
     return user;
   }
 
-  async getAllUsers() {
-    return await this.userRepository.findAll({ include: { all: true } });
+  async getUsers(page: number = 1, count: number = 10) {
+    const response = new GetUsersResDto();
+    if(count > 100)
+    {
+      response.error = "Максимальный размер страницы - 100 пользователей";
+      return response;
+    }
+    const users: User[] =  await this.userRepository.findAll({ include: { all: true }, offset: Number(((page-1)*count)), limit: Number(count)});
+    const totalCount = await this.userRepository.count();
+    response.items = users;
+    response.totalCount = totalCount;
+    return response;
   }
 
   async getUserByEmail(email: string) {
