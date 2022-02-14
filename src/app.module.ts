@@ -1,18 +1,18 @@
 import {Module} from "@nestjs/common";
-import {UsersModule} from './users/users.module';
+import {UsersModule} from './api/users/users.module';
 import {ConfigModule} from "@nestjs/config";
 import { SequelizeModule } from "@nestjs/sequelize";
-import { User } from "./users/users.model";
-import { RolesModule } from './roles/roles.module';
-import {Role} from "./roles/roles.model";
-import {UsersRoles} from "./users/users_roles.model";
-import { AuthModule } from './auth/auth.module';
-import { PostsModule } from './posts/posts.module';
-import { Post } from "./posts/posts.model";
+import { User } from "./api/users/users.model";
+import { RolesModule } from './api/roles/roles.module';
+import {Role} from "./api/roles/roles.model";
+import {UsersRoles} from "./api/users/users_roles.model";
+import { AuthModule } from './api/auth/auth.module';
+import { PostsModule } from './api/posts/posts.module';
+import { Post } from "./api/posts/posts.model";
 import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from "@nestjs/serve-static";
 import * as path from "path"
-import {RefreshToken} from "./auth/refresh_tokens.model";
+import {RefreshToken} from "./api/auth/refresh_tokens.model";
 
 @Module({
   controllers: [],

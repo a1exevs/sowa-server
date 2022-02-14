@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreatePostDTO } from "./DTO/CreatePostDTO";
 import { InjectModel } from "@nestjs/sequelize";
 import { Post } from './posts.model';
-import { FilesService } from "../files/files.service";
+import { FilesService } from "../../files/files.service";
 
 @Injectable()
 export class PostsService {
