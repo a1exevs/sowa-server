@@ -20,7 +20,7 @@ async function start() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
-
+  app.setGlobalPrefix('api/1.0');
   const whitelist = [CLIENT_URL];
 
   app.enableCors({
