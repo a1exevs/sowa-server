@@ -13,6 +13,7 @@ import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from "@nestjs/serve-static";
 import * as path from "path"
 import {RefreshToken} from "./api/auth/refresh_tokens.model";
+import { ProfileModule } from './api/profile/profile.module';
 
 @Module({
   controllers: [],
@@ -39,6 +40,7 @@ import {RefreshToken} from "./api/auth/refresh_tokens.model";
     AuthModule,
     PostsModule,
     FilesModule,
+    ProfileModule,
   ],
 })
 export class AppModule {
