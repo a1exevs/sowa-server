@@ -11,7 +11,7 @@ import { AuthModule } from "../auth/auth.module";
   controllers: [PostsController],
   providers: [PostsService],
   imports: [
-    SequelizeModule.forFeature([User, Post]),
+    SequelizeModule.forFeature([Post]),
     FilesModule,
     AuthModule
   ]

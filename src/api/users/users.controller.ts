@@ -8,7 +8,7 @@ import {
   Put,
   Req,
   Query,
-  HttpException, HttpStatus
+  HttpException, HttpStatus, ParseIntPipe
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
@@ -61,7 +61,7 @@ export class UsersController {
   @ApiResponse({status: 200, type: String})
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Get('/status/:userId')
-  getStatus(@Param('userId') userId: number): Promise<User>{
+  getStatus(@Param('userId', ParseIntPipe) userId: number): Promise<User>{
     return this.usersService.getStatus(userId);
   }
 

@@ -3,7 +3,6 @@ import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import { RolesService } from "./roles.service";
 import { Role } from "./roles.model";
 import { CreateRoleDTO } from "./DTO/CreateRoleDTO";
-import {JwtAuthGuard} from "../auth/guards/jwtAuth.guard";
 import {Roles} from "../auth/decorators/authRoles.decorator";
 import {RolesGuard} from "../auth/guards/roles.quard";
 import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";

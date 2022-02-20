@@ -11,7 +11,7 @@ import {AuthModule} from "../auth/auth.module";
     controllers: [RolesController],
     providers: [RolesService],
     imports: [
-        SequelizeModule.forFeature([Role, User, UsersRoles]),
+        SequelizeModule.forFeature([Role]),
         AuthModule
     ],
     exports: [

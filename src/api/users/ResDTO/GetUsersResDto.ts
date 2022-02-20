@@ -1,5 +1,4 @@
 import {ApiProperty} from "@nestjs/swagger";
-import { IsEmail, IsString, Length } from "class-validator";
 import { User } from "../users.model";
 
 export class GetUsersResDto {

@@ -1,6 +1,7 @@
-import {Column, DataType, ForeignKey, Model, Table} from "sequelize-typescript";
+import { Column, DataType, ForeignKey, HasMany, HasOne, Model, Table } from "sequelize-typescript";
 import {ApiProperty} from "@nestjs/swagger";
 import {User} from "../users/users.model";
+import { Contact } from "./contact.model";
 
 interface IProfile {
     userId: number,
