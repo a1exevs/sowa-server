@@ -16,6 +16,7 @@ import {RefreshToken} from "./api/auth/refresh_tokens.model";
 import { ProfileModule } from './api/profile/profile.module';
 import {Profile} from "./api/profile/profile.model";
 import { Contact } from "./api/profile/contact.model";
+import {Avatar} from "./api/profile/avatar.model";
 
 @Module({
   controllers: [],
@@ -34,7 +35,7 @@ import { Contact } from "./api/profile/contact.model";
       username: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DB,
-      models: [User, Role, UsersRoles, Post, RefreshToken, Profile, Contact],
+      models: [User, Role, UsersRoles, Post, RefreshToken, Profile, Contact, Avatar],
       autoLoadModels: true,
     }),
     UsersModule,

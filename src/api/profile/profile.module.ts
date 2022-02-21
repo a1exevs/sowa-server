@@ -7,12 +7,13 @@ import {AuthModule} from "../auth/auth.module";
 import {User} from "../users/users.model";
 import { Contact } from "./contact.model";
 import { UsersModule } from "../users/users.module";
+import {Avatar} from "./avatar.model";
 
 @Module({
   controllers: [ProfileController],
   providers: [ProfileService],
   imports: [
-    SequelizeModule.forFeature([Profile, Contact]),
+    SequelizeModule.forFeature([Profile, Contact, Avatar]),
     AuthModule,
     UsersModule
   ]

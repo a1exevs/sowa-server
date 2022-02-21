@@ -5,11 +5,14 @@ import { Contact } from "./contact.model";
 import { GetProfileResDTO } from "./ResDTO/GetProfileResDTO";
 import { GetContactResDto } from "./ResDTO/GetContactResDto";
 import { UsersService } from "../users/users.service";
+import {Avatar} from "./avatar.model";
+import {GetPhotosResDTO} from "./ResDTO/GetPhotosResDTO";
 
 @Injectable()
 export class ProfileService {
     constructor(@InjectModel(Profile) private profileRepository: typeof Profile,
                 @InjectModel(Contact) private contactRepository: typeof Contact,
+                @InjectModel(Avatar) private avatarRepository: typeof Avatar,
                 private usersService: UsersService) {}
 
     public async getUserProfile(userId: string) : Promise<GetProfileResDTO> {
@@ -19,11 +22,12 @@ export class ProfileService {
 
         const profile = await this.profileRepository.findOne({ where: { userId } })
         const contact = await this.contactRepository.findOne({ where: { userId } })
+        const avatar = await this.avatarRepository.findOne({ where: { userId } })
 
-        return this.buildGetProfileResponse(profile, contact);
+        return this.buildGetProfileResponse(profile, contact, avatar);
     }
 
-    private buildGetProfileResponse(profile: Profile, contact: Contact) : GetProfileResDTO
+    private buildGetProfileResponse(profile: Profile, contact: Contact, avatar: Avatar) : GetProfileResDTO
     {
         const contact_response = new GetContactResDto();
         if(contact)
@@ -38,6 +42,13 @@ export class ProfileService {
             contact_response.youtube = contact.youtube;
         }
 
+        const avatar_response = new GetPhotosResDTO();
+        if(avatar)
+        {
+            avatar_response.small = avatar.small;
+            avatar_response.large = avatar.large;
+        }
+
         const response = new GetProfileResDTO();
         if(profile)
         {
@@ -46,7 +57,9 @@ export class ProfileService {
             response.lookingForAJob = profile.lookingForAJob;
             response.lookingForAJobDescription = profile.lookingForAJobDescription;
         }
+
         response.contacts = contact_response;
+        response.photos = avatar_response;
         return response;
     }
 }

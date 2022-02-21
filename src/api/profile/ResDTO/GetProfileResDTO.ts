@@ -1,5 +1,6 @@
 import {ApiProperty} from "@nestjs/swagger";
 import { GetContactResDto } from "./GetContactResDto";
+import {GetPhotosResDTO} from "./GetPhotosResDTO";
 
 export class GetProfileResDTO {
   @ApiProperty({example: "Гарри Поттер", description: "Полное имя пользователя"})
@@ -16,4 +17,7 @@ export class GetProfileResDTO {
 
   @ApiProperty({description: "Контакты"})
   contacts: GetContactResDto = null;
+
+  @ApiProperty({description: "Фото профиля пользователя"})
+  photos: GetPhotosResDTO = null;
 }
