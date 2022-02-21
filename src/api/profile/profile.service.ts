@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import {InjectModel} from "@nestjs/sequelize";
 import {Profile} from "./profile.model";
 import { Contact } from "./contact.model";
 import { GetProfileResDTO } from "./ResDTO/GetProfileResDTO";
@@ -7,12 +6,15 @@ import { GetContactResDto } from "./ResDTO/GetContactResDto";
 import { UsersService } from "../users/users.service";
 import {Avatar} from "./avatar.model";
 import {GetPhotosResDTO} from "./ResDTO/GetPhotosResDTO";
+import {UserCommonInfoService} from "./userCommonInfo.service";
+import {UserContactsService} from "./userContacts.service";
+import {UserAvatarsService} from "./userAvatars.service";
 
 @Injectable()
 export class ProfileService {
-    constructor(@InjectModel(Profile) private profileRepository: typeof Profile,
-                @InjectModel(Contact) private contactRepository: typeof Contact,
-                @InjectModel(Avatar) private avatarRepository: typeof Avatar,
+    constructor(private userCommonInfoService: UserCommonInfoService,
+                private userContactsService: UserContactsService,
+                private userAvatarsService: UserAvatarsService,
                 private usersService: UsersService) {}
 
     public async getUserProfile(userId: string) : Promise<GetProfileResDTO> {
@@ -20,9 +22,9 @@ export class ProfileService {
         if(!user)
             throw new HttpException(`Пользователь с идентификатором ${userId} не найден`, HttpStatus.BAD_REQUEST);
 
-        const profile = await this.profileRepository.findOne({ where: { userId } })
-        const contact = await this.contactRepository.findOne({ where: { userId } })
-        const avatar = await this.avatarRepository.findOne({ where: { userId } })
+        const profile = await this.userCommonInfoService.getCommonInfoByUserId(userId);
+        const contact = await this.userContactsService.getContactsByUserId(userId);
+        const avatar = await this.userAvatarsService.getAvatarByUserId(userId);
 
         return this.buildGetProfileResponse(profile, contact, avatar);
     }
