@@ -19,10 +19,9 @@ export class ProfileController {
         return this.profileService.getUserProfile(userId);
     }
 
-    //@ApiOperation({summary: "Выдача роли пользователю"})
-    //@ApiResponse({status: 201, type: User})
-    //@Roles('admin')
-    //@UseGuards(RolesGuard, RefreshTokenGuard)
+    @ApiOperation({summary: "Изменение данных профиля пользователя"})
+    @ApiResponse({status: 200, type: GetProfileResDTO})
+    @UseGuards(JwtAuthGuard, RefreshTokenGuard)
     @Put()
     setProfile() {
         return "set Profile";
