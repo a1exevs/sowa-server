@@ -17,7 +17,7 @@ export class Contact extends Model<Contact, IContact> {
    */
   @ForeignKey(() => User)
   @ApiProperty({example: 1, description: "Уникальный идентификатор пользователя"})
-  @Column({type: DataType.INTEGER, allowNull: false})
+  @Column({type: DataType.INTEGER, allowNull: false, unique: true})
   userId: number;
 
   @ApiProperty({example: "facebook.com/george", description: "Ссылка на страницу в Facebook"})

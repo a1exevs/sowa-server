@@ -1,10 +1,11 @@
-import { Controller, Get, UseGuards, Put, Param, ParseIntPipe } from "@nestjs/common";
+import { Controller, Get, UseGuards, Put, Param, ParseIntPipe, Req, Body } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {JwtAuthGuard} from "../auth/guards/jwtAuth.guard";
 import {RefreshTokenGuard} from "../auth/guards/refreshToken.guard";
 import {ProfileService} from "./profile.service";
 import {Profile} from "./profile.model";
 import { GetProfileResDTO } from "./ResDTO/GetProfileResDTO";
+import { SetProfileReqDTO } from "./ReqDTO/SetProfileReqDto";
 
 @ApiTags("Профили")
 @Controller('profile')
@@ -16,14 +17,15 @@ export class ProfileController {
     @UseGuards(JwtAuthGuard, RefreshTokenGuard)
     @Get('/:userId')
     getProfile(@Param('userId', ParseIntPipe) userId: string) {
-        return this.profileService.getUserProfile(userId);
+        return this.profileService.getUserProfile(Number(userId));
     }
 
     @ApiOperation({summary: "Изменение данных профиля пользователя"})
     @ApiResponse({status: 200, type: GetProfileResDTO})
     @UseGuards(JwtAuthGuard, RefreshTokenGuard)
     @Put()
-    setProfile() {
-        return "set Profile";
+    setProfile(@Body() dto: SetProfileReqDTO, @Req() request) {
+        const userId = request.user.id
+        return this.profileService.setUserProfile(userId, dto);
     }
 }

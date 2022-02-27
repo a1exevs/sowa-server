@@ -19,7 +19,7 @@ export class Avatar extends Model<Avatar, IAvatar> {
      */
     @ForeignKey(() => User)
     @ApiProperty({example: 1, description: "Уникальный идентификатор пользователя"})
-    @Column({type: DataType.INTEGER, allowNull: false})
+    @Column({type: DataType.INTEGER, allowNull: false, unique: true})
     userId: number;
 
     @ApiProperty({example: "small_avatar.jpg", description: "Ссылка на фото профиля пользователя. Мелкий формат"})

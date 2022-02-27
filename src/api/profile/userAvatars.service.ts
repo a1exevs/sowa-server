@@ -6,7 +6,7 @@ import {Avatar} from "./avatar.model";
 export class UserAvatarsService {
     constructor(@InjectModel(Avatar) private avatarRepository: typeof Avatar) {}
 
-    public async getAvatarByUserId(userId: string) : Promise<Avatar> {
+    public async getAvatarByUserId(userId: number) : Promise<Avatar> {
         return await this.avatarRepository.findOne({ where: { userId } })
     }
 }

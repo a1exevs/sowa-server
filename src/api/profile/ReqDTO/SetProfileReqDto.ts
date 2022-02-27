@@ -1,6 +1,16 @@
 import {ApiProperty} from "@nestjs/swagger";
-import {IsBoolean, IsString} from "class-validator";
+import {
+    IsBoolean,
+    IsDefined,
+    IsIn,
+    IsNotEmpty,
+    IsNotEmptyObject,
+    IsObject,
+    IsString,
+    ValidateNested
+} from "class-validator";
 import {SetContactReqDTO} from "./SetContactReqDTO";
+import { Type } from "class-transformer";
 
 export class SetProfileReqDTO {
     @ApiProperty({example: "Гарри Поттер", description: "Полное имя пользователя"})
@@ -20,5 +30,9 @@ export class SetProfileReqDTO {
     readonly lookingForAJobDescription: string;
 
     @ApiProperty({description: "Контакты"})
+    @IsNotEmptyObject()
+    @IsObject()
+    @ValidateNested()
+    @Type(() => SetContactReqDTO)
     readonly contacts: SetContactReqDTO;
 }

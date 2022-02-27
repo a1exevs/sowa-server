@@ -1,5 +1,5 @@
 import {ApiProperty} from "@nestjs/swagger";
-import {IsString} from "class-validator";
+import { IsEmpty, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class SetContactReqDTO {
     @ApiProperty({example: "facebook.com/george", description: "Ссылка на страницу в Facebook"})

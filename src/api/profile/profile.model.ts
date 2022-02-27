@@ -19,7 +19,7 @@ export class Profile extends Model<Profile, IProfile> {
      */
     @ForeignKey(() => User)
     @ApiProperty({example: 1, description: "Уникальный идентификатор пользователя"})
-    @Column({type: DataType.INTEGER, allowNull: false})
+    @Column({type: DataType.INTEGER, allowNull: false, unique: true})
     userId: number;
 
     @ApiProperty({example: "Гарри Поттер", description: "Полное имя пользователя"})

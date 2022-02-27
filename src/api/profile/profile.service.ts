@@ -9,6 +9,8 @@ import {GetPhotosResDTO} from "./ResDTO/GetPhotosResDTO";
 import {UserCommonInfoService} from "./userCommonInfo.service";
 import {UserContactsService} from "./userContacts.service";
 import {UserAvatarsService} from "./userAvatars.service";
+import { SetProfileReqDTO } from "./ReqDTO/SetProfileReqDto";
+import { User } from "../users/users.model";
 
 @Injectable()
 export class ProfileService {
@@ -17,16 +19,25 @@ export class ProfileService {
                 private userAvatarsService: UserAvatarsService,
                 private usersService: UsersService) {}
 
-    public async getUserProfile(userId: string) : Promise<GetProfileResDTO> {
-        const user = await this.usersService.getUserById(Number(userId));
-        if(!user)
-            throw new HttpException(`Пользователь с идентификатором ${userId} не найден`, HttpStatus.BAD_REQUEST);
+    public async getUserProfile(userId: number) : Promise<GetProfileResDTO> {
+        await this.validateUserId(userId);
 
         const profile = await this.userCommonInfoService.getCommonInfoByUserId(userId);
         const contact = await this.userContactsService.getContactsByUserId(userId);
         const avatar = await this.userAvatarsService.getAvatarByUserId(userId);
 
         return this.buildGetProfileResponse(profile, contact, avatar);
+    }
+
+    public async setUserProfile(userId: number, dto: SetProfileReqDTO) {
+        await this.validateUserId(userId);
+
+        const profile = await this.userCommonInfoService.setCommonInfo(userId, dto);
+        let contacts = null;
+        if(dto.contacts)
+            contacts = await this.userContactsService.setContacts(userId, dto.contacts);
+
+        return this.buildGetProfileResponse(profile, contacts, null);
     }
 
     private buildGetProfileResponse(profile: Profile, contact: Contact, avatar: Avatar) : GetProfileResDTO
@@ -63,5 +74,12 @@ export class ProfileService {
         response.contacts = contact_response;
         response.photos = avatar_response;
         return response;
+    }
+
+    private async validateUserId(userId: number) : Promise<User> {
+        const user = await this.usersService.getUserById(Number(userId));
+        if(!user)
+            throw new HttpException(`Пользователь с идентификатором ${userId} не найден`, HttpStatus.BAD_REQUEST);
+        return user;
     }
 }
