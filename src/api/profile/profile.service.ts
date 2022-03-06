@@ -45,14 +45,14 @@ export class ProfileService {
         const contact_response = new GetContactResDto();
         if(contact)
         {
-            contact_response.vk = contact.vk;
-            contact_response.facebook = contact.facebook;
-            contact_response.github = contact.github;
-            contact_response.twitter = contact.twitter;
-            contact_response.instagram = contact.instagram;
-            contact_response.mainLink = contact.mainLink;
-            contact_response.website = contact.website;
-            contact_response.youtube = contact.youtube;
+            contact_response.vk = contact.vk ?? "";
+            contact_response.facebook = contact.facebook ?? "";
+            contact_response.github = contact.github ?? "";
+            contact_response.twitter = contact.twitter ?? "";
+            contact_response.instagram = contact.instagram ?? "";
+            contact_response.mainLink = contact.mainLink ?? "";
+            contact_response.website = contact.website ?? "";
+            contact_response.youtube = contact.youtube ?? "";
         }
 
         const avatar_response = new GetPhotosResDTO();

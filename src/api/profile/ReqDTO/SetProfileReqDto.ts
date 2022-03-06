@@ -5,7 +5,7 @@ import {
     IsIn,
     IsNotEmpty,
     IsNotEmptyObject,
-    IsObject,
+    IsObject, IsOptional,
     IsString,
     ValidateNested
 } from "class-validator";
@@ -30,8 +30,8 @@ export class SetProfileReqDTO {
     readonly lookingForAJobDescription: string;
 
     @ApiProperty({description: "Контакты"})
-    @IsNotEmptyObject()
     @IsObject()
+    @IsOptional()
     @ValidateNested()
     @Type(() => SetContactReqDTO)
     readonly contacts: SetContactReqDTO;
