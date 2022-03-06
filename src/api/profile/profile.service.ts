@@ -11,13 +11,15 @@ import {UserContactsService} from "./userContacts.service";
 import {UserAvatarsService} from "./userAvatars.service";
 import { SetProfileReqDTO } from "./ReqDTO/SetProfileReqDto";
 import { User } from "../users/users.model";
+import { FilesService } from "../files/files.service";
 
 @Injectable()
 export class ProfileService {
     constructor(private userCommonInfoService: UserCommonInfoService,
                 private userContactsService: UserContactsService,
                 private userAvatarsService: UserAvatarsService,
-                private usersService: UsersService) {}
+                private usersService: UsersService,
+                private fileService: FilesService) {}
 
     public async getUserProfile(userId: number) : Promise<GetProfileResDTO> {
         await this.validateUserId(userId);
@@ -38,6 +40,13 @@ export class ProfileService {
             contacts = await this.userContactsService.setContacts(userId, dto.contacts);
 
         return this.buildGetProfileResponse(profile, contacts, null);
+    }
+
+    public async setUserProfilePhoto(image: any, userId: number) {
+        await this.validateUserId(userId);
+
+        const fileURL = await this.fileService.addJPEGFile(image, "", `/users/${userId}/`);
+        return fileURL;
     }
 
     private buildGetProfileResponse(profile: Profile, contact: Contact, avatar: Avatar) : GetProfileResDTO
