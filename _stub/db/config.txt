@@ -17,6 +17,7 @@ For start DB You must:
         mysqldump -u sowa-server -p sowa_db | gzip > backup_db.sql.gz
     - create files .production.env and .development.env with content shown below.
 
+SERVER_URL=http://localhost
 CLIENT_URL=http://localhost:3000
 PORT=7000
 MYSQL_HOST=localhost
