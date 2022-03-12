@@ -8,7 +8,7 @@ import {
     Req,
     Body,
     UseInterceptors,
-    UploadedFile
+    UploadedFile, UseFilters
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {JwtAuthGuard} from "../auth/guards/jwtAuth.guard";
@@ -19,6 +19,7 @@ import { GetProfileResDTO } from "./ResDTO/GetProfileResDTO";
 import { SetProfileReqDTO } from "./ReqDTO/SetProfileReqDto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { CommonResDTO } from "../common/ResDTO/CommonResDTO";
+import { HttpExceptionFilter } from "../../exceptions/filters/httpexceptionfilter";
 
 @ApiTags("Профили")
 @Controller('profile')
@@ -44,6 +45,7 @@ export class ProfileController {
 
     @ApiOperation({summary: "Изменение фотографии профиля пользователя"})
     @ApiResponse({status: 200, type: CommonResDTO})
+    @UseFilters(new HttpExceptionFilter())
     @UseGuards(JwtAuthGuard, RefreshTokenGuard)
     @UseInterceptors(FileInterceptor('image'))
     @Put("/photo")
