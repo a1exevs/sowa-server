@@ -7,9 +7,15 @@ import * as uuid from "uuid"
 export class FilesService {
 
   public async addJPEGFile(file: any, fileName: string = "", relativePath: string = ""): Promise<string> {
+    FilesService.checkForFileSelection(file);
     FilesService.checkForMimeType(file, 'image/jpeg');
+    FilesService.checkForSize(file, 50);
     relativePath = FilesService.correctRelativePath(relativePath);
-    const {fileURL} = await this.createFile(file, fileName, "/activecontent/images" + relativePath);
+    if(!fileName) {
+      const date = new Date();
+      fileName = String(date.getTime()) + file.originalname;
+    }
+    const {fileURL} = await this.createFile(file, fileName, "/activecontent/images/avatars" + relativePath);
     return fileURL;
   }
 
@@ -32,7 +38,7 @@ export class FilesService {
     }
     catch (e)
     {
-      throw new HttpException("Произошла ошибка при записи файла", HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new e;
     }
   }
 
@@ -47,5 +53,17 @@ export class FilesService {
   {
     if(file.mimetype != haystack)
       throw new HttpException("Произошла ошибка при записи файла", HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  private static checkForSize(file: any, maxMBits: number)
+  {
+    if(file.size > maxMBits * 1000000)
+      throw new HttpException(`Закружаемый файл не может привышать ${maxMBits} МБт`, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  private static checkForFileSelection(file: any)
+  {
+    if(!file)
+      throw new HttpException(`Файл не был выбран`, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
