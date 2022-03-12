@@ -12,6 +12,7 @@ import {UserAvatarsService} from "./userAvatars.service";
 import { SetProfileReqDTO } from "./ReqDTO/SetProfileReqDto";
 import { User } from "../users/users.model";
 import { FilesService } from "../files/files.service";
+import { CommonResDTO } from "../common/ResDTO/CommonResDTO";
 
 @Injectable()
 export class ProfileService {
@@ -44,9 +45,9 @@ export class ProfileService {
 
     public async setUserProfilePhoto(image: any, userId: number) {
         await this.validateUserId(userId);
-
         const fileURL = await this.fileService.addJPEGFile(image, "", `/users/${userId}/`);
-        return fileURL;
+
+        return this.buildSetUserProfilePhotoResponse(fileURL, fileURL);
     }
 
     private buildGetProfileResponse(profile: Profile, contact: Contact, avatar: Avatar) : GetProfileResDTO
@@ -90,5 +91,16 @@ export class ProfileService {
         if(!user)
             throw new HttpException(`Пользователь с идентификатором ${userId} не найден`, HttpStatus.BAD_REQUEST);
         return user;
+    }
+
+    private buildSetUserProfilePhotoResponse(smallImageUrl: string, largeImageUrl: string) : CommonResDTO
+    {
+        const photos_response = new GetPhotosResDTO();
+        photos_response.small = smallImageUrl;
+        photos_response.large = largeImageUrl;
+
+        const response = new CommonResDTO();
+        response.data = {photos: photos_response}
+        return response;
     }
 }

@@ -18,6 +18,7 @@ import {Profile} from "./profile.model";
 import { GetProfileResDTO } from "./ResDTO/GetProfileResDTO";
 import { SetProfileReqDTO } from "./ReqDTO/SetProfileReqDto";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { CommonResDTO } from "../common/ResDTO/CommonResDTO";
 
 @ApiTags("Профили")
 @Controller('profile')
@@ -42,7 +43,7 @@ export class ProfileController {
     }
 
     @ApiOperation({summary: "Изменение фотографии профиля пользователя"})
-    @ApiResponse({status: 200, type: GetProfileResDTO})
+    @ApiResponse({status: 200, type: CommonResDTO})
     @UseGuards(JwtAuthGuard, RefreshTokenGuard)
     @UseInterceptors(FileInterceptor('image'))
     @Put("/photo")
