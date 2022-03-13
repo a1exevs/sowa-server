@@ -6,34 +6,36 @@ import * as uuid from "uuid"
 @Injectable()
 export class FilesService {
 
-  public async addJPEGFile(file: any, fileName: string = "", relativePath: string = ""): Promise<string> {
+  public async addJPEGFile(file: any, fileName: string = "", relativeDir: string = ""): Promise<string> {
     FilesService.checkForFileSelection(file);
     FilesService.checkForMimeType(file, 'image/jpeg');
     FilesService.checkForSize(file, 50);
-    relativePath = FilesService.correctRelativePath(relativePath);
+    relativeDir = FilesService.correctRelativePath(relativeDir);
     if(!fileName) {
       const date = new Date();
       fileName = String(date.getTime()) + file.originalname;
     }
-    const {fileURL} = await this.createFile(file, fileName, "/activecontent/images/avatars" + relativePath);
+    const relativeStaticDir = "/activecontent/images/avatars" + relativeDir;
+    const {filePath, fileURL} = await this.createFile(file, fileName, relativeStaticDir);
+    await this.compressImage(filePath);
     return fileURL;
   }
 
-  async createFile(file: any, fileName: string = "", relativePath: string = ""): Promise<{filePath: string, fileURL: string}> {
+  async createFile(file: any, fileName: string = "", relativeStaticDir: string = ""): Promise<{filePath: string, fileURL: string}> {
     try {
-      relativePath = FilesService.correctRelativePath(relativePath);
+      relativeStaticDir = FilesService.correctRelativePath(relativeStaticDir);
 
       if(!fileName)
           fileName = uuid.v4() + ".jpg";
 
-      const pathForSaving = path.resolve(__dirname, '../../', 'static' + relativePath);
+      const pathForSaving = path.resolve(__dirname, '../../', 'static' + relativeStaticDir);
       if(!fs.existsSync(pathForSaving))
           fs.mkdirSync(pathForSaving, {recursive: true})
       fs.writeFileSync(path.join(pathForSaving, fileName), file.buffer);
-      const PORT = process.env.PORT || undefined;
-      const SERVER_URL = process.env.SERVER_URL || undefined;
-      const fileURL = SERVER_URL + ":" + PORT + relativePath + fileName;
+
+      const fileURL = this.getStaticFileURL(relativeStaticDir + fileName);
       const filePath = pathForSaving + "/" + fileName;
+
       return {filePath, fileURL};
     }
     catch (e)
@@ -65,5 +67,33 @@ export class FilesService {
   {
     if(!file)
       throw new HttpException(`Файл не был выбран`, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  private async compressImage(filePath: string)
+  {
+    const list = filePath.split("/");
+    const fileName = list[list.length - 1];
+    const fileDir = filePath.replace(fileName, '');
+    const compressFileName = "small_" + fileName;
+    const compressFilePath = fileDir + compressFileName;
+
+    const sharp = require("sharp");
+    try {
+      await sharp(filePath)
+        .resize({
+          height: 150
+        })
+        .toFile(compressFilePath);
+    } catch (error) {
+      throw new HttpException(`Ошибка при компрессии image-файла`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    return compressFileName;
+  }
+
+  private getStaticFileURL(relativeStaticDir: string)
+  {
+    const PORT = process.env.PORT || undefined;
+    const SERVER_URL = process.env.SERVER_URL || undefined;
+    return SERVER_URL + ":" + PORT + relativeStaticDir;
   }
 }
