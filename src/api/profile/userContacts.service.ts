@@ -12,7 +12,7 @@ export class UserContactsService {
     }
 
     public async setContacts(userId: number, dto: SetContactReqDTO) {
-        const [contacts, created] =  await this.contactRepository.upsert({userId, ...dto})
-        return contacts;
+        await this.contactRepository.upsert({userId, ...dto}, {returning: true} )
+        return await this.getContactsByUserId(userId);
     }
 }

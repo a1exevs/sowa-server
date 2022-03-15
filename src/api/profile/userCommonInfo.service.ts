@@ -13,7 +13,7 @@ export class UserCommonInfoService {
 
     public async setCommonInfo(userId: number, dto: SetProfileReqDTO)
     {
-        const [profile, created] = await this.profileRepository.upsert({userId, ...dto}, {returning: true})
-        return profile;
+        await this.profileRepository.upsert({userId, ...dto}, {returning: true} )
+        return await this.getCommonInfoByUserId(userId);
     }
 }

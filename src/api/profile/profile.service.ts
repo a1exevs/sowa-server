@@ -36,20 +36,28 @@ export class ProfileService {
         await this.validateUserId(userId);
 
         const profile = await this.userCommonInfoService.setCommonInfo(userId, dto);
-        let contacts = null;
-        if(dto.contacts)
-            contacts = await this.userContactsService.setContacts(userId, dto.contacts);
+        let contacts = dto.contacts ? await this.userContactsService.setContacts(userId, dto.contacts) :
+                                      await this.userContactsService.getContactsByUserId(userId);
 
         return this.buildGetProfileResponse(profile, contacts, null);
     }
 
     public async setUserProfilePhoto(image: any, userId: number) {
         await this.validateUserId(userId);
-        const fileURL = await this.fileService.addJPEGFile(image, "", `/users/${userId}/`);
+        const {originalImageURL, smallImageURL} = await this.fileService.addJPEGFile(image, "", `/users/${userId}/`);
+        const avatars = await this.userAvatarsService.setAvatarData({small: smallImageURL, large: originalImageURL}, userId)
 
-        return this.buildSetUserProfilePhotoResponse(fileURL, fileURL);
+        return this.buildGetUserProfilePhotoResponse(avatars);
     }
 
+    /**
+     * Сформировать ответ на основе сущностей, связанных с информацией о пользователе,
+     * с учетом возможности отсутствия в БД этих данных (например, для нового пользователя)
+     * @param profile
+     * @param contact
+     * @param avatar
+     * @private
+     */
     private buildGetProfileResponse(profile: Profile, contact: Contact, avatar: Avatar) : GetProfileResDTO
     {
         const contact_response = new GetContactResDto();
@@ -68,17 +76,17 @@ export class ProfileService {
         const avatar_response = new GetPhotosResDTO();
         if(avatar)
         {
-            avatar_response.small = avatar.small;
-            avatar_response.large = avatar.large;
+            avatar_response.small = avatar.small ?? "";
+            avatar_response.large = avatar.large ?? "";
         }
 
         const response = new GetProfileResDTO();
         if(profile)
         {
-            response.fullName = profile.fullName;
-            response.aboutMe = profile.aboutMe;
-            response.lookingForAJob = profile.lookingForAJob;
-            response.lookingForAJobDescription = profile.lookingForAJobDescription;
+            response.fullName = profile.fullName ?? "";
+            response.aboutMe = profile.aboutMe ?? "";
+            response.lookingForAJob = profile.lookingForAJob ?? false;
+            response.lookingForAJobDescription = profile.lookingForAJobDescription ?? "";
         }
 
         response.contacts = contact_response;
@@ -93,11 +101,20 @@ export class ProfileService {
         return user;
     }
 
-    private buildSetUserProfilePhotoResponse(smallImageUrl: string, largeImageUrl: string) : CommonResDTO
+    /**
+     * Сформировать ответ на основе данных о фотографиях профиля пользователя
+     * с учетом возможности отсутствия в БД этих данных (например, для нового пользователя)
+     * @param avatars
+     * @private
+     */
+    private buildGetUserProfilePhotoResponse(avatars: Avatar) : CommonResDTO
     {
         const photos_response = new GetPhotosResDTO();
-        photos_response.small = smallImageUrl;
-        photos_response.large = largeImageUrl;
+        if(avatars)
+        {
+            photos_response.small = avatars.small ?? "";
+            photos_response.large = avatars.large ?? "";
+        }
 
         const response = new CommonResDTO();
         response.data = {photos: photos_response}

@@ -9,7 +9,7 @@ import {UsersRoles} from "./api/users/users_roles.model";
 import { AuthModule } from './api/auth/auth.module';
 import { PostsModule } from './api/posts/posts.module';
 import { Post } from "./api/posts/posts.model";
-import { FilesModule } from './files/files.module';
+import { FilesModule } from './api/files/files.module';
 import { ServeStaticModule } from "@nestjs/serve-static";
 import * as path from "path"
 import {RefreshToken} from "./api/auth/refresh_tokens.model";
@@ -26,7 +26,7 @@ import {Avatar} from "./api/profile/avatar.model";
       envFilePath: `.${process.env.NODE_ENV}.env`
     }),
     ServeStaticModule.forRoot({
-      rootPath: path.resolve(__dirname, 'static')
+      rootPath: path.resolve(__dirname, process.env.SERVER_STATIC || "static")
     }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
@@ -37,6 +37,7 @@ import {Avatar} from "./api/profile/avatar.model";
       database: process.env.MYSQL_DB,
       models: [User, Role, UsersRoles, Post, RefreshToken, Profile, Contact, Avatar],
       autoLoadModels: true,
+      //sync: {force: true}
     }),
     UsersModule,
     RolesModule,
@@ -46,5 +47,6 @@ import {Avatar} from "./api/profile/avatar.model";
     ProfileModule,
   ],
 })
+
 export class AppModule {
 }

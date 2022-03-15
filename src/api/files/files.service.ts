@@ -6,7 +6,8 @@ import * as uuid from "uuid"
 @Injectable()
 export class FilesService {
 
-  public async addJPEGFile(file: any, fileName: string = "", relativeDir: string = ""): Promise<string> {
+  public async addJPEGFile(file: any, fileName: string = "", relativeDir: string = ""): Promise<{originalImageURL: string, smallImageURL: string}>
+  {
     FilesService.checkForFileSelection(file);
     FilesService.checkForMimeType(file, 'image/jpeg');
     FilesService.checkForSize(file, 50);
@@ -17,24 +18,25 @@ export class FilesService {
     }
     const relativeStaticDir = "/activecontent/images/avatars" + relativeDir;
     const {filePath, fileURL} = await this.createFile(file, fileName, relativeStaticDir);
-    await this.compressImage(filePath);
-    return fileURL;
+    const result = await this.compressImage(filePath);
+    return { originalImageURL: fileURL, smallImageURL: result.fileURL };
   }
 
-  async createFile(file: any, fileName: string = "", relativeStaticDir: string = ""): Promise<{filePath: string, fileURL: string}> {
+  public async createFile(file: any, fileName: string = "", relativeStaticDir: string = "") : Promise<{filePath: string, fileURL: string}>
+  {
     try {
       relativeStaticDir = FilesService.correctRelativePath(relativeStaticDir);
 
       if(!fileName)
           fileName = uuid.v4() + ".jpg";
 
-      const pathForSaving = path.resolve(__dirname, '../../', 'static' + relativeStaticDir);
-      if(!fs.existsSync(pathForSaving))
-          fs.mkdirSync(pathForSaving, {recursive: true})
-      fs.writeFileSync(path.join(pathForSaving, fileName), file.buffer);
+      const dirForSaving = path.resolve(__dirname, '../../', process.env.SERVER_STATIC + relativeStaticDir);
+      if(!fs.existsSync(dirForSaving))
+          fs.mkdirSync(dirForSaving, {recursive: true})
+      fs.writeFileSync(path.join(dirForSaving, fileName), file.buffer);
 
-      const fileURL = this.getStaticFileURL(relativeStaticDir + fileName);
-      const filePath = pathForSaving + "/" + fileName;
+      const filePath = dirForSaving + "/" + fileName;
+      const fileURL = this.getStaticFileURLFromStaticFileFullPath(filePath);
 
       return {filePath, fileURL};
     }
@@ -57,10 +59,10 @@ export class FilesService {
       throw new HttpException("Произошла ошибка при записи файла", HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  private static checkForSize(file: any, maxMBits: number)
+  private static checkForSize(file: any, maxMBytes: number)
   {
-    if(file.size > maxMBits * 1000000)
-      throw new HttpException(`Закружаемый файл не может привышать ${maxMBits} МБт`, HttpStatus.INTERNAL_SERVER_ERROR);
+    if(file.size > maxMBytes * 1000000)
+      throw new HttpException(`Закружаемый файл не может привышать ${maxMBytes} МБт`, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   private static checkForFileSelection(file: any)
@@ -69,7 +71,7 @@ export class FilesService {
       throw new HttpException(`Файл не был выбран`, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  private async compressImage(filePath: string)
+  private async compressImage(filePath: string) : Promise<{filePath: string, fileURL: string}>
   {
     const list = filePath.split("/");
     const fileName = list[list.length - 1];
@@ -87,13 +89,20 @@ export class FilesService {
     } catch (error) {
       throw new HttpException(`Ошибка при компрессии image-файла`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    return compressFileName;
+
+    return { filePath: compressFilePath, fileURL: this.getStaticFileURLFromStaticFileFullPath(compressFilePath ) }
   }
 
-  private getStaticFileURL(relativeStaticDir: string)
+  private getStaticFileURLFromStaticFileFullPath(fullFilePath: string)
   {
+    const serverStaticDir = process.env.SERVER_STATIC || undefined;
     const PORT = process.env.PORT || undefined;
     const SERVER_URL = process.env.SERVER_URL || undefined;
-    return SERVER_URL + ":" + PORT + relativeStaticDir;
+    if(!serverStaticDir || !PORT || !SERVER_URL)
+      return "";
+    const list = fullFilePath.split(serverStaticDir);
+    if(list.length != 2)
+      return "";
+    return SERVER_URL + ":" + PORT + list[1];
   }
 }
