@@ -7,6 +7,7 @@ import { RefreshTokensService } from "./refresh_tokens.service";
 import { TokensService } from "./tokens.service";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { RefreshToken } from "./refresh_tokens.model";
+import {User} from "../users/users.model";
 
 @Module({
   controllers: [AuthController],
@@ -19,7 +20,7 @@ import { RefreshToken } from "./refresh_tokens.model";
         expiresIn: '600s'
       }
     }),
-    SequelizeModule.forFeature([RefreshToken])
+    SequelizeModule.forFeature([RefreshToken, User])
   ],
   exports: [
     AuthService,

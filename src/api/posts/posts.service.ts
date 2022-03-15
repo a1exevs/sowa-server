@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreatePostDTO } from "./DTO/CreatePostDTO";
 import { InjectModel } from "@nestjs/sequelize";
 import { Post } from './posts.model';
-import { FilesService } from "../../files/files.service";
+import { FilesService } from "../files/files.service";
 
 @Injectable()
 export class PostsService {
@@ -11,9 +11,9 @@ export class PostsService {
 
   async createPost(DTO: CreatePostDTO, image: any, userID: number) {
     let post;
-    const fileName = await this.fileService.createFile(image);
+    const {fileURL} = await this.fileService.createFile(image);
     try {
-      post = await this.postRepository.create({...DTO, userId: userID, image: fileName});
+      post = await this.postRepository.create({...DTO, userId: userID, image: fileURL});
     }
     catch (e) {
       throw new HttpException(`Не удалось создать пост. ${e.message}`, HttpStatus.BAD_REQUEST);

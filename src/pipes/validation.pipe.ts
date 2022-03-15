@@ -1,6 +1,6 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from "@nestjs/common";
-import { plainToClass, plainToInstance } from "class-transformer";
-import { validate } from "class-validator";
+import { plainToInstance } from "class-transformer";
+import { validate, ValidationError } from "class-validator";
 import { ValidationException } from "../exceptions/validation.exception";
 
 @Injectable()
@@ -16,9 +16,7 @@ export class ValidationPipe implements PipeTransform<any> {
 
     if(errors.length)
     {
-      let messages = errors.map(error => {
-        return `${error.property} - ${Object.values(error.constraints).join(', ')}`
-      })
+      let messages = this.getErrorsMessages(errors);
 
       throw new ValidationException(messages);
     }
@@ -28,5 +26,20 @@ export class ValidationPipe implements PipeTransform<any> {
   private toValidate(metatype: Function): boolean {
     const types: Function[] = [String, Boolean, Number, Array, Object];
     return !types.includes(metatype);
+  }
+
+  private getErrorsMessages(errors: ValidationError[])
+  {
+    return errors.map(error => {
+      const message = error.constraints ? `${error.property} - ${Object.values(error.constraints).join(', ')}` : '';
+      let childrenMessages;
+      if(error.children)
+        childrenMessages = this.getErrorsMessages(error.children)
+      if(message && childrenMessages && childrenMessages.length)
+        childrenMessages.push(message)
+      if(childrenMessages && childrenMessages.length)
+        return childrenMessages;
+      return message;
+    })
   }
 }
