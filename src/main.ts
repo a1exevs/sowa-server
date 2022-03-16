@@ -4,31 +4,43 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ValidationPipe } from "./pipes/validation.pipe";
 import * as cookieParser from 'cookie-parser';
 import {Logger} from "./logs/Logger";
+import {INestApplication} from "@nestjs/common";
 
 async function start() {
   const PORT = process.env.PORT || 5000;
   const CLIENT_URL = process.env.CLIENT_URL || undefined;
 
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
-  app.useLogger(app.get(Logger));
-
-  const docConfig = new DocumentBuilder()
-    .setTitle("SOWA-Server")
-    .setDescription("This is an API for messengers SOWA")
-    .setVersion("1.0.0")
-    .addTag("SOWA JS")
-    .build();
-  const document = SwaggerModule.createDocument(app, docConfig);
-  SwaggerModule.setup('/api/docs', app, document);
+  setupLogger(app);
+  setupDocsModule(app);
 
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
   app.setGlobalPrefix('api/1.0');
-  const whitelist = [CLIENT_URL];
 
+  const whitelist = [CLIENT_URL];
+  setupCORS(app, whitelist);
+
+  await app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+}
+
+function setupDocsModule(app: INestApplication)
+{
+  const docConfig = new DocumentBuilder()
+      .setTitle("SOWA-Server")
+      .setDescription("This is an API for messengers SOWA")
+      .setVersion("1.0.0")
+      .addTag("SOWA JS")
+      .build();
+  const document = SwaggerModule.createDocument(app, docConfig);
+  SwaggerModule.setup('/api/docs', app, document);
+}
+
+function setupCORS(app: INestApplication, whiteList: string[])
+{
   app.enableCors({
     origin: function (origin, callback) {
-      if (!origin || whitelist.indexOf(origin) !== -1) {
+      if (!origin || whiteList.indexOf(origin) !== -1) {
         console.log("allowed cors for:", origin)
         callback(null, true)
       } else {
@@ -41,8 +53,11 @@ async function start() {
     credentials: true,
     maxAge: 600
   });
+}
 
-  await app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+function setupLogger(app: INestApplication)
+{
+  app.useLogger(app.get(Logger));
 }
 
 start();
