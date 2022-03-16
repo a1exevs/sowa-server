@@ -3,11 +3,14 @@ import { AppModule } from "./app.module";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ValidationPipe } from "./pipes/validation.pipe";
 import * as cookieParser from 'cookie-parser';
+import {Logger} from "./logs/Logger";
 
 async function start() {
   const PORT = process.env.PORT || 5000;
   const CLIENT_URL = process.env.CLIENT_URL || undefined;
-  const app = await NestFactory.create(AppModule);
+
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.useLogger(app.get(Logger));
 
   const docConfig = new DocumentBuilder()
     .setTitle("SOWA-Server")
