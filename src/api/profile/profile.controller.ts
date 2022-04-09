@@ -20,6 +20,7 @@ import { SetProfileReqDTO } from "./ReqDTO/SetProfileReqDto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { CommonResDTO } from "../common/ResDTO/CommonResDTO";
 import { HttpExceptionFilter } from "../../exceptions/filters/httpexceptionfilter";
+import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
 
 @ApiTags("Профили")
 @Controller('profile')
@@ -47,7 +48,7 @@ export class ProfileController {
     @ApiResponse({status: 200, type: CommonResDTO})
     @UseFilters(new HttpExceptionFilter())
     @UseGuards(JwtAuthGuard, RefreshTokenGuard)
-    @UseInterceptors(FileInterceptor('image'))
+    @UseInterceptors(FileInterceptor('image'), ResponseInterceptor)
     @Put("/photo")
     setProfilePhoto(@UploadedFile() image, @Req() request) {
         const userId = request.user.id
