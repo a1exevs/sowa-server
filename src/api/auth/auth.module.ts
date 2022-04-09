@@ -15,7 +15,7 @@ import {User} from "../users/users.model";
   imports: [
     forwardRef(() => UsersModule),
     JwtModule.register({
-      secret: process.env.SECRET_KEY || 'SECRET',
+      secret: process.env.JWT_SECRET_KEY || 'SECRET',
       signOptions: {
         expiresIn: '600s'
       }

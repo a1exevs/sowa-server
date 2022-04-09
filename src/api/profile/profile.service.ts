@@ -107,7 +107,7 @@ export class ProfileService {
      * @param avatars
      * @private
      */
-    private buildGetUserProfilePhotoResponse(avatars: Avatar) : CommonResDTO
+    private buildGetUserProfilePhotoResponse(avatars: Avatar) : { photos }
     {
         const photos_response = new GetPhotosResDTO();
         if(avatars)
@@ -116,8 +116,6 @@ export class ProfileService {
             photos_response.large = avatars.large ?? "";
         }
 
-        const response = new CommonResDTO();
-        response.data = {photos: photos_response}
-        return response;
+        return { photos: photos_response };
     }
 }
