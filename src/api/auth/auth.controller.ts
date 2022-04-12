@@ -17,6 +17,7 @@ import {JwtAuthGuard} from "./guards/jwtAuth.guard";
 import { Response, Request } from "express";
 import {AuthenticationResponse} from "./DTO/AuthenticationResponse";
 import { RefreshTokenGuard } from "./guards/refreshToken.guard";
+import { SvgCaptchaGuard } from "./guards/svgcaptcha.guard";
 import { UnauthorizedExceptionFilter } from "./exceptionfilters/unauthorizedexceptionfilter";
 
 const AUTH_PATH: string = "auth"
@@ -38,6 +39,7 @@ export class AuthController {
 
   @ApiOperation({summary: "Авторизация пользователя"})
   @ApiResponse({status: 201, type: AuthenticationResponse})
+  @UseGuards(SvgCaptchaGuard)
   @UseFilters(UnauthorizedExceptionFilter)
   @Post('/login')
   async login(@Body() dto: LoginDto, @Res() response: Response, @Req() request)
