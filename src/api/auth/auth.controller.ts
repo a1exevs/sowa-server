@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseFilters,
+  UseGuards
+} from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./DTO/LoginDto";
@@ -7,6 +17,7 @@ import {JwtAuthGuard} from "./guards/jwtAuth.guard";
 import { Response, Request } from "express";
 import {AuthenticationResponse} from "./DTO/AuthenticationResponse";
 import { RefreshTokenGuard } from "./guards/refreshToken.guard";
+import { UnauthorizedExceptionFilter } from "./exceptionfilters/unauthorizedexceptionfilter";
 
 const AUTH_PATH: string = "auth"
 
@@ -21,17 +32,19 @@ export class AuthController {
   async registration(@Body() dto: RegisterDto, @Res() response: Response)
   {
     const registerResult = await this.authService.registration(dto);
-    this.setupCookies(response, registerResult);
+    AuthController.setupCookies(response, registerResult);
     response.send(registerResult);
   }
 
   @ApiOperation({summary: "Авторизация пользователя"})
   @ApiResponse({status: 201, type: AuthenticationResponse})
+  @UseFilters(UnauthorizedExceptionFilter)
   @Post('/login')
-  async login(@Body() dto: LoginDto, @Res() response: Response)
+  async login(@Body() dto: LoginDto, @Res() response: Response, @Req() request)
   {
     const loginResult = await this.authService.login(dto);
-    this.setupCookies(response, loginResult);
+    AuthController.setupCookies(response, loginResult);
+    request.session.authFailedCount = undefined;
     response.send(loginResult);
   }
 
@@ -42,7 +55,7 @@ export class AuthController {
   async refresh(@Req() request: Request, @Res() response: Response)
   {
     const refreshResult = await this.authService.refresh(request.cookies.refresh_token);
-    this.setupCookies(response, refreshResult);
+    AuthController.setupCookies(response, refreshResult);
     response.send(refreshResult);
   }
 
@@ -65,7 +78,7 @@ export class AuthController {
     response.send(Boolean(result));
   }
 
-  private setupCookies(response: Response, data: AuthenticationResponse)
+  private static setupCookies(response: Response, data: AuthenticationResponse)
   {
     if("refresh_token" in data.data.payload)
       response.cookie("refresh_token",

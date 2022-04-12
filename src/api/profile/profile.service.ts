@@ -12,7 +12,6 @@ import {UserAvatarsService} from "./userAvatars.service";
 import { SetProfileReqDTO } from "./ReqDTO/SetProfileReqDto";
 import { User } from "../users/users.model";
 import { FilesService } from "../files/files.service";
-import { CommonResDTO } from "../common/ResDTO/CommonResDTO";
 
 @Injectable()
 export class ProfileService {
@@ -44,7 +43,7 @@ export class ProfileService {
 
     public async setUserProfilePhoto(image: any, userId: number) {
         await this.validateUserId(userId);
-        const {originalImageURL, smallImageURL} = await this.fileService.addJPEGFile(image, "", `/users/${userId}/`);
+        const { originalImageURL, smallImageURL } = await this.fileService.addJPEGFile(image, "", `/users/${userId}/`);
         const avatars = await this.userAvatarsService.setAvatarData({small: smallImageURL, large: originalImageURL}, userId)
 
         return this.buildGetUserProfilePhotoResponse(avatars);
