@@ -7,9 +7,10 @@ import { FileInterceptor} from "@nestjs/platform-express";
 import { JwtAuthGuard } from "../auth/guards/jwtAuth.guard";
 import { REQUEST } from "@nestjs/core";
 import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
+import { Routes } from "../common/constants/routes";
 
 @ApiTags("Посты")
-@Controller('posts')
+@Controller(Routes.ENDPOINT_POSTS)
 export class PostsController {
   constructor(private postsService: PostsService,
               @Inject(REQUEST) private request) {}
