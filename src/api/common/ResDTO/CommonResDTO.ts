@@ -3,7 +3,7 @@ import { User } from "../../users/users.model";
 import { ResultCodes } from "../constants/resultcodes";
 
 export class CommonResDTO {
-  @ApiProperty({example: [User], description: "Данные по запросу"})
+  @ApiProperty({description: "Данные по запросу"})
   data: any = null;
 
   @ApiProperty({example: ["Данные отправлены в реестр"], description: "Массив сообщений по результатам выполнения запроса"})
