@@ -1,5 +1,6 @@
 import {ApiProperty} from "@nestjs/swagger";
 import { User } from "../../users/users.model";
+import { ResultCodes } from "../constants/resultcodes";
 
 export class CommonResDTO {
   @ApiProperty({example: [User], description: "Данные по запросу"})
@@ -12,5 +13,5 @@ export class CommonResDTO {
   fieldsErrors: string[] = [];
 
   @ApiProperty({example: 0, description: "Код результата выполнения запроса"})
-  resultCode: number = 0;
+  resultCode: number = ResultCodes.OK;
 }

@@ -6,7 +6,7 @@ import * as uuid from "uuid"
 @Injectable()
 export class FilesService {
 
-  public async addJPEGFile(file: any, fileName: string = "", relativeDir: string = ""): Promise<{originalImageURL: string, smallImageURL: string}>
+  public async addJPEGFile(file: any, fileName: string = '', relativeDir: string = ''): Promise<{originalImageURL: string, smallImageURL: string}>
   {
     FilesService.checkForFileSelection(file);
     FilesService.checkForMimeType(file, 'image/jpeg');
@@ -17,18 +17,18 @@ export class FilesService {
       fileName = String(date.getTime()) + file.originalname;
     }
     const relativeStaticDir = "/activecontent/images/avatars" + relativeDir;
-    const {filePath, fileURL} = await this.createFile(file, fileName, relativeStaticDir);
+    const {filePath, fileURL} = await this.createFile(file, fileName, 'jpg', relativeStaticDir);
     const result = await this.compressImage(filePath);
     return { originalImageURL: fileURL, smallImageURL: result.fileURL };
   }
 
-  public async createFile(file: any, fileName: string = "", relativeStaticDir: string = "") : Promise<{filePath: string, fileURL: string}>
+  public async createFile(file: any, fileName: string = "", fileExtension: string = 'sowa', relativeStaticDir: string = "") : Promise<{filePath: string, fileURL: string}>
   {
     try {
       relativeStaticDir = FilesService.correctRelativePath(relativeStaticDir);
 
       if(!fileName)
-          fileName = uuid.v4() + ".jpg";
+          fileName = uuid.v4() + "." + fileExtension;
 
       const dirForSaving = path.resolve(__dirname, '../../', process.env.SERVER_STATIC + relativeStaticDir);
       if(!fs.existsSync(dirForSaving))
@@ -44,6 +44,15 @@ export class FilesService {
     {
       throw new e;
     }
+  }
+
+  public deleteFileWithTimer(filePath: string, seconds: number) {
+    setTimeout(() => {
+      fs.unlink(filePath,function(err){
+        if(err) return console.log(err);
+        console.log(`file ${filePath} deleted successfully`);
+      });
+    }, seconds * 1000);
   }
 
   private static correctRelativePath(path: string)
