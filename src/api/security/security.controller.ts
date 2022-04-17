@@ -4,9 +4,10 @@ import { SecurityService } from "./security.service";
 import { CommonResDTO } from "../common/ResDTO/CommonResDTO";
 import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
 import { ISession } from "../auth/interfaces/ISession";
+import { Routes } from "../common/constants/routes";
 
 @ApiTags("Безопасность")
-@Controller('security')
+@Controller(Routes.ENDPOINT_SECURITY)
 export class SecurityController {
   constructor(private securityService: SecurityService) {}
 

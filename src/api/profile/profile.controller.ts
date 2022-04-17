@@ -20,9 +20,10 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { CommonResDTO } from "../common/ResDTO/CommonResDTO";
 import { HttpExceptionFilter } from "../../exceptions/filters/httpexceptionfilter";
 import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
+import { Routes } from "../common/constants/routes";
 
 @ApiTags("Профили")
-@Controller('profile')
+@Controller(Routes.ENDPOINT_PROFILE)
 export class ProfileController {
     constructor(private profileService: ProfileService) {}
 

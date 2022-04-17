@@ -22,9 +22,10 @@ import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
 import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
 import { GetUsersQuery } from "./queries/GetUsersQuery"
 import { GetUsersResDto } from "./ResDTO/GetUsersResDto";
+import { Routes } from "../common/constants/routes";
 
 @ApiTags("Пользователи")
-@Controller('users')
+@Controller(Routes.ENDPOINT_USERS)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 

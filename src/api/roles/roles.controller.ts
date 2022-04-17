@@ -6,9 +6,10 @@ import { CreateRoleDTO } from "./DTO/CreateRoleDTO";
 import {Roles} from "../auth/decorators/authRoles.decorator";
 import {RolesGuard} from "../auth/guards/roles.quard";
 import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
+import { Routes } from "../common/constants/routes";
 
 @ApiTags("Роли")
-@Controller('roles')
+@Controller(Routes.ENDPOINT_ROLES)
 export class RolesController {
   constructor(private roleService: RolesService) {}
 

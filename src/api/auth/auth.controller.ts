@@ -12,11 +12,10 @@ import { UnauthorizedExceptionFilter } from "./exceptionfilters/unauthorizedexce
 import { ISession } from "./interfaces/ISession";
 import { AuthenticationResDto } from "./DTO/AuthenticationResDto";
 import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
-
-const AUTH_PATH: string = "auth"
+import { Routes } from "../common/constants/routes";
 
 @ApiTags("Авторизация")
-@Controller(AUTH_PATH)
+@Controller(Routes.ENDPOINT_AUTH)
 export class AuthController {
   constructor(private authService: AuthService) {}
 
