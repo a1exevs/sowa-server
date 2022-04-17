@@ -58,9 +58,9 @@ export class TokensService {
     return { user, access_token, refresh_token: newRefreshToken }
   }
 
-  public async removeRefreshToken(refreshToken: string): Promise<number> {
+  public async removeRefreshToken(refreshToken: string): Promise<boolean> {
     const payload = await this.decodeRefreshToken(refreshToken);
-    return await this.refreshTokensService.removeTokenByUUId(payload.jti);
+    return !!await this.refreshTokensService.removeTokenByUUId(payload.jti);
   }
 
   public static getRefreshTokenExpiresIn() : number

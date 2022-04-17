@@ -1,5 +1,9 @@
-import { CanActivate, ExecutionContext, HttpStatus, Injectable } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Observable } from "rxjs";
+import { sendResponse } from "../../common/helpers/exceptionfilters_helper";
+import { ResultCodes } from "../../common/constants/resultcodes";
+import { LoginDto } from "../DTO/LoginDto";
+import { ISession } from "../interfaces/ISession";
 
 const MAX_AUTH_FAILED_COUNT = 5;
 
@@ -8,28 +12,22 @@ export class SvgCaptchaGuard implements CanActivate{
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
+    const session: ISession = request.session;
+    const body: LoginDto = request.body;
+    const captchaText = session.captcha;
+    session.captcha = null;
 
-    if(request.session.authFailedCount >= MAX_AUTH_FAILED_COUNT)
+    if(session.authFailedCount >= MAX_AUTH_FAILED_COUNT)
     {
-      /**
-       * @todo При привышении порога MAX_AUTH_FAILED_COUNT:
-       * 1) вернуть код 10 с требованием обратиться на /secure/getCaptcha
-       * 2) проверять на наличие и равенство поля request.body.captcha == request.session.captca
-       *
-       * На /secure/getCaptcha:
-       * 1) генерировать капчу, согласно коду ниже;
-       * 2) возвращать на капчу ссылку;
-       * 3) по таймеру удалять ее;
-       */
+      if(captchaText === body.captcha)
+        return true
 
-      let svgCaptcha = require('svg-captcha');
-
-      let captcha = svgCaptcha.create();
-
-      request.session.captca = captcha.text;
-
-      response.type('svg');
-      response.status(HttpStatus.OK).send(captcha.data);
+      sendResponse(
+        new UnauthorizedException({message: ''}),
+        response,
+        ResultCodes.NEED_CAPTCHA_AUTHORIZATION,
+        ['Need authorization with captcha.']
+      );
     }
 
     return true;

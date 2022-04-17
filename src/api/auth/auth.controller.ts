@@ -1,24 +1,17 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Post,
-  Req,
-  Res,
-  UseFilters,
-  UseGuards
-} from "@nestjs/common";
+import { Body, Controller, Delete, Get, Post, Req, Res, UseFilters, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./DTO/LoginDto";
 import { RegisterDto } from "./DTO/RegisterDto";
-import {JwtAuthGuard} from "./guards/jwtAuth.guard";
-import { Response, Request } from "express";
-import {AuthenticationResponse} from "./DTO/AuthenticationResponse";
+import { JwtAuthGuard } from "./guards/jwtAuth.guard";
+import { Request, Response } from "express";
+import { AuthenticationResponse } from "./DTO/AuthenticationResponse";
 import { RefreshTokenGuard } from "./guards/refreshToken.guard";
 import { SvgCaptchaGuard } from "./guards/svgcaptcha.guard";
 import { UnauthorizedExceptionFilter } from "./exceptionfilters/unauthorizedexceptionfilter";
+import { ISession } from "./interfaces/ISession";
+import { AuthenticationResDto } from "./DTO/AuthenticationResDto";
+import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
 
 const AUTH_PATH: string = "auth"
 
@@ -28,37 +21,40 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @ApiOperation({summary: "Регистрация пользователя"})
-  @ApiResponse({status: 201, type: AuthenticationResponse})
+  @ApiResponse({status: 201, type: AuthenticationResDto})
+  @UseInterceptors(ResponseInterceptor)
   @Post('/registration')
-  async registration(@Body() dto: RegisterDto, @Res() response: Response)
+  async registration(@Body() dto: RegisterDto, @Res({ passthrough: true }) response: Response)
   {
-    const registerResult = await this.authService.registration(dto);
+    const registerResult: AuthenticationResponse = await this.authService.registration(dto);
     AuthController.setupCookies(response, registerResult);
-    response.send(registerResult);
+    return new AuthenticationResDto(registerResult.data.user.id, registerResult.data.payload.access_token);
   }
 
   @ApiOperation({summary: "Авторизация пользователя"})
-  @ApiResponse({status: 201, type: AuthenticationResponse})
+  @ApiResponse({status: 201, type: AuthenticationResDto})
   @UseGuards(SvgCaptchaGuard)
   @UseFilters(UnauthorizedExceptionFilter)
+  @UseInterceptors(ResponseInterceptor)
   @Post('/login')
-  async login(@Body() dto: LoginDto, @Res() response: Response, @Req() request)
+  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) response: Response, @Req() request)
   {
-    const loginResult = await this.authService.login(dto);
+    const loginResult: AuthenticationResponse = await this.authService.login(dto);
     AuthController.setupCookies(response, loginResult);
-    request.session.authFailedCount = undefined;
-    response.send(loginResult);
+    AuthController.resetAuthFailedCounter(request);
+    return new AuthenticationResDto(loginResult.data.user.id, loginResult.data.payload.access_token);
   }
 
   @ApiOperation({summary: "Обновление данных пользователя"})
-  @ApiResponse({status: 201, type: AuthenticationResponse})
+  @ApiResponse({status: 201, type: AuthenticationResDto})
   @UseGuards(RefreshTokenGuard)
+  @UseInterceptors(ResponseInterceptor)
   @Post('/refresh')
-  async refresh(@Req() request: Request, @Res() response: Response)
+  async refresh(@Req() request: Request, @Res({ passthrough: true }) response: Response)
   {
-    const refreshResult = await this.authService.refresh(request.cookies.refresh_token);
+    const refreshResult: AuthenticationResponse = await this.authService.refresh(request.cookies.refresh_token);
     AuthController.setupCookies(response, refreshResult);
-    response.send(refreshResult);
+    return new AuthenticationResDto(refreshResult.data.user.id, refreshResult.data.payload.access_token);
   }
 
   @ApiOperation({summary: "Получение данные текущего пользователя"})
@@ -74,10 +70,10 @@ export class AuthController {
   @ApiResponse({status: 200, type: Boolean})
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Delete('/logout')
-  async logout(@Req() request: Request, @Res() response: Response) {
-    const result = await this.authService.logout(request.cookies.refresh_token);
+  async logout(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
+    const result: boolean = await this.authService.logout(request.cookies.refresh_token);
     response.clearCookie("refresh_token");
-    response.send(Boolean(result));
+    return result;
   }
 
   private static setupCookies(response: Response, data: AuthenticationResponse)
@@ -86,5 +82,10 @@ export class AuthController {
       response.cookie("refresh_token",
         data.data.payload.refresh_token,
         {httpOnly: true, expires: data.data.payload.refresh_token_expiration}); //path: AUTH_PATH
+  }
+
+  private static resetAuthFailedCounter(request) {
+    const session: ISession = request.session;
+    session.authFailedCount = null;
   }
 }

@@ -21,10 +21,10 @@ export class AuthService {
     const token = await this.tokensService.generateAccessToken(user)
     const refresh = await this.tokensService.generateRefreshToken(user, TokensService.getRefreshTokenExpiresIn())
 
-    return this.buildResponsePayload(user, token, refresh, this.tokensService.getRefreshTokenExpiration());
+    return AuthService.buildResponsePayload(user, token, refresh, this.tokensService.getRefreshTokenExpiration());
   }
 
-  async registration(dto: RegisterDto) {
+  async registration(dto: RegisterDto) : Promise<AuthenticationResponse> {
     const candidate = await this.userService.getUserByEmail(dto.email);
     if(candidate)
       throw new HttpException("Пользователь уже существуют", HttpStatus.BAD_REQUEST);
@@ -34,13 +34,13 @@ export class AuthService {
     const token = await this.tokensService.generateAccessToken(user)
     const refresh = await this.tokensService.generateRefreshToken(user, TokensService.getRefreshTokenExpiresIn())
 
-    return this.buildResponsePayload(user, token, refresh, this.tokensService.getRefreshTokenExpiration())
+    return AuthService.buildResponsePayload(user, token, refresh, this.tokensService.getRefreshTokenExpiration())
   }
 
-  public async refresh(currentRefreshToken: string)
+  public async refresh(currentRefreshToken: string) : Promise<AuthenticationResponse>
   {
     const { user, access_token, refresh_token } = await this.tokensService.updateAccessRefreshTokensFromRefreshToken(currentRefreshToken)
-    return this.buildResponsePayload(user, access_token, refresh_token, this.tokensService.getRefreshTokenExpiration())
+    return AuthService.buildResponsePayload(user, access_token, refresh_token, this.tokensService.getRefreshTokenExpiration())
   }
 
   public async me(userId: number)
@@ -53,7 +53,7 @@ export class AuthService {
     }
   }
 
-  public async logout(refreshToken: string)
+  public async logout(refreshToken: string) : Promise<boolean>
   {
     return await this.tokensService.removeRefreshToken(refreshToken);
   }
@@ -69,7 +69,7 @@ export class AuthService {
     throw new UnauthorizedException({message: 'Неверный email или пароль'});
   }
 
-  private buildResponsePayload (user: User, accessToken: string, refreshToken: string, expiration: Date): AuthenticationResponse {
+  private static buildResponsePayload (user: User, accessToken: string, refreshToken: string, expiration: Date): AuthenticationResponse {
     const resp = new AuthenticationResponse;
     resp.status = "success";
     resp.data = {

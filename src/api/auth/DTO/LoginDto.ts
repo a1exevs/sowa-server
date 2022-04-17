@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, Length, MinLength } from "class-validator";
+import { IsEmail, IsOptional, IsString, Length, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class LoginDto {
@@ -11,4 +11,9 @@ export class LoginDto {
   @IsString({message: "Должно быть строкой"})
   @Length(4, 16, {message: "Длина должна быть больше 4 и меньше 16 символов"})
   readonly password: string;
+
+  @ApiProperty({example: "1234", description: "Текст капчи"})
+  @IsString({message: "Должно быть строкой"})
+  @IsOptional()
+  readonly captcha: string;
 }
