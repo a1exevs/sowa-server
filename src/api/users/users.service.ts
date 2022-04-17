@@ -7,6 +7,7 @@ import { AddUserRoleDTO } from "./ReqDTO/AddUserRoleDTO";
 import { BanUserDTO } from "./ReqDTO/BanUserDTO";
 import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
 import { GetUsersResDto } from "./ResDTO/GetUsersResDto";
+import { FindOptions } from "sequelize/dist/lib/model";
 
 @Injectable()
 export class UsersService {
@@ -41,8 +42,19 @@ export class UsersService {
     return response;
   }
 
-  async getUserByEmail(email: string) {
-    return await this.userRepository.findOne({ where: { email }, include: { all: true } });
+  async getUserByEmail(email: string, withAllData: boolean = false) {
+
+    /**
+     * Вынести формирование объекта FindOptions в хэлпер
+     */
+    let findOptions: FindOptions = {
+      where: { email }
+    }
+    if(withAllData)
+      findOptions.include = { all: true };
+
+
+    return await this.userRepository.findOne(findOptions);
   }
 
   async getUserById(id: number) {

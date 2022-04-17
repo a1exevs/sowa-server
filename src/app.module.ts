@@ -18,6 +18,7 @@ import {Profile} from "./api/profile/profile.model";
 import { Contact } from "./api/profile/contact.model";
 import {Avatar} from "./api/profile/avatar.model";
 import {LoggerModule} from "./logs/logger.module";
+import { SecurityModule } from './api/security/security.module';
 
 @Module({
   controllers: [],
@@ -46,7 +47,8 @@ import {LoggerModule} from "./logs/logger.module";
     PostsModule,
     FilesModule,
     ProfileModule,
-    LoggerModule
+    LoggerModule,
+    SecurityModule
   ],
 })
 

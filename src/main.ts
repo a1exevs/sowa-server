@@ -5,6 +5,7 @@ import { ValidationPipe } from "./pipes/validation.pipe";
 import * as cookieParser from 'cookie-parser';
 import {Logger} from "./logs/Logger";
 import {INestApplication} from "@nestjs/common";
+import * as session from 'express-session';
 
 async function start() {
   const PORT = process.env.PORT || 5000;
@@ -20,6 +21,8 @@ async function start() {
 
   const whitelist = [CLIENT_URL];
   setupCORS(app, whitelist);
+
+  setupSession(app);
 
   await app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 }
@@ -58,6 +61,17 @@ function setupCORS(app: INestApplication, whiteList: string[])
 function setupLogger(app: INestApplication)
 {
   app.useLogger(app.get(Logger));
+}
+
+function setupSession(app: INestApplication)
+{
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET_KEY || 'my-secret',
+      resave: false,
+      saveUninitialized: false
+    }),
+  );
 }
 
 start();
