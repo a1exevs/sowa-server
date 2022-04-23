@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Post, Req, Res, UseFilters, UseGuards, UseInterceptors } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBadRequestResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./DTO/LoginDto";
 import { RegisterDto } from "./DTO/RegisterDto";
@@ -13,6 +13,8 @@ import { ISession } from "./interfaces/ISession";
 import { AuthenticationResDto } from "./DTO/AuthenticationResDto";
 import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
 import { Routes } from "../common/constants/routes";
+import { ApiResult } from "./decorators/api-result.decorator";
+import { HttpExceptionFilter } from "../../exceptions/filters/httpexceptionfilter";
 
 @ApiTags("Авторизация")
 @Controller(Routes.ENDPOINT_AUTH)
@@ -20,8 +22,10 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @ApiOperation({summary: "Регистрация пользователя"})
-  @ApiResponse({status: 201, type: AuthenticationResDto})
+  @ApiResult({status: 201, type: AuthenticationResDto, description: 'User was registered successful'})
+  @ApiBadRequestResponse( {description: "Bad request"} )
   @UseInterceptors(ResponseInterceptor)
+  @UseFilters(HttpExceptionFilter)
   @Post('/registration')
   async registration(@Body() dto: RegisterDto, @Res({ passthrough: true }) response: Response)
   {
@@ -33,7 +37,7 @@ export class AuthController {
   @ApiOperation({summary: "Авторизация пользователя"})
   @ApiResponse({status: 201, type: AuthenticationResDto})
   @UseGuards(SvgCaptchaGuard)
-  @UseFilters(UnauthorizedExceptionFilter)
+  @UseFilters(HttpExceptionFilter, UnauthorizedExceptionFilter)
   @UseInterceptors(ResponseInterceptor)
   @Post('/login')
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) response: Response, @Req() request)

@@ -42,7 +42,7 @@ export class UsersService {
     return response;
   }
 
-  async getUserByEmail(email: string, withAllData: boolean = false) {
+  public async getUserByEmail(email: string, withAllData: boolean = false) {
 
     /**
      * Вынести формирование объекта FindOptions в хэлпер
@@ -89,7 +89,7 @@ export class UsersService {
     return await this.userRepository.findOne({ attributes: ["status"], where: { id: userId } });
   }
 
-  async setStatus(dto: SetUserStatusDTO, userId: number) {
+  public async setStatus(dto: SetUserStatusDTO, userId: number) {
     return await this.userRepository.update({ status: dto.status }, { where: { id: userId } });
   }
 }
