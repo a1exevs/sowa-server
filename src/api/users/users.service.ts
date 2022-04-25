@@ -16,13 +16,15 @@ export class UsersService {
   }
 
   async createUser(DTO: CreateUserDTO) {
+    const role = await this.roleService.getRoleByValue("user");
+    if(!role)
+      throw new HttpException('Сервис недоступен: отсутствует конфигурация ролей для пользователей.', HttpStatus.FORBIDDEN);
     let user;
     try {
       user = await this.userRepository.create(DTO);
     } catch (e) {
       throw new HttpException(`Не удалось создать пользователя. ${e.message}`, HttpStatus.BAD_REQUEST);
     }
-    const role = await this.roleService.getRoleByValue("user");
     await user.$set("roles", [role.id]);
     user.roles = [role];
     return user;

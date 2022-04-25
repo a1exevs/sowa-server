@@ -19,6 +19,7 @@ import { Contact } from "./api/profile/contact.model";
 import {Avatar} from "./api/profile/avatar.model";
 import {LoggerModule} from "./logs/logger.module";
 import { SecurityModule } from './api/security/security.module';
+import { FollowersModule } from './api/followers/followers.module';
 
 @Module({
   controllers: [],
@@ -38,8 +39,7 @@ import { SecurityModule } from './api/security/security.module';
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DB,
       models: [User, Role, UsersRoles, Post, RefreshToken, Profile, Contact, Avatar],
-      autoLoadModels: true,
-      //sync: {force: true}
+      autoLoadModels: true
     }),
     UsersModule,
     RolesModule,
@@ -48,7 +48,8 @@ import { SecurityModule } from './api/security/security.module';
     FilesModule,
     ProfileModule,
     LoggerModule,
-    SecurityModule
+    SecurityModule,
+    FollowersModule
   ],
 })
 
