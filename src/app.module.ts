@@ -17,7 +17,7 @@ import { ProfileModule } from './api/profile/profile.module';
 import {Profile} from "./api/profile/profile.model";
 import { Contact } from "./api/profile/contact.model";
 import {Avatar} from "./api/profile/avatar.model";
-import {LoggerModule} from "./logs/logger.module";
+import {LoggerModule} from "./api/common/logs/logger.module";
 import { SecurityModule } from './api/security/security.module';
 
 @Module({

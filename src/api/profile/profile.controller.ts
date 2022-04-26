@@ -18,7 +18,7 @@ import { GetProfileResDTO } from "./ResDTO/GetProfileResDTO";
 import { SetProfileReqDTO } from "./ReqDTO/SetProfileReqDto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { CommonResDTO } from "../common/ResDTO/CommonResDTO";
-import { HttpExceptionFilter } from "../../exceptions/filters/httpexceptionfilter";
+import { HttpExceptionFilter } from "../common/exceptions/filters/httpexceptionfilter";
 import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
 import { Routes } from "../common/constants/routes";
 
