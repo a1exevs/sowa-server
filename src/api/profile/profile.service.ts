@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
 import {Profile} from "./profile.model";
 import { Contact } from "./contact.model";
 import { GetProfileResDTO } from "./ResDTO/GetProfileResDTO";
@@ -18,6 +18,7 @@ export class ProfileService {
     constructor(private userCommonInfoService: UserCommonInfoService,
                 private userContactsService: UserContactsService,
                 private userAvatarsService: UserAvatarsService,
+                @Inject(forwardRef(() => UsersService))
                 private usersService: UsersService,
                 private fileService: FilesService) {}
 
@@ -31,7 +32,8 @@ export class ProfileService {
         return this.buildGetProfileResponse(profile, contact, avatar);
     }
 
-    public async setUserProfile(userId: number, dto: SetProfileReqDTO) {
+    public async setUserProfile(userId: number, dto: SetProfileReqDTO)
+    : Promise<GetProfileResDTO> {
         await this.validateUserId(userId);
 
         const profile = await this.userCommonInfoService.setCommonInfo(userId, dto);

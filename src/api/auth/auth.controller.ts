@@ -14,7 +14,7 @@ import { AuthenticationResDto } from "./DTO/AuthenticationResDto";
 import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
 import { Routes } from "../common/constants/routes";
 import { ApiResult } from "./decorators/api-result.decorator";
-import { HttpExceptionFilter } from "../../exceptions/filters/httpexceptionfilter";
+import { HttpExceptionFilter } from "../common/exceptions/filters/httpexceptionfilter";
 
 @ApiTags("Авторизация")
 @Controller(Routes.ENDPOINT_AUTH)

@@ -6,6 +6,8 @@ import { UsersService } from './users.service';
 import { RolesModule } from "../roles/roles.module";
 import { AuthModule } from "../auth/auth.module";
 import { FollowersModule } from "../followers/followers.module";
+import { FollowersService } from "../followers/followers.service";
+import { ProfileModule } from "../profile/profile.module";
 
 @Module({
   controllers: [UsersController],
@@ -14,7 +16,8 @@ import { FollowersModule } from "../followers/followers.module";
     SequelizeModule.forFeature([User]),
     RolesModule,
     forwardRef(() => AuthModule),
-    forwardRef(() => FollowersModule)
+    forwardRef(() => FollowersModule),
+    forwardRef( () => ProfileModule)
   ],
   exports: [
     UsersService

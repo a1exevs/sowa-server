@@ -11,7 +11,7 @@ import {
   HttpException, HttpStatus, ParseIntPipe
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { User } from "./users.model";
 import { JwtAuthGuard } from "../auth/guards/jwtAuth.guard";
 import {RolesGuard} from "../auth/guards/roles.quard";
@@ -21,7 +21,7 @@ import { BanUserDTO } from "./ReqDTO/BanUserDTO";
 import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
 import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
 import { GetUsersQuery } from "./queries/GetUsersQuery"
-import { GetUsersResDto } from "./ResDTO/GetUsersResDto";
+import { GetUsersResponse } from "./ResDTO/get-users.response";
 import { Routes } from "../common/constants/routes";
 
 @ApiTags("Пользователи")
@@ -30,14 +30,21 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @ApiOperation({summary: "Получение пользователей"})
-  @ApiResponse({status: 200, type: GetUsersResDto})
+  @ApiOkResponse({ type: GetUsersResponse.Swagger.GetUsersResponseData })
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Get()
-  getUsers(@Query() queryParams: GetUsersQuery) {
+  getUsers(
+    @Query() queryParams: GetUsersQuery,
+    @Req() request
+  ): Promise<GetUsersResponse.Data> {
     if((queryParams.page && queryParams.page < 0) || (queryParams.count && queryParams.count < 0))
       throw new HttpException("An error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-    return this.usersService.getUsers(queryParams.page && queryParams.page > 0 ? queryParams.page : 1,
-                                      queryParams.count && queryParams.count > 0 ? queryParams.count : 10);
+    const userId = request.user.id
+    return this.usersService.getUsers(
+      queryParams.page && queryParams.page > 0 ? queryParams.page : 1,
+      queryParams.count && queryParams.count > 0 ? queryParams.count : 10,
+      userId
+    );
   }
 
   @ApiOperation({summary: "Выдача роли пользователю"})

@@ -1,17 +1,19 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, forwardRef, HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Followers, IFollowers } from "./followers.model";
 import { UsersService } from "../users/users.service";
+import { Op } from "sequelize";
 
 @Injectable()
 export class FollowersService {
   constructor(@InjectModel(Followers) private followerRepository: typeof Followers,
+              @Inject(forwardRef(() => UsersService))
               private usersService: UsersService) {}
 
   public async follow(followData: IFollowers): Promise<boolean> {
     const uuid = await this.validateFollowRequest(followData);
     if(uuid)
-      throw new HttpException(`Пользователь id=${followData.followerId}уже является подписчиком пользователя id=${followData.userId}`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`Пользователь id=${followData.followerId} уже является подписчиком пользователя id=${followData.userId}`, HttpStatus.BAD_REQUEST);
 
     return !!await this.followerRepository.create(followData);
   }
@@ -24,8 +26,13 @@ export class FollowersService {
     return !!await this.followerRepository.destroy({ where: unfollowData })
   }
 
-  public async findFollowRows(followData: IFollowers): Promise<Followers[]> {
-    return await this.followerRepository.findAll( {where: followData} );
+  public async findFollowRows(followerId: number, userIds: number[]): Promise<Followers[]> {
+    return await this.followerRepository.findAll({
+      where: {
+        followerId,
+        userId: {[Op.in]: userIds}
+      }
+    });
   }
 
   private async validateFollowRequest(followData: IFollowers): Promise<string | null> {
