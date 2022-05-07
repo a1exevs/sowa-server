@@ -1,4 +1,4 @@
-import { Get, HttpCode, HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { User } from "./users.model";
 import { CreateUserDTO } from "./ReqDTO/CreateUserDTO";
@@ -6,43 +6,70 @@ import { RolesService } from "../roles/roles.service";
 import { AddUserRoleDTO } from "./ReqDTO/AddUserRoleDTO";
 import { BanUserDTO } from "./ReqDTO/BanUserDTO";
 import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
-import { GetUsersResDto } from "./ResDTO/GetUsersResDto";
+import { GetUsersResponse } from "./ResDTO/get-users.response";
 import { FindOptions } from "sequelize/dist/lib/model";
+import { FollowersService } from "../followers/followers.service";
+import { ProfileService } from "../profile/profile.service";
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User) private userRepository: typeof User,
-              private roleService: RolesService) {
-  }
+  constructor(
+    @InjectModel(User) private userRepository: typeof User,
+    private roleService: RolesService,
+    private followersService: FollowersService,
+    private profileService: ProfileService
+  ) {}
 
   async createUser(DTO: CreateUserDTO) {
+    const role = await this.roleService.getRoleByValue("user");
+    if(!role)
+      throw new HttpException('Сервис недоступен: отсутствует конфигурация ролей для пользователей.', HttpStatus.FORBIDDEN);
     let user;
     try {
       user = await this.userRepository.create(DTO);
     } catch (e) {
       throw new HttpException(`Не удалось создать пользователя. ${e.message}`, HttpStatus.BAD_REQUEST);
     }
-    const role = await this.roleService.getRoleByValue("user");
     await user.$set("roles", [role.id]);
     user.roles = [role];
     return user;
   }
 
-  async getUsers(page: number = 1, count: number = 10) {
-    const response = new GetUsersResDto();
+  async getUsers(
+    page: number = 1, count: number = 10, userId: number
+  ): Promise<GetUsersResponse.Data> {
     if(count > 100)
-    {
-      response.error = "Максимальный размер страницы - 100 пользователей";
-      return response;
-    }
-    const users: User[] =  await this.userRepository.findAll({ include: { all: true }, offset: Number(((page-1)*count)), limit: Number(count)});
+      return new GetUsersResponse.Data({
+        error: "Максимальный размер страницы - 100 пользователей"
+      });
+
+    const users: User[] =  await this.userRepository.findAll({
+      offset: Number(((page-1)*count)),
+      limit: Number(count)
+    });
     const totalCount = await this.userRepository.count();
-    response.items = users;
-    response.totalCount = totalCount;
-    return response;
+
+    const userIds: number[] = users.map( user => user.id );
+    const followRows = await this.followersService.findFollowRows(userId, userIds);
+
+    const userItems = await Promise.all(users.map(async (user): Promise<GetUsersResponse.User> => {
+      const profile = await this.profileService.getUserProfile(user.id);
+      return new GetUsersResponse.User({
+        id: user.id,
+        email: user.email,
+        status: user.status,
+        followed: followRows.some(row => row.userId === user.id),
+        avatar: profile.photos
+      })
+    }));
+
+    return new GetUsersResponse.Data({
+      items: userItems,
+      totalCount
+    });
   }
 
-  async getUserByEmail(email: string, withAllData: boolean = false) {
+  public async getUserByEmail(email: string, withAllData: boolean = false) {
 
     /**
      * Вынести формирование объекта FindOptions в хэлпер
@@ -89,7 +116,7 @@ export class UsersService {
     return await this.userRepository.findOne({ attributes: ["status"], where: { id: userId } });
   }
 
-  async setStatus(dto: SetUserStatusDTO, userId: number) {
+  public async setStatus(dto: SetUserStatusDTO, userId: number) {
     return await this.userRepository.update({ status: dto.status }, { where: { id: userId } });
   }
 }

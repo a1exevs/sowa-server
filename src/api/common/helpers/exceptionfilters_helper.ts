@@ -7,7 +7,9 @@ export const sendResponse = (exception: HttpException, response: Response, resul
   const status = exception.getStatus();
   const body = new CommonResDTO();
   if(exception.message)
-    body.messages = [ exception.message ];
+    if(Array.isArray(exception.message))
+      body.messages = [ ...exception.message ];
+    else body.messages = [ exception.message ];
 
   if(messages.length)
     body.messages = body.messages.concat(messages);
