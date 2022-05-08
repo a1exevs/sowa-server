@@ -8,7 +8,6 @@ import {
   Put,
   Req,
   Query,
-  HttpException, HttpStatus, ParseIntPipe
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -23,6 +22,7 @@ import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
 import { GetUsersQuery } from "./queries/GetUsersQuery"
 import { GetUsersResponse } from "./ResDTO/get-users.response";
 import { Routes } from "../common/constants/routes";
+import { ParsePositiveIntPipe } from "../common/pipes/parse-positive-int.pipe";
 
 @ApiTags("Пользователи")
 @Controller(Routes.ENDPOINT_USERS)
@@ -37,12 +37,10 @@ export class UsersController {
     @Query() queryParams: GetUsersQuery,
     @Req() request
   ): Promise<GetUsersResponse.Data> {
-    if((queryParams.page && queryParams.page < 0) || (queryParams.count && queryParams.count < 0))
-      throw new HttpException("An error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);
     const userId = request.user.id
     return this.usersService.getUsers(
-      queryParams.page && queryParams.page > 0 ? queryParams.page : 1,
-      queryParams.count && queryParams.count > 0 ? queryParams.count : 10,
+      queryParams.page ?? 1,
+      queryParams.count ?? 10,
       userId
     );
   }
@@ -69,7 +67,7 @@ export class UsersController {
   @ApiResponse({status: 200, type: String})
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Get('/status/:userId')
-  getStatus(@Param('userId', ParseIntPipe) userId: number): Promise<User>{
+  getStatus(@Param('userId', ParsePositiveIntPipe) userId: number): Promise<User>{
     return this.usersService.getStatus(userId);
   }
 
