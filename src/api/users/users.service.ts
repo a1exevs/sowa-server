@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { User } from "./users.model";
 import { CreateUserDTO } from "./ReqDTO/CreateUserDTO";
@@ -36,13 +36,8 @@ export class UsersService {
   }
 
   async getUsers(
-    page: number = 1, count: number = 10, userId: number
+    page: number, count: number, userId: number
   ): Promise<GetUsersResponse.Data> {
-    if(count > 100)
-      return new GetUsersResponse.Data({
-        error: "Максимальный размер страницы - 100 пользователей"
-      });
-
     const users: User[] =  await this.userRepository.findAll({
       offset: Number(((page-1)*count)),
       limit: Number(count)
@@ -112,8 +107,11 @@ export class UsersService {
     throw new HttpException("Не удалось найти пользователя", HttpStatus.NOT_FOUND);
   }
 
-  async getStatus(userId: number) {
-    return await this.userRepository.findOne({ attributes: ["status"], where: { id: userId } });
+  async getStatus(userId: number): Promise<User> {
+    const status = await this.userRepository.findOne({ attributes: ["status"], where: { id: userId } });
+    if(!status)
+      throw new NotFoundException();
+    return status;
   }
 
   public async setStatus(dto: SetUserStatusDTO, userId: number) {

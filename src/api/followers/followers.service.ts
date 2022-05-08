@@ -1,4 +1,12 @@
-import { BadRequestException, forwardRef, HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Followers, IFollowers } from "./followers.model";
 import { UsersService } from "../users/users.service";
@@ -42,7 +50,7 @@ export class FollowersService {
     const follower = await this.usersService.getUserById(followData.followerId);
     const user = await this.usersService.getUserById(followData.userId);
     if(!follower || !user)
-      throw new BadRequestException;
+      throw new NotFoundException();
 
     return await this.existRow(followData);
   }
