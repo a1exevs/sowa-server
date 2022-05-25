@@ -278,11 +278,13 @@ describe('AuthController', () => {
       const errorObject = {message: exceptionMessage};
 
       unauthorizedExceptionFilter.catch(new UnauthorizedException(errorObject), mockArgumentsHost);
+      const body = JSON.parse(res._getData());
 
       expect(res._getStatusCode()).toBe(401);
       expect(mockGetResponse).toBeCalledTimes(1);
       expect(mockGetRequest).toBeCalledTimes(1);
       expect(req.session['authFailedCount']).toBe((+authFailedCount) + 1);
+      expect(body.resultCode).toBe(ResultCodes.NEED_CAPTCHA_AUTHORIZATION);
     })
     it('Svg Captcha Guard: captcha text correct. Authorization failed MAX times', async () => {
       const req = createRequest();
