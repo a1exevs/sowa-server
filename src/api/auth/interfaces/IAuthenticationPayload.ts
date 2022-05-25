@@ -1,7 +1,9 @@
 import {User} from "../../users/users.model";
 
 export interface IAuthenticationPayload {
-    user: User
+    user: {
+        id
+    }
     payload: {
         type: string
         access_token: string

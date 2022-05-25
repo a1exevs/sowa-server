@@ -8,6 +8,7 @@ import { TokensService } from "./tokens.service";
 import { RegisterDto } from "./DTO/RegisterDto";
 import { LoginDto } from "./DTO/LoginDto";
 import { AuthenticationResponse } from "./DTO/AuthenticationResponse";
+import { GetCurrentUserResponse } from "./DTO/get-current-user.response";
 
 @Injectable()
 export class AuthService {
@@ -24,10 +25,10 @@ export class AuthService {
     return AuthService.buildResponsePayload(user, token, refresh, this.tokensService.getRefreshTokenExpiration());
   }
 
-  async registration(dto: RegisterDto) : Promise<AuthenticationResponse> {
+  public async registration(dto: RegisterDto) : Promise<AuthenticationResponse> {
     const candidate = await this.userService.getUserByEmail(dto.email);
     if(candidate)
-      throw new HttpException("Пользователь уже существуют", HttpStatus.BAD_REQUEST);
+      throw new HttpException("Пользователь уже существует", HttpStatus.BAD_REQUEST);
     const hashPassword = await bcrypt.hash(dto.password, 5);
     const user = await this.userService.createUser({...dto, password: hashPassword});
 
@@ -43,15 +44,16 @@ export class AuthService {
     return AuthService.buildResponsePayload(user, access_token, refresh_token, this.tokensService.getRefreshTokenExpiration())
   }
 
-  public async me(userId: number)
+  public async me(userId: number) : Promise<GetCurrentUserResponse.User>
   {
     const user = await this.userService.getUserById(userId)
 
-    return {
-      status: 'success',
-      data: user,
-    }
+    return new GetCurrentUserResponse.User({
+      id: user.id,
+      email: user.email
+    });
   }
+
 
   public async logout(refreshToken: string) : Promise<boolean>
   {

@@ -15,6 +15,7 @@ import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor"
 import { Routes } from "../common/constants/routes";
 import { ApiResult } from "./decorators/api-result.decorator";
 import { HttpExceptionFilter } from "../common/exceptions/filters/httpexceptionfilter";
+import { GetCurrentUserResponse } from "./DTO/get-current-user.response";
 
 @ApiTags("Авторизация")
 @Controller(Routes.ENDPOINT_AUTH)
@@ -35,7 +36,7 @@ export class AuthController {
   }
 
   @ApiOperation({summary: "Авторизация пользователя"})
-  @ApiResponse({status: 201, type: AuthenticationResDto})
+  @ApiResult({status: 201, type: AuthenticationResDto, description: 'User was authorized successful'})
   @UseGuards(SvgCaptchaGuard)
   @UseFilters(HttpExceptionFilter, UnauthorizedExceptionFilter)
   @UseInterceptors(ResponseInterceptor)
@@ -49,7 +50,7 @@ export class AuthController {
   }
 
   @ApiOperation({summary: "Обновление данных пользователя"})
-  @ApiResponse({status: 201, type: AuthenticationResDto})
+  @ApiResult({status: 201, type: AuthenticationResDto, description: 'Tokens were refreshed successful'})
   @UseGuards(RefreshTokenGuard)
   @UseInterceptors(ResponseInterceptor)
   @Post('/refresh')
@@ -61,10 +62,11 @@ export class AuthController {
   }
 
   @ApiOperation({summary: "Получение данные текущего пользователя"})
-  @ApiResponse({status: 200})
+  @ApiResult({status: 200, type: GetCurrentUserResponse.Swagger.GetCurrentUserResponseUser, description: 'Current user data was received successful'})
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
+  @UseInterceptors(ResponseInterceptor)
   @Get('/me')
-  me(@Req() request) {
+  me(@Req() request): Promise<GetCurrentUserResponse.User> {
     const userId = request.user.id
     return this.authService.me(userId);
   }

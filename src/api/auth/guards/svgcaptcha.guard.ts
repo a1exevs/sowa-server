@@ -5,7 +5,7 @@ import { ResultCodes } from "../../common/constants/resultcodes";
 import { LoginDto } from "../DTO/LoginDto";
 import { ISession } from "../interfaces/ISession";
 
-const MAX_AUTH_FAILED_COUNT = 5;
+export const MAX_AUTH_FAILED_COUNT = 5;
 
 @Injectable()
 export class SvgCaptchaGuard implements CanActivate{
@@ -28,6 +28,7 @@ export class SvgCaptchaGuard implements CanActivate{
         ResultCodes.NEED_CAPTCHA_AUTHORIZATION,
         ['Need authorization with captcha.']
       );
+      return false;
     }
 
     return true;

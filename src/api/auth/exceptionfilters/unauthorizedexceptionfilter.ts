@@ -2,8 +2,7 @@ import { ExceptionFilter, Catch, ArgumentsHost, UnauthorizedException } from '@n
 import { sendResponse } from "../../common/helpers/exceptionfilters_helper";
 import { ResultCodes } from "../../common/constants/resultcodes";
 import { ISession } from "../interfaces/ISession";
-
-const MAX_AUTH_FAILED_COUNT = 5;
+import { MAX_AUTH_FAILED_COUNT } from "../guards/svgcaptcha.guard";
 
 @Catch(UnauthorizedException)
 export class UnauthorizedExceptionFilter implements ExceptionFilter {

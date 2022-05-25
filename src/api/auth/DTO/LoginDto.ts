@@ -13,5 +13,5 @@ export class LoginDto {
   @ApiProperty({example: "1234", description: "Текст капчи"})
   @IsString({message: "Должно быть строкой"})
   @IsOptional()
-  readonly captcha: string;
+  readonly captcha?: string;
 }
