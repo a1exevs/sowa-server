@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AuthService } from './auth.service';
 import { AuthController } from "./auth.controller";
 import { JwtService } from "@nestjs/jwt";
-import { createResponse, createRequest } from "node-mocks-http"
+import { createResponse, createRequest } from "node-mocks-http";
 import { AuthenticationResponse } from "./DTO/AuthenticationResponse";
 import { UsersService } from "../users/users.service";
 import { TokensService } from "./tokens.service";
@@ -19,6 +19,121 @@ import { JwtAuthGuard } from "./guards/jwtAuth.guard";
 import { RefreshTokenGuard } from "./guards/refreshToken.guard";
 import { HttpExceptionFilter } from "../common/exceptions/filters/httpexceptionfilter";
 import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
+import { Request } from "express";
+import { sendPseudoError } from "../../test/tests-helper.spec";
+
+interface IGetMockRequest {
+  sessionVariables?: Record<'key' | 'value', string>[],
+  cookiesVariable?: Record<'key' | 'value', string>[],
+  body?: any,
+}
+interface IGetMockExecutionContextData extends IGetMockRequest {
+  req?: any
+}
+interface IGetMockArgumentsHost extends IGetMockExecutionContextData {}
+interface IGetMockJWTServiceData {
+  expiresIn: string,
+  payload: string | object
+  subject?: string
+  jwtId?: string
+}
+
+const getMockJWTServiceData = function(props: IGetMockJWTServiceData) {
+  const jwtService = new JwtService({
+    secret: 'SECRET',
+    signOptions: {
+      expiresIn: props.expiresIn,
+      subject: props.subject ?? '',
+      jwtid: props.jwtId ?? ''
+    }
+  });
+  const token = jwtService.sign(props.payload);
+  return {
+    token,
+    jwtService
+  };
+}
+
+const getValidationPipeDataForUserRegistration  = function(email, password) {
+  let target: ValidationPipe = new ValidationPipe();
+  const registerDto: RegisterDto = { email, password};
+  const metadata: ArgumentMetadata = { type: 'body', metatype: RegisterDto };
+  return {target, metadata, registerDto};
+}
+
+const getMockAuthenticationResponse = function(userId, accessToken, refreshToken): AuthenticationResponse {
+  return {
+    status: 'success',
+    data: {
+      user: {
+        id: userId
+      },
+      payload: {
+        type: 'bearer',
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        refresh_token_expiration: new Date()
+      }
+    }
+  };
+}
+
+const getMockRequest = function(props: IGetMockRequest): Request {
+  const request = createRequest();
+  if(props.sessionVariables && props.sessionVariables.length)
+    props.sessionVariables.forEach( variable => request._setSessionVariable(variable.key, variable.value) )
+
+  if(props.cookiesVariable && props.cookiesVariable.length)
+    props.cookiesVariable.forEach( cookie => request._setCookiesVariable(cookie.key, cookie.value) )
+
+  if(props.body)
+    request._setBody(props.body);
+
+  return request;
+}
+
+const getMockExecutionContextData = function(props: IGetMockExecutionContextData) {
+  const {mockArgumentsHost, mockGetRequest, mockGetResponse, request, response} = getMockArgumentsHostData(props);
+  const mockContext: ExecutionContext = {
+    getClass: jest.fn(),
+    getHandler: jest.fn(),
+    ...mockArgumentsHost
+  };
+
+  return {
+    mockContext,
+    mockGetRequest,
+    mockGetResponse,
+    request,
+    response
+  };
+}
+
+const getMockArgumentsHostData = function(props: IGetMockArgumentsHost) {
+  const request = props.req ? props.req : getMockRequest(props);
+  const response = createResponse();
+  const mockGetResponse = jest.fn().mockImplementation(() => response);
+  const mockGetRequest = jest.fn().mockImplementation(() => request);
+  const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
+    getResponse: mockGetResponse,
+    getRequest: mockGetRequest
+  }));
+  const mockArgumentsHost = {
+    switchToHttp: mockHttpArgumentsHost,
+    getArgByIndex: jest.fn(),
+    getArgs: jest.fn(),
+    getType: jest.fn(),
+    switchToRpc: jest.fn(),
+    switchToWs: jest.fn()
+  };
+  return {
+    mockArgumentsHost,
+    mockGetRequest,
+    mockGetResponse,
+    request,
+    response
+  };
+}
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -95,54 +210,47 @@ describe('AuthController', () => {
 
   describe('AuthController - registration', () => {
     it('Input params validation: should return bad request (incorrect email)', async () => {
-      let target: ValidationPipe = new ValidationPipe();
-      const registerDto: RegisterDto = { email: "useryandex.ru", password: '12345678' };
-      const metadata: ArgumentMetadata = { type: 'body', metatype: RegisterDto };
+      const {target, metadata, registerDto} =
+        getValidationPipeDataForUserRegistration('useryandex.ru', '12345678');
       try {
         await target.transform(registerDto, metadata);
-        throw new HttpException("Don't throw", 0);
+        sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(400);
         expect(err.getResponse()).toContainEqual('email - Некорректный email');
       }
     });
     it('Input params validation: should return bad request (incorrect small password)', async () => {
-      let target: ValidationPipe = new ValidationPipe();
-      const registerDto: RegisterDto = { email: "user@yandex.ru", password: '1234567' };
-      const metadata: ArgumentMetadata = { type: 'body', metatype: RegisterDto };
+      const {target, metadata, registerDto} =
+        getValidationPipeDataForUserRegistration('useryandex.ru', '1234567')
       try {
         await target.transform(registerDto, metadata);
-        throw new HttpException("Don't throw", 0);
+        sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(400);
         expect(err.getResponse()).toContainEqual('password - Длина должна быть больше 8 и меньше 50 символов');
       }
     });
     it('Input params validation: should return bad request (incorrect large password)', async () => {
-      let target: ValidationPipe = new ValidationPipe();
-      const registerDto: RegisterDto = {
-        email: "user@yandex.ru",
-        password: '123456789012345678901234567890123456789012345678901'
-      };
-      const metadata: ArgumentMetadata = { type: 'body', metatype: RegisterDto };
+      const {target, metadata, registerDto} =
+        getValidationPipeDataForUserRegistration(
+        'useryandex.ru',
+        '123456789012345678901234567890123456789012345678901'
+      )
       try {
         await target.transform(registerDto, metadata);
-        throw new HttpException("Don't throw", 0);
+        sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(400);
         expect(err.getResponse()).toContainEqual('password - Длина должна быть больше 8 и меньше 50 символов');
       }
     });
     it('Input params validation: should be successful', async () => {
-      let target: ValidationPipe = new ValidationPipe();
-      const registerDto: RegisterDto = {
-        email: "user@yandex.ru",
-        password: '12345678'
-      };
-      const metadata: ArgumentMetadata = { type: 'body', metatype: RegisterDto };
+      const {target, metadata, registerDto} =
+        getValidationPipeDataForUserRegistration('user@yandex.ru', '12345678')
       try {
         await target.transform(registerDto, metadata);
-        throw new HttpException("Don't throw", 0);
+        sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(0);
         expect(err.getResponse()).toBe("Don't throw");
@@ -153,20 +261,8 @@ describe('AuthController', () => {
       const userId = 1;
       const accessToken = '12345fsagasdsfasdfsdf';
       const refreshToken = '12345fsagasdsdfsdf';
-      const serviceRegisterResponseMock: AuthenticationResponse = {
-        status: 'success',
-        data: {
-          user: {
-            id: userId
-          },
-          payload: {
-            type: 'bearer',
-            access_token: accessToken,
-            refresh_token: refreshToken,
-            refresh_token_expiration: new Date()
-          }
-        }
-      };
+      const serviceRegisterResponseMock =
+        getMockAuthenticationResponse(userId, accessToken, refreshToken);
       const registerDto = { email: "user@yandex.ru", password: '12345678' };
       const mockRegistrationF = jest.spyOn(authService, 'registration').mockImplementation(async () => serviceRegisterResponseMock);
       const controllerRegisterResponse = new AuthenticationResDto(userId, accessToken);
@@ -186,7 +282,7 @@ describe('AuthController', () => {
       });
       try {
         await authController.registration(registerDto, res);
-        throw new HttpException("Don't throw", 0);
+        sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(400);
         expect(authService.registration).toBeCalledTimes(1);
@@ -203,20 +299,8 @@ describe('AuthController', () => {
       const userId = 1;
       const accessToken = '12345fsagasdsfasdfsdf';
       const refreshToken = '12345fsagasdsdfsdf';
-      const serviceLoginResponseMock: AuthenticationResponse = {
-        status: 'success',
-        data: {
-          user: {
-            id: userId
-          },
-          payload: {
-            type: 'bearer',
-            access_token: accessToken,
-            refresh_token: refreshToken,
-            refresh_token_expiration: new Date()
-          }
-        }
-      };
+      const serviceLoginResponseMock =
+        getMockAuthenticationResponse(userId, accessToken, refreshToken);
       const loginDto: LoginDto = { email: "user@yandex.ru", password: '0000' };
       const mockLoginF = jest.spyOn(authService, 'login').mockImplementation(async () => Promise.resolve(serviceLoginResponseMock));
       const controllerLoginResponse = new AuthenticationResDto(userId, accessToken);
@@ -242,7 +326,7 @@ describe('AuthController', () => {
 
       try {
         await authController.login(loginDto, res, req);
-        throw new HttpException("Don't throw", 0);
+        sendPseudoError();
       } catch(err) {
         expect(err.status).toBe(401);
         expect(res.cookies.refresh_token).toBeUndefined();
@@ -252,179 +336,112 @@ describe('AuthController', () => {
       }
     });
     it('Login mehtod: should be catch unauthorized exception by filter', async () => {
-      const req = createRequest();
       const authFailedCount = '5';
-      req._setSessionVariable('authFailedCount', authFailedCount);
-      const res = createResponse();
-      const mockJson = jest.fn();
-      const mockStatus = jest.fn().mockImplementation(() => ({
-        json: mockJson
-      }));
-      const mockGetResponse = jest.fn().mockImplementation(() => res);
-      const mockGetRequest = jest.fn().mockImplementation(() => req);
-      const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
-        getResponse: mockGetResponse,
-        getRequest: mockGetRequest
-      }));
-      const mockArgumentsHost = {
-        switchToHttp: mockHttpArgumentsHost,
-        getArgByIndex: jest.fn(),
-        getArgs: jest.fn(),
-        getType: jest.fn(),
-        switchToRpc: jest.fn(),
-        switchToWs: jest.fn()
-      };
+      const {mockArgumentsHost, mockGetRequest, mockGetResponse, request, response} = getMockArgumentsHostData({
+        sessionVariables: [
+          {key: 'authFailedCount', value: authFailedCount}
+        ]
+      })
+
       const exceptionMessage = 'Неверный email или пароль';
       const errorObject = {message: exceptionMessage};
 
       unauthorizedExceptionFilter.catch(new UnauthorizedException(errorObject), mockArgumentsHost);
-      const body = JSON.parse(res._getData());
+      const body = JSON.parse(response._getData());
 
-      expect(res._getStatusCode()).toBe(401);
+      expect(response._getStatusCode()).toBe(401);
       expect(mockGetResponse).toBeCalledTimes(1);
       expect(mockGetRequest).toBeCalledTimes(1);
-      expect(req.session['authFailedCount']).toBe((+authFailedCount) + 1);
+      expect(request.session['authFailedCount']).toBe((+authFailedCount) + 1);
       expect(body.resultCode).toBe(ResultCodes.NEED_CAPTCHA_AUTHORIZATION);
     })
     it('Svg Captcha Guard: captcha text correct. Authorization failed MAX times', async () => {
-      const req = createRequest();
       const authFailedCount = `${MAX_AUTH_FAILED_COUNT}`;
       const captchaText = '1234';
-      req._setSessionVariable('authFailedCount', authFailedCount);
-      req._setSessionVariable('captcha', captchaText);
       const loginDto = { email: "user@yandex.ru", password: '12345678', captcha: captchaText};
-      req._setBody(loginDto);
-      const res = createResponse();
-      const mockGetResponse = jest.fn().mockImplementation(() => res);
-      const mockGetRequest = jest.fn().mockImplementation(() => req);
-      const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
-        getResponse: mockGetResponse,
-        getRequest: mockGetRequest
-      }));
-      const mockExecutionContext = {
-        switchToHttp: mockHttpArgumentsHost,
-        getClass: jest.fn(),
-        getHandler: jest.fn(),
-        getArgs: jest.fn(),
-        getArgByIndex: jest.fn(),
-        switchToRpc: jest.fn(),
-        switchToWs: jest.fn(),
-        getType: jest.fn()
-      };
+      const {mockContext, mockGetRequest, mockGetResponse, request} = getMockExecutionContextData({
+          sessionVariables: [
+            {key: 'authFailedCount', value: authFailedCount},
+            {key: 'captcha', value: captchaText}
+          ],
+          body: loginDto
+        }
+      );
 
       const captchaGuard = new SvgCaptchaGuard();
-      const result = captchaGuard.canActivate(mockExecutionContext);
+      const result = captchaGuard.canActivate(mockContext);
 
       expect(result).toBe(true);
       expect(mockGetRequest).toBeCalledTimes(1);
       expect(mockGetResponse).toBeCalledTimes(1);
-      expect(req.session['captcha']).toBeNull();
+      expect(request.session['captcha']).toBeNull();
     })
     it('Svg Captcha Guard: captcha text correct. Authorization failed MAX+1 times', async () => {
-      const req = createRequest();
       const authFailedCount = `${MAX_AUTH_FAILED_COUNT + 1}`;
       const captchaText = '1234';
-      req._setSessionVariable('authFailedCount', authFailedCount);
-      req._setSessionVariable('captcha', captchaText);
       const loginDto = { email: "user@yandex.ru", password: '12345678', captcha: captchaText};
-      req._setBody(loginDto);
-      const res = createResponse();
-      const mockGetResponse = jest.fn().mockImplementation(() => res);
-      const mockGetRequest = jest.fn().mockImplementation(() => req);
-      const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
-        getResponse: mockGetResponse,
-        getRequest: mockGetRequest
-      }));
-      const mockExecutionContext = {
-        switchToHttp: mockHttpArgumentsHost,
-        getClass: jest.fn(),
-        getHandler: jest.fn(),
-        getArgs: jest.fn(),
-        getArgByIndex: jest.fn(),
-        switchToRpc: jest.fn(),
-        switchToWs: jest.fn(),
-        getType: jest.fn()
-      };
+      const {mockContext, mockGetRequest, mockGetResponse, request} = getMockExecutionContextData({
+          sessionVariables: [
+            {key: 'authFailedCount', value: authFailedCount},
+            {key: 'captcha', value: captchaText}
+          ],
+          body: loginDto
+        }
+      );
 
       const captchaGuard = new SvgCaptchaGuard();
-      const result = captchaGuard.canActivate(mockExecutionContext);
+      const result = captchaGuard.canActivate(mockContext);
 
       expect(result).toBe(true);
       expect(mockGetRequest).toBeCalledTimes(1);
       expect(mockGetResponse).toBeCalledTimes(1);
-      expect(req.session['captcha']).toBeNull();
+      expect(request.session['captcha']).toBeNull();
     })
     it('Svg Captcha Guard: captcha text incorrect', async () => {
-      const req = createRequest();
       const authFailedCount = `${MAX_AUTH_FAILED_COUNT}`;
       const correctCaptchaText = '1234';
       const incorrectCaptchaText = '1254';
-      req._setSessionVariable('authFailedCount', authFailedCount);
-      req._setSessionVariable('captcha', correctCaptchaText);
       const loginDto = { email: "user@yandex.ru", password: '12345678', captcha: incorrectCaptchaText};
-      req._setBody(loginDto);
-      const res = createResponse();
-      const mockGetResponse = jest.fn().mockImplementation(() => res);
-      const mockGetRequest = jest.fn().mockImplementation(() => req);
-      const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
-        getResponse: mockGetResponse,
-        getRequest: mockGetRequest
-      }));
-      const mockExecutionContext = {
-        switchToHttp: mockHttpArgumentsHost,
-        getClass: jest.fn(),
-        getHandler: jest.fn(),
-        getArgs: jest.fn(),
-        getArgByIndex: jest.fn(),
-        switchToRpc: jest.fn(),
-        switchToWs: jest.fn(),
-        getType: jest.fn()
-      };
+      const {mockContext, mockGetRequest, mockGetResponse, request, response} = getMockExecutionContextData({
+          sessionVariables: [
+            {key: 'authFailedCount', value: authFailedCount},
+            {key: 'captcha', value: correctCaptchaText}
+          ],
+          body: loginDto
+        }
+      );
 
       const captchaGuard = new SvgCaptchaGuard();
-      const result = captchaGuard.canActivate(mockExecutionContext);
-      const data = JSON.parse(res._getData());
+      const result = captchaGuard.canActivate(mockContext);
+      const data = JSON.parse(response._getData());
 
       expect(result).toBe(false);
-      expect(res._getStatusCode()).toBe(401);
+      expect(response._getStatusCode()).toBe(401);
       expect(mockGetRequest).toBeCalledTimes(1);
       expect(mockGetResponse).toBeCalledTimes(1);
-      expect(req.session['captcha']).toBeNull();
+      expect(request.session['captcha']).toBeNull();
       expect(data.resultCode).toBe(ResultCodes.NEED_CAPTCHA_AUTHORIZATION);
       expect(data.messages).toContainEqual('Need authorization with captcha.');
       expect(data.data).toBeNull();
     })
     it('Svg Captcha Guard: captcha text correct. Authorization failed MAX-1 times', async () => {
-      const req = createRequest();
       const authFailedCount = `${MAX_AUTH_FAILED_COUNT - 1}`;
-      req._setSessionVariable('authFailedCount', authFailedCount);
       const loginDto = { email: "user@yandex.ru", password: '12345678'};
-      req._setBody(loginDto);
-      const res = createResponse();
-      const mockGetResponse = jest.fn().mockImplementation(() => res);
-      const mockGetRequest = jest.fn().mockImplementation(() => req);
-      const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
-        getResponse: mockGetResponse,
-        getRequest: mockGetRequest
-      }));
-      const mockExecutionContext = {
-        switchToHttp: mockHttpArgumentsHost,
-        getClass: jest.fn(),
-        getHandler: jest.fn(),
-        getArgs: jest.fn(),
-        getArgByIndex: jest.fn(),
-        switchToRpc: jest.fn(),
-        switchToWs: jest.fn(),
-        getType: jest.fn()
-      };
+      const {mockContext, mockGetRequest, mockGetResponse, request} = getMockExecutionContextData({
+          sessionVariables: [
+            {key: 'authFailedCount', value: authFailedCount}
+          ],
+          body: loginDto
+        }
+      );
 
       const captchaGuard = new SvgCaptchaGuard();
-      const result = captchaGuard.canActivate(mockExecutionContext);
+      const result = captchaGuard.canActivate(mockContext);
 
       expect(result).toBe(true);
       expect(mockGetRequest).toBeCalledTimes(1);
       expect(mockGetResponse).toBeCalledTimes(1);
-      expect(req.session['captcha']).toBeNull();
+      expect(request.session['captcha']).toBeNull();
     })
   });
 
@@ -437,20 +454,8 @@ describe('AuthController', () => {
       const req = createRequest();
       req._setCookiesVariable('refresh_token', oldRefreshToken);
       const res = createResponse();
-      const mockAuthenticationResponse: AuthenticationResponse = {
-        status: 'success',
-        data: {
-          user: {
-            id: userId
-          },
-          payload: {
-            type: 'bearer',
-            access_token: accessToken,
-            refresh_token: newRefreshToken,
-            refresh_token_expiration: new Date()
-          }
-        }
-      };
+      const mockAuthenticationResponse =
+        getMockAuthenticationResponse(userId, accessToken, newRefreshToken);
       const mockRefreshF = jest.spyOn(authService, 'refresh').mockImplementation(async () => Promise.resolve(mockAuthenticationResponse));
       const controllerLoginResponse = new AuthenticationResDto(userId, accessToken);
       const response = await authController.refresh(req, res);
@@ -504,59 +509,37 @@ describe('AuthController', () => {
 
   describe('AuthController - Auth Guards', () => {
     it('Jwt Auth Guard: should be successful result', async () => {
-
-      const jwtService = new JwtService({
-        secret: 'SECRET',
-        signOptions: {
-          expiresIn: '600s'
-        }
-      });
       const payloadPropertyName = 'id';
       const payloadPropertyValue = 1;
       const payload = { [payloadPropertyName]: payloadPropertyValue };
-      const token = await jwtService.signAsync(payload);
-
+      const {jwtService, token} = getMockJWTServiceData({
+        expiresIn: '600s',
+        payload
+      })
       const req = {
         user: null,
         headers: {
           authorization: `Bearer ${token}`
         }
       }
-      const mockGetRequest = jest.fn().mockImplementation(() => req);
-      const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
-        getRequest: mockGetRequest,
-        getResponse: jest.fn()
-      }));
-      const mockExecutionContext = {
-        switchToHttp: mockHttpArgumentsHost,
-        getClass: jest.fn(),
-        getHandler: jest.fn(),
-        getArgs: jest.fn(),
-        getArgByIndex: jest.fn(),
-        switchToRpc: jest.fn(),
-        switchToWs: jest.fn(),
-        getType: jest.fn()
-      };
+      const {mockContext, mockGetRequest, request} = getMockExecutionContextData({ req });
 
       const jwtAuthGuard = new JwtAuthGuard(jwtService);
-      const result = jwtAuthGuard.canActivate(mockExecutionContext);
+      const result = jwtAuthGuard.canActivate(mockContext);
 
       expect(result).toBe(true);
       expect(mockGetRequest).toBeCalledTimes(1);
-      expect(req.user).toHaveProperty(payloadPropertyName, payloadPropertyValue);
+      expect(request.user).toHaveProperty(payloadPropertyName, payloadPropertyValue);
     });
     it('Jwt Auth Guard: token should be expired', async () => {
       const expiresIn = 600;
-      const jwtService = new JwtService({
-        secret: 'SECRET',
-        signOptions: {
-          expiresIn: `${expiresIn}s`
-        }
-      });
       const payloadPropertyName = 'id';
       const payloadPropertyValue = 1;
       const payload = { [payloadPropertyName]: payloadPropertyValue };
-      const token = await jwtService.signAsync(payload);
+      const {jwtService, token} = getMockJWTServiceData({
+        expiresIn: `${expiresIn}s`,
+        payload
+      })
 
       const req = {
         user: null,
@@ -564,28 +547,14 @@ describe('AuthController', () => {
           authorization: `Bearer ${token}`
         }
       }
-      const mockGetRequest = jest.fn().mockImplementation(() => req);
-      const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
-        getRequest: mockGetRequest,
-        getResponse: jest.fn()
-      }));
-      const mockExecutionContext = {
-        switchToHttp: mockHttpArgumentsHost,
-        getClass: jest.fn(),
-        getHandler: jest.fn(),
-        getArgs: jest.fn(),
-        getArgByIndex: jest.fn(),
-        switchToRpc: jest.fn(),
-        switchToWs: jest.fn(),
-        getType: jest.fn()
-      };
+      const {mockContext, mockGetRequest} = getMockExecutionContextData({ req });
 
       const jwtAuthGuard = new JwtAuthGuard(jwtService);
       jest.useRealTimers();
       setTimeout(() => {
         try {
-          jwtAuthGuard.canActivate(mockExecutionContext)
-          throw new HttpException("Don't throw", 0);
+          jwtAuthGuard.canActivate(mockContext)
+          sendPseudoError();
         } catch (err) {
           expect(err.status).toBe(HttpStatus.UNAUTHORIZED);
           expect(err.message).toBe('Пользователь не авторизован');
@@ -596,16 +565,13 @@ describe('AuthController', () => {
     });
     it('Jwt Auth Guard: should throw exception (no Bearer token in headers)', async () => {
       const expiresIn = 600;
-      const jwtService = new JwtService({
-        secret: 'SECRET',
-        signOptions: {
-          expiresIn: `${expiresIn}s`
-        }
-      });
       const payloadPropertyName = 'id';
       const payloadPropertyValue = 1;
       const payload = { [payloadPropertyName]: payloadPropertyValue };
-      const token = await jwtService.signAsync(payload);
+      const {jwtService, token} = getMockJWTServiceData({
+        expiresIn: `${expiresIn}s`,
+        payload
+      })
 
       const req = {
         user: null,
@@ -613,26 +579,12 @@ describe('AuthController', () => {
           authorization: `${token}`
         }
       }
-      const mockGetRequest = jest.fn().mockImplementation(() => req);
-      const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
-        getRequest: mockGetRequest,
-        getResponse: jest.fn()
-      }));
-      const mockExecutionContext = {
-        switchToHttp: mockHttpArgumentsHost,
-        getClass: jest.fn(),
-        getHandler: jest.fn(),
-        getArgs: jest.fn(),
-        getArgByIndex: jest.fn(),
-        switchToRpc: jest.fn(),
-        switchToWs: jest.fn(),
-        getType: jest.fn()
-      };
+      const {mockContext, mockGetRequest} = getMockExecutionContextData({ req });
 
       const jwtAuthGuard = new JwtAuthGuard(jwtService);
       try {
-        jwtAuthGuard.canActivate(mockExecutionContext)
-        throw new HttpException("Don't throw", 0);
+        jwtAuthGuard.canActivate(mockContext)
+        sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.UNAUTHORIZED);
         expect(err.message).toBe('Пользователь не авторизован');
@@ -641,16 +593,13 @@ describe('AuthController', () => {
     });
     it('Jwt Auth Guard: should throw exception (incorrect Bearer token in headers)', async () => {
       const expiresIn = 600;
-      const jwtService = new JwtService({
-        secret: 'SECRET',
-        signOptions: {
-          expiresIn: `${expiresIn}s`
-        }
-      });
       const payloadPropertyName = 'id';
       const payloadPropertyValue = 1;
       const payload = { [payloadPropertyName]: payloadPropertyValue };
-      const token = await jwtService.signAsync(payload);
+      const {jwtService, token} = getMockJWTServiceData({
+        expiresIn: `${expiresIn}s`,
+        payload
+      })
 
       const req = {
         user: null,
@@ -658,26 +607,12 @@ describe('AuthController', () => {
           authorization: `Bearer ${token}1234`
         }
       }
-      const mockGetRequest = jest.fn().mockImplementation(() => req);
-      const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
-        getRequest: mockGetRequest,
-        getResponse: jest.fn()
-      }));
-      const mockExecutionContext = {
-        switchToHttp: mockHttpArgumentsHost,
-        getClass: jest.fn(),
-        getHandler: jest.fn(),
-        getArgs: jest.fn(),
-        getArgByIndex: jest.fn(),
-        switchToRpc: jest.fn(),
-        switchToWs: jest.fn(),
-        getType: jest.fn()
-      };
+      const {mockContext, mockGetRequest} = getMockExecutionContextData({ req });
 
       const jwtAuthGuard = new JwtAuthGuard(jwtService);
       try {
-        jwtAuthGuard.canActivate(mockExecutionContext)
-        throw new HttpException("Don't throw", 0);
+        jwtAuthGuard.canActivate(mockContext)
+        sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.UNAUTHORIZED);
         expect(err.message).toBe('Пользователь не авторизован');
@@ -688,63 +623,31 @@ describe('AuthController', () => {
     it('Refresh Token Guard: should be successful result', async () => {
       const userId = 1;
       const tokenUUID = '1dsfsdf';
-      const jwtService = new JwtService({
-        secret: 'SECRET',
-        signOptions: {
-          expiresIn: '600s',
-          subject: `${userId}`,
-          jwtid: tokenUUID
-        }
+      const {token} = getMockJWTServiceData({
+        expiresIn: `600s`,
+        payload: {},
+        subject: `${userId}`,
+        jwtId: `${tokenUUID}`
+      })
+      const {mockContext, mockGetRequest} = getMockExecutionContextData({
+        cookiesVariable: [
+          {key: 'refresh_token', value: token}
+        ]
       });
-      const token = await jwtService.signAsync({});
-
-      const req = createRequest();
-      req._setCookiesVariable('refresh_token', token);
-      const mockGetRequest = jest.fn().mockImplementation(() => req);
-      const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
-        getRequest: mockGetRequest,
-        getResponse: jest.fn()
-      }));
-      const mockExecutionContext = {
-        switchToHttp: mockHttpArgumentsHost,
-        getClass: jest.fn(),
-        getHandler: jest.fn(),
-        getArgs: jest.fn(),
-        getArgByIndex: jest.fn(),
-        switchToRpc: jest.fn(),
-        switchToWs: jest.fn(),
-        getType: jest.fn()
-      };
 
       //const refreshTokenGuard = new RefreshTokenGuard();
-      const result = refreshTokenGuard.canActivate(mockExecutionContext);
+      const result = refreshTokenGuard.canActivate(mockContext);
 
       expect(result).toBe(true);
       expect(mockGetRequest).toBeCalledTimes(1);
     });
     it('Refresh Token Guard: should throw exception (no token in cookies)', async () => {
-      const req = createRequest();
-      const mockGetRequest = jest.fn().mockImplementation(() => req);
-      const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
-        getRequest: mockGetRequest,
-        getResponse: jest.fn()
-      }));
-      const mockExecutionContext = {
-        switchToHttp: mockHttpArgumentsHost,
-        getClass: jest.fn(),
-        getHandler: jest.fn(),
-        getArgs: jest.fn(),
-        getArgByIndex: jest.fn(),
-        switchToRpc: jest.fn(),
-        switchToWs: jest.fn(),
-        getType: jest.fn()
-      };
-
+      const {mockContext, mockGetRequest} = getMockExecutionContextData({});
       //const refreshTokenGuard = new RefreshTokenGuard();
 
       try {
-        refreshTokenGuard.canActivate(mockExecutionContext)
-        throw new HttpException("Don't throw", 0);
+        refreshTokenGuard.canActivate(mockContext)
+        sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.FORBIDDEN);
         expect(err.message).toBe('Нет доступа');
@@ -755,32 +658,13 @@ describe('AuthController', () => {
 
   describe('AuthController - HttpExceptionFilter', () => {
     it('', async () => {
-      const req = createRequest();
-      const res = createResponse();
-      const mockJson = jest.fn();
-      const mockStatus = jest.fn().mockImplementation(() => ({
-        json: mockJson
-      }));
-      const mockGetResponse = jest.fn().mockImplementation(() => res);
-      const mockGetRequest = jest.fn().mockImplementation(() => req);
-      const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
-        getResponse: mockGetResponse,
-        getRequest: mockGetRequest
-      }));
-      const mockArgumentsHost = {
-        switchToHttp: mockHttpArgumentsHost,
-        getArgByIndex: jest.fn(),
-        getArgs: jest.fn(),
-        getType: jest.fn(),
-        switchToRpc: jest.fn(),
-        switchToWs: jest.fn()
-      };
+      const {mockArgumentsHost, mockGetResponse, response} = getMockArgumentsHostData({})
       const errorCode = HttpStatus.BAD_REQUEST;
       const errorMessage = 'Error message';
       httpExceptionFilter.catch(new HttpException(errorMessage, errorCode), mockArgumentsHost)
-      const body = JSON.parse(res._getData());
+      const body = JSON.parse(response._getData());
 
-      expect(res._getStatusCode()).toBe(errorCode);
+      expect(response._getStatusCode()).toBe(errorCode);
       expect(mockGetResponse).toBeCalledTimes(1);
       expect(body.messages).toContainEqual(errorMessage);
       expect(body.data).toBeNull();
