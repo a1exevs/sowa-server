@@ -16,15 +16,6 @@ export class AuthService {
               private jwtService: JwtService,
               private tokensService: TokensService) {}
 
-  async login(dto: LoginDto) : Promise<AuthenticationResponse> {
-    const user = await this.validateUser(dto);
-
-    const token = await this.tokensService.generateAccessToken(user)
-    const refresh = await this.tokensService.generateRefreshToken(user, TokensService.getRefreshTokenExpiresIn())
-
-    return AuthService.buildResponsePayload(user, token, refresh, this.tokensService.getRefreshTokenExpiration());
-  }
-
   public async registration(dto: RegisterDto) : Promise<AuthenticationResponse> {
     const candidate = await this.userService.getUserByEmail(dto.email);
     if(candidate)
@@ -38,6 +29,15 @@ export class AuthService {
     return AuthService.buildResponsePayload(user, token, refresh, this.tokensService.getRefreshTokenExpiration())
   }
 
+  async login(dto: LoginDto) : Promise<AuthenticationResponse> {
+    const user = await this.validateUser(dto);
+
+    const token = await this.tokensService.generateAccessToken(user)
+    const refresh = await this.tokensService.generateRefreshToken(user, TokensService.getRefreshTokenExpiresIn())
+
+    return AuthService.buildResponsePayload(user, token, refresh, this.tokensService.getRefreshTokenExpiration());
+  }
+
   public async refresh(currentRefreshToken: string) : Promise<AuthenticationResponse>
   {
     const { user, access_token, refresh_token } = await this.tokensService.updateAccessRefreshTokensFromRefreshToken(currentRefreshToken)
@@ -47,13 +47,14 @@ export class AuthService {
   public async me(userId: number) : Promise<GetCurrentUserResponse.User>
   {
     const user = await this.userService.getUserById(userId)
+    if(!user)
+      throw new UnauthorizedException({message: 'Пользователь не авторизован'});
 
     return new GetCurrentUserResponse.User({
       id: user.id,
       email: user.email
     });
   }
-
 
   public async logout(refreshToken: string) : Promise<boolean>
   {

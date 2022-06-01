@@ -20,11 +20,11 @@ export class UsersService {
     private profileService: ProfileService
   ) {}
 
-  async createUser(DTO: CreateUserDTO) {
+  async createUser(DTO: CreateUserDTO): Promise<User> {
     const role = await this.roleService.getRoleByValue("user");
     if(!role)
       throw new HttpException('Сервис недоступен: отсутствует конфигурация ролей для пользователей.', HttpStatus.FORBIDDEN);
-    let user;
+    let user: User;
     try {
       user = await this.userRepository.create(DTO);
     } catch (e) {
@@ -74,7 +74,6 @@ export class UsersService {
     }
     if(withAllData)
       findOptions.include = { all: true };
-
 
     return await this.userRepository.findOne(findOptions);
   }

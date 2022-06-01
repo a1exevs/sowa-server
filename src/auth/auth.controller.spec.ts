@@ -170,7 +170,6 @@ describe('AuthController', () => {
         tokenService
       ]
     }).compile();
-
     authController = moduleRef.get<AuthController>(AuthController);
     authService = moduleRef.get<AuthService>(AuthService);
     unauthorizedExceptionFilter = moduleRef.get<UnauthorizedExceptionFilter>(UnauthorizedExceptionFilter);
