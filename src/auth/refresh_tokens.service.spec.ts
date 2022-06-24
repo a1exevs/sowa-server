@@ -1,0 +1,131 @@
+import { RefreshTokensService } from "./refresh_tokens.service";
+import { Test, TestingModule } from "@nestjs/testing";
+import { RefreshToken } from "./refresh_tokens.model";
+import { getModelToken } from "@nestjs/sequelize";
+
+jest.mock("./refresh_tokens.model")
+
+interface IMockUser {
+  id: number,
+  email: string,
+  roles: [
+    {
+      id: number,
+      value: string,
+      description: string
+    }
+  ]
+}
+
+interface IMockRefreshToken {
+  uuid: string,
+  userId: number,
+  isRevoked: boolean,
+  expires: Date
+}
+
+
+const getMockUser = (): IMockUser => {
+  return {
+    id: 1,
+    email: 'user@yandex.ru',
+    roles: [
+      {
+        id: 2,
+        value: 'user',
+        description: 'User role'
+      }
+    ]
+  };
+}
+
+const getMockRefreshToken = (): IMockRefreshToken => {
+  return {
+    uuid: 'sdfsdf',
+    userId: 1,
+    isRevoked: false,
+    expires: new Date()
+  }
+}
+
+describe('RefreshTokensService', () => {
+  let refreshTokensService: RefreshTokensService;
+  let model: typeof RefreshToken;
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    jest.clearAllTimers();
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        RefreshTokensService,
+        {
+          provide: getModelToken(RefreshToken),
+          useValue: {
+
+          }
+        }
+      ],
+    }).compile();
+    refreshTokensService = module.get<RefreshTokensService>(RefreshTokensService);
+    model = module.get<typeof RefreshToken>(getModelToken(RefreshToken));
+  });
+
+  describe('RefreshTokensService - definition', () => {
+    it('RefreshTokensService - should be defined', () => {
+      expect(refreshTokensService).toBeDefined();
+    });
+    it('RefreshToken - should be defined', () => {
+      expect(model).toBeDefined();
+    });
+  });
+
+  describe('RefreshTokensService - createRefreshToken', () => {
+    it('should be successful result', async () => {
+      const mockUser = getMockUser();
+      const ttl = 24 * 60 * 60 * 1000;
+      jest.spyOn(RefreshToken, 'count').mockImplementation(() => {
+        return Promise.resolve(2);
+      })
+      // @ts-ignore
+      const saveFn = jest.spyOn(RefreshToken.prototype, 'save').mockImplementation(async () => {
+        return saveFn.mock.instances[0];
+      })
+      // @ts-ignore
+      const token = await refreshTokensService.createRefreshToken(mockUser, ttl);
+      expect(token.userId).toBe(mockUser.id);
+      expect(token.isRevoked).toBe(false);
+      expect(saveFn).toBeCalledTimes(1)
+    });
+  });
+
+  describe('RefreshTokensService - findTokenByUUId', () => {
+    it('should be successful result', async () => {
+      const mockToken = getMockRefreshToken();
+      // @ts-ignore
+      jest.spyOn(RefreshToken, 'findOne').mockImplementation(() => {
+        return mockToken;
+      })
+
+      const token = await refreshTokensService.findTokenByUUId(11);
+      expect(token).toEqual(mockToken);
+    });
+  });
+
+  describe('RefreshTokensService - findTokenByUUId', () => {
+    it('should be successful result', async () => {
+      const removedNumber = 1;
+      const uuid = 1111;
+      const params = { where: { uuid} }
+      // @ts-ignore
+      const destroyFn = jest.spyOn(RefreshToken, 'destroy').mockImplementation(async () => {
+        return Promise.resolve(removedNumber);
+      })
+
+      const removed = await refreshTokensService.removeTokenByUUId(uuid);
+      expect(removed).toEqual(removedNumber);
+      expect(destroyFn).toBeCalledTimes(1);
+      expect(destroyFn).toBeCalledWith(params);
+    });
+  });
+});

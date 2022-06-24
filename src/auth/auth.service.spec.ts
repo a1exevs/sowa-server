@@ -5,7 +5,7 @@ import { JwtService } from "@nestjs/jwt";
 import { TokensService } from "./tokens.service";
 import { LoginDto } from "./DTO/LoginDto";
 import * as bcrypt from "bcryptjs";
-import { sendPseudoError } from "../../test/tests-helper.spec";
+import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
 import { RegisterDto } from "./DTO/RegisterDto";
 import { UnprocessableEntityException } from "@nestjs/common";
 
@@ -297,7 +297,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('AuthService - refresh', () => {
+  describe('AuthService - me', () => {
     it('Me method: should be successful result', async () => {
       const userId = 1;
       const userEmail = 'user@yandex.ru';
@@ -334,7 +334,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('AuthService - refresh', () => {
+  describe('AuthService - logout', () => {
     it('Logout method: should be successful result', async () => {
       const refreshToken = 'sdfsdfsdfsdf';
       const refreshTokenResult = true;

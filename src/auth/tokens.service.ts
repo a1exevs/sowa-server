@@ -60,7 +60,13 @@ export class TokensService {
 
   public async removeRefreshToken(refreshToken: string): Promise<boolean> {
     const payload = await this.decodeRefreshToken(refreshToken);
-    return !!await this.refreshTokensService.removeTokenByUUId(payload.jti);
+    const tokenId = payload.jti;
+
+    if (!tokenId) {
+      throw new UnprocessableEntityException('Refresh token is malformed')
+    }
+
+    return !!await this.refreshTokensService.removeTokenByUUId(tokenId);
   }
 
   public static getRefreshTokenExpiresIn() : number
@@ -92,7 +98,7 @@ export class TokensService {
     const user = await this.getUserFromRefreshTokenPayload(payload)
 
     if (!user) {
-      throw new UnprocessableEntityException('Refresh token malformed')
+      throw new UnprocessableEntityException('Refresh token is malformed')
     }
 
     const newRefreshToken = await this.generateRefreshToken(user, TokensService.getRefreshTokenExpiresIn())
@@ -102,12 +108,12 @@ export class TokensService {
 
   private async decodeRefreshToken (token: string): Promise<RefreshTokenPayload> {
     try {
-      return this.jwtService.verifyAsync(token)
+      return await this.jwtService.verifyAsync(token)
     } catch (e) {
       if (e instanceof TokenExpiredError) {
         throw new UnprocessableEntityException('Refresh token expired')
       } else {
-        throw new UnprocessableEntityException('Refresh token malformed')
+        throw new UnprocessableEntityException('Refresh token is malformed')
       }
     }
   }
@@ -116,17 +122,17 @@ export class TokensService {
     const subId = payload.sub
 
     if (!subId) {
-      throw new UnprocessableEntityException('Refresh token malformed')
+      throw new UnprocessableEntityException('Refresh token is malformed')
     }
 
     return this.usersService.getUserById(subId)
   }
 
   private async getStoredTokenFromRefreshTokenPayload (payload: RefreshTokenPayload): Promise<RefreshToken | null> {
-    const tokenId = payload.jti
+    const tokenId = payload.jti;
 
     if (!tokenId) {
-      throw new UnprocessableEntityException('Refresh token malformed')
+      throw new UnprocessableEntityException('Refresh token is malformed')
     }
 
     return this.refreshTokensService.findTokenByUUId(tokenId)
