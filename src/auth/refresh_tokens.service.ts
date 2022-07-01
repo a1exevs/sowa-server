@@ -5,9 +5,9 @@ import { RefreshToken } from './refresh_tokens.model'
 @Injectable()
 export class RefreshTokensService {
   public async createRefreshToken (user: User, ttl: number): Promise<RefreshToken> {
-    const maxLoginsCount: number = 5;
+    const maxLoginsCount = 5;
 
-    const token = new RefreshToken()
+    const token = new RefreshToken();
 
     const loginsCount: number = await RefreshToken.count({ where: {userId: user.id} })
 

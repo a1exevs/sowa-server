@@ -3,10 +3,13 @@ import * as path from "path"
 import * as fs from "fs"
 import * as uuid from "uuid"
 
+export const COMPRESS_IMAGE_NAME_PREFIX = "small_"
+
 @Injectable()
 export class FilesService {
 
-  public async addJPEGFile(file: any, fileName: string = '', relativeDir: string = ''): Promise<{originalImageURL: string, smallImageURL: string}>
+  public async addJPEGFile(file: any, fileName: string = '', relativeDir: string = '')
+    : Promise<{originalImageURL: string, originalImagePath: string, smallImageURL: string, smallImagePath: string}>
   {
     FilesService.checkForFileSelection(file);
     FilesService.checkForMimeType(file, 'image/jpeg');
@@ -16,10 +19,16 @@ export class FilesService {
       const date = new Date();
       fileName = String(date.getTime()) + file.originalname;
     }
+    //TODO move this hard code dir in specific mehtod (example, addAvatar)
     const relativeStaticDir = "/activecontent/images/avatars" + relativeDir;
     const {filePath, fileURL} = await this.createFile(file, fileName, 'jpg', relativeStaticDir);
     const result = await this.compressImage(filePath);
-    return { originalImageURL: fileURL, smallImageURL: result.fileURL };
+    return {
+      originalImageURL: fileURL,
+      originalImagePath: filePath,
+      smallImageURL: result.fileURL,
+      smallImagePath: result.filePath
+    };
   }
 
   public async createFile(file: any, fileName: string = "", fileExtension: string = 'sowa', relativeStaticDir: string = "") : Promise<{filePath: string, fileURL: string}>
@@ -28,7 +37,9 @@ export class FilesService {
       relativeStaticDir = FilesService.correctRelativePath(relativeStaticDir);
 
       if(!fileName)
-          fileName = uuid.v4() + "." + fileExtension;
+        fileName = uuid.v4() + "." + fileExtension;
+      else if(!fileName.endsWith('.' + fileExtension))
+        fileName = fileName + '.' + fileExtension;
 
       const dirForSaving = path.resolve(__dirname, '../../', process.env.SERVER_STATIC + relativeStaticDir);
       if(!fs.existsSync(dirForSaving))
@@ -42,7 +53,7 @@ export class FilesService {
     }
     catch (e)
     {
-      throw new e;
+      throw e;
     }
   }
 
@@ -64,20 +75,20 @@ export class FilesService {
 
   private static checkForMimeType(file: any, haystack: string)
   {
-    if(file.mimetype != haystack)
-      throw new HttpException("Произошла ошибка при записи файла", HttpStatus.INTERNAL_SERVER_ERROR);
+    if(file.mimetype !== haystack)
+      throw new HttpException("Произошла ошибка при записи файла", HttpStatus.BAD_REQUEST);
   }
 
   private static checkForSize(file: any, maxMBytes: number)
   {
-    if(file.size > maxMBytes * 1000000)
-      throw new HttpException(`Закружаемый файл не может привышать ${maxMBytes} МБт`, HttpStatus.INTERNAL_SERVER_ERROR);
+    if(!file.size || file.size > maxMBytes * 1000000)
+      throw new HttpException(`Закружаемый файл не может привышать ${maxMBytes} МБт`, HttpStatus.BAD_REQUEST);
   }
 
   private static checkForFileSelection(file: any)
   {
     if(!file)
-      throw new HttpException(`Файл не был выбран`, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(`Файл не был выбран`, HttpStatus.BAD_REQUEST);
   }
 
   private async compressImage(filePath: string) : Promise<{filePath: string, fileURL: string}>
@@ -85,7 +96,7 @@ export class FilesService {
     const list = filePath.split("/");
     const fileName = list[list.length - 1];
     const fileDir = filePath.replace(fileName, '');
-    const compressFileName = "small_" + fileName;
+    const compressFileName = COMPRESS_IMAGE_NAME_PREFIX + fileName;
     const compressFilePath = fileDir + compressFileName;
 
     const sharp = require("sharp");

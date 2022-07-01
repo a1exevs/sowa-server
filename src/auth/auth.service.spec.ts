@@ -10,7 +10,6 @@ import { RegisterDto } from "./DTO/RegisterDto";
 import { UnprocessableEntityException } from "@nestjs/common";
 
 describe('AuthService', () => {
-
   let authService: AuthService;
   let userService: UsersService;
   let jwtService: JwtService;

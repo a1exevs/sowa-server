@@ -30,7 +30,7 @@ import { Followers } from "./followers/followers.model";
       envFilePath: `.${process.env.NODE_ENV}.env`
     }),
     ServeStaticModule.forRoot({
-      rootPath: path.resolve(__dirname, process.env.SERVER_STATIC || "static")
+      rootPath: path.resolve(__dirname, '../', process.env.SERVER_STATIC || "static")
     }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
