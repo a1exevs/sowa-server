@@ -15,8 +15,7 @@ import { Op } from "sequelize";
 @Injectable()
 export class FollowersService {
   constructor(@InjectModel(Followers) private followerRepository: typeof Followers,
-              @Inject(forwardRef(() => UsersService))
-              private usersService: UsersService) {}
+              @Inject(forwardRef(() => UsersService)) private usersService: UsersService) {}
 
   public async follow(followData: IFollowers): Promise<boolean> {
     const uuid = await this.validateFollowRequest(followData);

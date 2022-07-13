@@ -24,7 +24,6 @@ interface IMockRefreshToken {
   expires: Date
 }
 
-
 const getMockUser = (): IMockUser => {
   return {
     id: 1,
