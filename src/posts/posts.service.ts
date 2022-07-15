@@ -10,8 +10,8 @@ export class PostsService {
               private fileService: FilesService) {}
 
   async createPost(DTO: CreatePostDTO, image: any, userID: number) {
-    let post;
-    const {fileURL} = await this.fileService.createFile(image, null, 'jpg', 'posts_images');
+    let post: Post;
+    const { fileURL } = await this.fileService.createFile(image, null, 'jpg', 'posts_images');
     try {
       post = await this.postRepository.create({...DTO, userId: userID, image: fileURL});
     }

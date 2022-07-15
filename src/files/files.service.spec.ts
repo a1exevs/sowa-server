@@ -1,30 +1,14 @@
 import { COMPRESS_IMAGE_NAME_PREFIX, FilesService } from "./files.service";
 import { Test, TestingModule } from "@nestjs/testing";
-import { readFileSync, rmdirSync, existsSync } from "fs";
-import * as path from "path"
+import { existsSync } from "fs";
 import { HttpStatus } from "@nestjs/common";
 import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
-
-const TEST_FILE_PATH = path.resolve(__dirname, '../../', 'assets/sowa.jpg');
-const TEST_FILE_ORIGINAL_NAME = 'sowa.jpg';
-
-interface IFile {
-  buffer: Buffer,
-  size: number,
-  mimetype: string,
-  originalname: string
-}
-
-const loadFile = (filePath: string, mockSizeInBytes: number, mockMimeType: string, mockOriginalName): IFile => {
-  let buffer;
-  filePath.split('/');
-  try {
-    buffer = readFileSync(filePath);
-  } catch (error) {
-    throw error;
-  }
-  return  { buffer, mimetype: mockMimeType, size: mockSizeInBytes, originalname: mockOriginalName }
-}
+import {
+  loadTestFile,
+  removeTestStaticDir,
+  TEST_FILE_ORIGINAL_NAME,
+  TEST_FILE_PATH
+} from "../../test-helpers/files-helper.spec";
 
 describe('FilesService', () => {
   let filesService: FilesService;
@@ -41,15 +25,7 @@ describe('FilesService', () => {
   });
 
   afterEach(async () => {
-    if(existsSync(process.env.SERVER_STATIC))
-    {
-      try {
-        rmdirSync(process.env.SERVER_STATIC,{ recursive: true });
-      } catch(error) {
-        console.log(error);
-      }
-      console.log(`Directory ${process.env.SERVER_STATIC} deleted successfully`);
-    }
+    removeTestStaticDir()
   })
 
   describe('FilesService - definition', () => {
@@ -61,7 +37,7 @@ describe('FilesService', () => {
   describe('FilesService - addJPEGFile', () => {
     it('should be successful result', async  () => {
       expect.assertions(10);
-      const file = loadFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
+      const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
       const fileName = 'testImageFileName';
       const fileDir = 'fileDir'
       const { originalImageURL, originalImagePath, smallImageURL, smallImagePath } = await filesService.addJPEGFile(file, fileName, fileDir);
@@ -84,7 +60,7 @@ describe('FilesService', () => {
     it('should be successful result (with original file name)', async  () => {
       expect.assertions(6);
       const originalName = TEST_FILE_ORIGINAL_NAME;
-      const file = loadFile(TEST_FILE_PATH, 20000000, 'image/jpeg', originalName)
+      const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', originalName)
       const { originalImageURL, originalImagePath, smallImageURL, smallImagePath } = await filesService.addJPEGFile(file);
       const originalImagePathDividedArr = originalImagePath.split('/');
       const originalImageUrlDividedArr = originalImageURL.split('/');
@@ -108,7 +84,7 @@ describe('FilesService', () => {
       }
     });
     it('should be throw exception (file has incorrect mime type', async  () => {
-      const file = loadFile(TEST_FILE_PATH, 20000000, 'image/png', TEST_FILE_ORIGINAL_NAME);
+      const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/png', TEST_FILE_ORIGINAL_NAME);
       try {
         await filesService.addJPEGFile(file, 'test', 'file');
         sendPseudoError();
@@ -118,7 +94,7 @@ describe('FilesService', () => {
       }
     });
     it('should be throw exception (file has very large size (more then 50 MBytes)', async  () => {
-      const file = loadFile(TEST_FILE_PATH, 50000001, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
+      const file = loadTestFile(TEST_FILE_PATH, 50000001, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
       try {
         await filesService.addJPEGFile(file, 'test', 'file');
         sendPseudoError();
@@ -131,7 +107,7 @@ describe('FilesService', () => {
   describe('FilesService - createFile', () => {
     it('should be successful result', async  () => {
       expect.assertions(5);
-      const file = loadFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
+      const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
       const fileName = 'testImageFileName';
       const fileExtension = 'jpg';
       const fileDir = 'fileDir';
@@ -147,7 +123,7 @@ describe('FilesService', () => {
     });
     it('should be successful result (with default parameters)', async  () => {
       expect.assertions(5);
-      const file = loadFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
+      const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
       const url =  process.env.SERVER_URL + ':' + process.env.PORT + '/';
       const {filePath, fileURL} = await filesService.createFile(file);
       const filePathDividedArr = filePath.split('/');
@@ -164,7 +140,7 @@ describe('FilesService', () => {
     it('should delete file after N seconds', async () => {
       jest.useFakeTimers();
       expect.assertions(1);
-      const file = loadFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
+      const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
       const { filePath } = await filesService.createFile(file);
       const seconds = 1;
       filesService.deleteFileWithTimer(filePath, seconds);
@@ -176,7 +152,7 @@ describe('FilesService', () => {
     it('should exist a file after N/2 seconds', async () => {
       jest.useFakeTimers();
       expect.assertions(1);
-      const file = loadFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
+      const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
       const { filePath } = await filesService.createFile(file);
       const seconds = 5;
       filesService.deleteFileWithTimer(filePath, seconds);
