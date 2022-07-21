@@ -30,5 +30,5 @@ export class SetProfileReqDTO {
     @IsOptional()
     @ValidateNested()
     @Type(() => SetContactReqDTO)
-    readonly contacts: SetContactReqDTO;
+    readonly contacts?: SetContactReqDTO;
 }

@@ -31,8 +31,8 @@ export class ProfileController {
     @ApiResponse({status: 200, type: GetProfileResDTO})
     @UseGuards(JwtAuthGuard, RefreshTokenGuard)
     @Get('/:userId')
-    getProfile(@Param('userId', ParseIntPipe) userId: string) {
-        return this.profileService.getUserProfile(Number(userId));
+    getProfile(@Param('userId', ParseIntPipe) userId: number) {
+        return this.profileService.getUserProfile(userId);
     }
 
     @ApiOperation({summary: "Изменение данных профиля пользователя"})

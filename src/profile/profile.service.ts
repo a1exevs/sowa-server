@@ -18,8 +18,7 @@ export class ProfileService {
     constructor(private userCommonInfoService: UserCommonInfoService,
                 private userContactsService: UserContactsService,
                 private userAvatarsService: UserAvatarsService,
-                @Inject(forwardRef(() => UsersService))
-                private usersService: UsersService,
+                @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
                 private fileService: FilesService) {}
 
     public async getUserProfile(userId: number) : Promise<GetProfileResDTO> {
@@ -96,7 +95,7 @@ export class ProfileService {
     }
 
     private async validateUserId(userId: number) : Promise<User> {
-        const user = await this.usersService.getUserById(Number(userId));
+        const user = await this.usersService.getUserById(userId);
         if(!user)
             throw new HttpException(`Пользователь с идентификатором ${userId} не найден`, HttpStatus.BAD_REQUEST);
         return user;
@@ -108,7 +107,7 @@ export class ProfileService {
      * @param avatars
      * @private
      */
-    private buildGetUserProfilePhotoResponse(avatars: Avatar) : { photos }
+    private buildGetUserProfilePhotoResponse(avatars: Avatar) : { photos: GetPhotosResDTO }
     {
         const photos_response = new GetPhotosResDTO();
         if(avatars)

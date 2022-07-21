@@ -21,7 +21,7 @@ export class SecurityController {
     return { captchaURL };
   }
 
-  private static setSessionCaptchaText(request, captchaText) {
+  private static setSessionCaptchaText(request, captchaText: string) {
     const session: ISession = request.session;
     session.captcha = captchaText;
   }
