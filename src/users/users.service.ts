@@ -65,10 +65,7 @@ export class UsersService {
   }
 
   public async getUserByEmail(email: string, withAllData: boolean = false) {
-
-    /**
-     * Вынести формирование объекта FindOptions в хэлпер
-     */
+    //TODO Вынести формирование объекта FindOptions в хэлпер
     let findOptions: FindOptions = {
       where: { email }
     }
@@ -83,33 +80,34 @@ export class UsersService {
   }
 
   async addRole(dto: AddUserRoleDTO) {
-    const user = await this.userRepository.findByPk(dto.userID, { include: { all: true } });
+    const user = await this.userRepository.findByPk(dto.userId, { include: { all: true } });
+    if(!user)
+      throw new HttpException("Не удалось найти пользователя", HttpStatus.NOT_FOUND);
     const hasRole = user.roles.some(role => role.value == dto.value);
     if (hasRole)
       throw new HttpException(`Пользователь уже имеет роль ${dto.value}`, HttpStatus.NOT_ACCEPTABLE);
     const role = await this.roleService.getRoleByValue(dto.value);
-    if (user && role) {
-      await user.$add("roles", role.id);
-      return user;
-    }
-    throw new HttpException("Не удалось найти пользователя или роль", HttpStatus.NOT_FOUND);
+    if (!role)
+      throw new HttpException("Не удалось найти роль", HttpStatus.NOT_FOUND);
+
+    await user.$add("roles", role.id);
+    return user;
   }
 
   async ban(dto: BanUserDTO) {
-    const user = await this.userRepository.findByPk(dto.userID);
-    if (user) {
-      user.banned = true;
-      user.banReason = dto.banReason;
-      await user.save();
-      return user;
-    }
-    throw new HttpException("Не удалось найти пользователя", HttpStatus.NOT_FOUND);
+    const user = await this.userRepository.findByPk(dto.userId);
+    if (!user)
+      throw new HttpException("Не удалось найти пользователя", HttpStatus.NOT_FOUND);
+
+    user.banned = true;
+    user.banReason = dto.banReason;
+    await user.save();
+    return user;
   }
 
-  async getStatus(userId: number): Promise<User> {
-    const status = await this.userRepository.findOne({ attributes: ["status"], where: { id: userId } });
-    if(!status)
-      throw new NotFoundException();
+  async getStatus(userId: number): Promise<{ status: string }> {
+    const status: { status: string } = await this.userRepository.findOne({ attributes: ["status"], where: { id: userId } });
+    if (!status) throw new NotFoundException();
     return status;
   }
 

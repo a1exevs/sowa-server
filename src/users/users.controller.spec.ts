@@ -1,0 +1,203 @@
+import { Test, TestingModule } from "@nestjs/testing";
+import { UsersController } from "./users.controller";
+import { UsersService } from "./users.service";
+import { JwtService } from "@nestjs/jwt";
+import { GetUsersQuery } from "./queries/GetUsersQuery";
+import { AddUserRoleDTO } from "./ReqDTO/AddUserRoleDTO";
+import { User } from "./users.model";
+import { HttpException, HttpStatus, NotFoundException } from "@nestjs/common";
+import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
+import { BanUserDTO } from "./ReqDTO/BanUserDTO";
+import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
+import { mockGetUsersResponse } from "../../test-helpers/users-helper.spec";
+
+describe('UsersController', () => {
+  let usersController: UsersController;
+  let usersService: UsersService;
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+
+    const jwtService = { provide: JwtService, useValue: {} };
+
+    const moduleRef: TestingModule = await Test.createTestingModule({
+      controllers: [UsersController],
+      providers: [
+        {
+          provide: UsersService,
+          useValue: {
+            getUsers: jest.fn(x => x),
+            addRole: jest.fn(x => x),
+            ban: jest.fn(x => x),
+            getStatus: jest.fn(x => x),
+            setStatus: jest.fn(x => x),
+          }
+        },
+        jwtService
+      ]
+    }).compile();
+    usersController = moduleRef.get<UsersController>(UsersController);
+    usersService = moduleRef.get<UsersService>(UsersService);
+  });
+
+  describe('UsersController - definition', () => {
+    it('UsersController - should be defined', () => {
+      expect(usersController).toBeDefined();
+    });
+    it('UsersService - should be defined', () => {
+      expect(usersService).toBeDefined();
+    });
+  });
+
+  describe('UsersController - getUsers', () => {
+    it('should be successful result', async () => {
+      const userId = 1;
+      const req = { user: { id: userId }};
+      const queryParams: GetUsersQuery = { page: 1, count: 3 };
+      const mockResponse = mockGetUsersResponse();
+      jest.spyOn(usersService, 'getUsers').mockImplementation(() => {
+        return Promise.resolve(mockResponse);
+      })
+
+      const result = await usersController.getUsers(queryParams, req);
+
+      expect(usersService.getUsers).toBeCalledTimes(1);
+      expect(usersService.getUsers).toBeCalledWith(queryParams.page, queryParams.count, userId);
+      expect(result).toEqual(mockResponse);
+    });
+    it('should be successful result (with default query params)', async () => {
+      const userId = 1;
+      const req = { user: { id: userId }};
+      const mockResponse = mockGetUsersResponse();
+      jest.spyOn(usersService, 'getUsers').mockImplementation(() => {
+        return Promise.resolve(mockResponse);
+      })
+
+      const result = await usersController.getUsers({page: null, count: null}, req);
+
+      expect(usersService.getUsers).toBeCalledTimes(1);
+      expect(usersService.getUsers).toBeCalledWith(1, 10, userId);
+      expect(result).toEqual(mockResponse);
+    });
+  });
+
+  describe('UsersController - addRole', () => {
+    it('should be successful result', async () => {
+      const userId = 1;
+      const roleValue = 'admin';
+      const reqDto: AddUserRoleDTO = { userId, value: roleValue };
+      // @ts-ignore
+      const mockUser: Partial<User> = { id: userId, roles: [{value: roleValue, id: 1 }] };
+      // @ts-ignore
+      jest.spyOn(usersService, 'addRole').mockImplementation(() => {
+        return Promise.resolve(mockUser);
+      });
+      const result = await usersController.addRole(reqDto);
+      expect(usersService.addRole).toBeCalledTimes(1);
+      expect(usersService.addRole).toBeCalledWith(reqDto);
+      expect(result).toEqual(mockUser);
+    });
+    it('should throw error (user already has the role)', async () => {
+      const userId = 1;
+      const roleValue = 'admin';
+      const reqDto: AddUserRoleDTO = { userId, value: roleValue };
+      // @ts-ignore
+      const errorMessage = 'Пользователь уже имеет роль ${reqDto.value}';
+      const errorStatus = HttpStatus.BAD_REQUEST;
+      // @ts-ignore
+      jest.spyOn(usersService, 'addRole').mockImplementation(() => {
+        throw new HttpException(errorMessage, errorStatus);
+      });
+      try {
+        await usersController.addRole(reqDto);
+        sendPseudoError();
+      } catch (error) {
+        expect(error.status).toBe(errorStatus);
+        expect(error.message).toBe(errorMessage);
+        expect(usersService.addRole).toBeCalledTimes(1);
+        expect(usersService.addRole).toBeCalledWith(reqDto);
+      }
+    });
+  });
+
+  describe('UsersController - ban', () => {
+    it('should be successful result', async () => {
+      const userId = 1;
+      const banReason = 'banReason';
+      const reqDto: BanUserDTO = { userId, banReason: 'reason' };
+      const mockUser: Partial<User> = { id: userId, banned: true, banReason };
+      // @ts-ignore
+      jest.spyOn(usersService, 'ban').mockImplementation(() => {
+        return Promise.resolve(mockUser);
+      });
+      const result = await usersController.ban(reqDto);
+      expect(usersService.ban).toBeCalledTimes(1);
+      expect(usersService.ban).toBeCalledWith(reqDto);
+      expect(result).toEqual(mockUser);
+    });
+    it('should throw exception (user was not found)', async () => {
+      const userId = 1;
+      const reqDto: BanUserDTO = { userId, banReason: 'reason' };
+      const errorStatus = HttpStatus.NOT_FOUND;
+      const errorMessage = "Не удалось найти пользователя";
+      // @ts-ignore
+      jest.spyOn(usersService, 'ban').mockImplementation(() => {
+        throw new HttpException(errorMessage, errorStatus);
+      });
+      try {
+        await usersController.ban(reqDto);
+        sendPseudoError();
+      } catch (error) {
+        expect(error.status).toBe(errorStatus);
+        expect(error.message).toBe(errorMessage);
+        expect(usersService.ban).toBeCalledTimes(1);
+        expect(usersService.ban).toBeCalledWith(reqDto);
+      }
+    });
+  });
+
+  describe('UsersController - getStatus', () => {
+    it('should be successful result', async () => {
+      const userId = 1;
+      const mockResponse = { status: 'status' };
+      jest.spyOn(usersService, 'getStatus').mockImplementation(() => {
+        return Promise.resolve(mockResponse);
+      });
+      const result = await usersController.getStatus(userId);
+      expect(result).toEqual(mockResponse);
+      expect(usersService.getStatus).toBeCalledTimes(1);
+      expect(usersService.getStatus).toBeCalledWith(userId);
+      expect(usersService.getStatus).toReturnWith(Promise.resolve(mockResponse));
+    });
+    it('should throw result (user was not found)', async () => {
+      const userId = 1;
+      jest.spyOn(usersService, 'getStatus').mockImplementation(() => {
+        throw new NotFoundException();
+      });
+      try {
+        await usersController.getStatus(userId);
+        sendPseudoError();
+      } catch (error) {
+        expect(error.status).toBe(HttpStatus.NOT_FOUND);
+        expect(usersService.getStatus).toBeCalledTimes(1);
+        expect(usersService.getStatus).toBeCalledWith(userId);
+      }
+    });
+  });
+
+  describe('UsersController - setStatus', () => {
+    it('should be successful result', async () => {
+      const dto: SetUserStatusDTO = { status: 'new status' };
+      const userId = 1;
+      const req = { user: { id: userId } };
+      // @ts-ignore
+      jest.spyOn(usersService, 'setStatus').mockImplementation(() => {
+        return Promise.resolve([1, [{ id: userId }]])
+      });
+      const result = await usersController.setStatus(req, dto);
+      expect(usersService.setStatus).toBeCalledTimes(1);
+      expect(usersService.setStatus).toBeCalledWith(dto, userId);
+      expect(result).toBeTruthy();
+    });
+  });
+});

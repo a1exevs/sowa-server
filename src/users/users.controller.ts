@@ -67,7 +67,7 @@ export class UsersController {
   @ApiResponse({status: 200, type: String})
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Get('/status/:userId')
-  getStatus(@Param('userId', ParsePositiveIntPipe) userId: number): Promise<User>{
+  getStatus(@Param('userId', ParsePositiveIntPipe) userId: number): Promise<{ status: string }>{
     return this.usersService.getStatus(userId);
   }
 

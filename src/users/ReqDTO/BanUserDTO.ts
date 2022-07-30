@@ -4,7 +4,7 @@ import { IsNumber, IsString } from "class-validator";
 export class BanUserDTO {
   @ApiProperty({example: 1, description: "Идентификатор пользователя"})
   @IsNumber({},{message: "Должно быть числом"})
-  readonly userID: number;
+  readonly userId: number;
 
   @ApiProperty({example: "Спам", description: "Причина бана"})
   @IsString({message: "Должно быть строкой"})

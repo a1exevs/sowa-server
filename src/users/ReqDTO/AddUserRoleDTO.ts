@@ -8,5 +8,5 @@ export class AddUserRoleDTO {
 
   @ApiProperty({example: 1, description: "Идентификатор пользователя"})
   @IsNumber({}, {message: "Должно быть числом"})
-  readonly userID: number;
+  readonly userId: number;
 }
