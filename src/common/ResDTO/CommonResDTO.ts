@@ -1,5 +1,4 @@
 import {ApiProperty} from "@nestjs/swagger";
-import { User } from "../../users/users.model";
 import { ResultCodes } from "../constants/resultcodes";
 
 export class CommonResDTO {

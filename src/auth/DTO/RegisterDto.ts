@@ -2,6 +2,11 @@ import { IsEmail, IsNotEmpty, IsString, Length, MinLength } from "class-validato
 import { ApiProperty } from "@nestjs/swagger";
 
 export class RegisterDto {
+  constructor(email, password) {
+    this.email = email;
+    this.password = password;
+  }
+
   @ApiProperty({example: "user@yandex.ru", description: "Адрес электронной почты пользователя"})
   @IsString({message: "Должно быть строкой"})
   @IsEmail({}, {message: "Некорректный email"})

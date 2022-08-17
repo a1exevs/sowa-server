@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { createRequest, createResponse } from "node-mocks-http";
-import { ExecutionContext } from "@nestjs/common";
+import { CallHandler, ExecutionContext } from "@nestjs/common";
+import { Observable } from "rxjs";
 
 interface IGetMockRequest {
   sessionVariables?: Record<'key' | 'value', string>[],
@@ -67,4 +68,12 @@ export const getMockArgumentsHostData = function(props: IGetMockArgumentsHost) {
     request,
     response
   };
+}
+
+export const getMockCallHandler = (data: any): CallHandler => {
+  return  {
+    handle: () => {
+      return new Observable<any>(subscriber => subscriber.next(data));
+    }
+  }
 }

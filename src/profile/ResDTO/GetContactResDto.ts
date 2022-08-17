@@ -1,6 +1,26 @@
 import {ApiProperty} from "@nestjs/swagger";
 
 export class GetContactResDto {
+  constructor(
+    facebook = '',
+    website= '',
+    twitter= '',
+    instagram= '',
+    youtube= '',
+    github= '',
+    vk= '',
+    mainLink= ''
+  ) {
+    this.facebook = facebook;
+    this.website = website;
+    this.twitter = twitter;
+    this.instagram = instagram;
+    this.youtube = youtube;
+    this.github = github;
+    this.vk = vk;
+    this.mainLink = mainLink;
+  }
+
   @ApiProperty({example: "facebook.com/george", description: "Ссылка на страницу в Facebook"})
   facebook: string = "";
 

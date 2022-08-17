@@ -1,5 +1,4 @@
-import {ApiProperty} from "@nestjs/swagger";
-import {IAuthenticationPayload} from "../interfaces/IAuthenticationPayload";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class AuthenticationResDto {
   constructor(userId: number, accessToken: string) {

@@ -1,5 +1,3 @@
-import {User} from "../../users/users.model";
-
 export interface IAuthenticationPayload {
     user: {
         id

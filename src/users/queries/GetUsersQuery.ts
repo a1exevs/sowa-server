@@ -3,6 +3,11 @@ import { Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class GetUsersQuery{
+  constructor(page, count) {
+    this.page = page;
+    this.count = count;
+  }
+
   @ApiProperty({example: "1", description: "Номер страницы", default: 1, required: false })
   @Type(() => Number)
   @IsInt()

@@ -3,6 +3,15 @@ import { GetContactResDto } from "./GetContactResDto";
 import {GetPhotosResDTO} from "./GetPhotosResDTO";
 
 export class GetProfileResDTO {
+  constructor(fullName = '', aboutMe = '', lookingForAJob = false, lookingForAJobDescription = '', contacts = null, photos = null) {
+    this.fullName = fullName;
+    this.aboutMe = aboutMe;
+    this.lookingForAJob = lookingForAJob;
+    this.lookingForAJobDescription = lookingForAJobDescription;
+    this.contacts = contacts;
+    this.photos = photos
+  }
+
   @ApiProperty({example: "Гарри Поттер", description: "Полное имя пользователя"})
   fullName: string = "";
 

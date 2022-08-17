@@ -8,11 +8,11 @@ import { UsersService } from "../users/users.service";
 import { TokensService } from "./tokens.service";
 import { AuthenticationResDto } from "./DTO/AuthenticationResDto";
 import { ValidationPipe } from "../common/pipes/validation.pipe";
-import { ArgumentMetadata, ExecutionContext, HttpException, HttpStatus, UnauthorizedException } from "@nestjs/common";
+import { ArgumentMetadata, HttpException, HttpStatus, UnauthorizedException } from "@nestjs/common";
 import { RegisterDto } from "./DTO/RegisterDto";
 import { LoginDto } from "./DTO/LoginDto";
 import { UnauthorizedExceptionFilter } from "./exceptionfilters/unauthorizedexceptionfilter";
-import { MAX_AUTH_FAILED_COUNT, SvgCaptchaGuard } from "./guards/svgcaptcha.guard";
+import { SvgCaptchaGuard } from "./guards/svgcaptcha.guard";
 import { ResultCodes } from "../common/constants/resultcodes";
 import { GetCurrentUserResponse } from "./DTO/get-current-user.response";
 import { JwtAuthGuard } from "./guards/jwtAuth.guard";
@@ -20,7 +20,7 @@ import { RefreshTokenGuard } from "./guards/refreshToken.guard";
 import { HttpExceptionFilter } from "../common/exceptions/filters/httpexceptionfilter";
 import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
 import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
-import { getMockArgumentsHostData, getMockExecutionContextData } from "../../test-helpers/context-helper.spec";
+import { getMockArgumentsHostData } from "../../test-helpers/context-helper.spec";
 
 const getValidationPipeDataForUserRegistration  = function(email, password) {
   let target: ValidationPipe = new ValidationPipe();
@@ -246,26 +246,6 @@ describe('AuthController', () => {
         expect(authService.login).toBeCalledTimes(1);
       }
     });
-    it('Login mehtod: should be catch unauthorized exception by filter', async () => {
-      const authFailedCount = '5';
-      const {mockArgumentsHost, mockGetRequest, mockGetResponse, request, response} = getMockArgumentsHostData({
-        sessionVariables: [
-          {key: 'authFailedCount', value: authFailedCount}
-        ]
-      })
-
-      const exceptionMessage = 'Неверный email или пароль';
-      const errorObject = {message: exceptionMessage};
-
-      unauthorizedExceptionFilter.catch(new UnauthorizedException(errorObject), mockArgumentsHost);
-      const body = JSON.parse(response._getData());
-
-      expect(response._getStatusCode()).toBe(401);
-      expect(mockGetResponse).toBeCalledTimes(1);
-      expect(mockGetRequest).toBeCalledTimes(1);
-      expect(request.session['authFailedCount']).toBe((+authFailedCount) + 1);
-      expect(body.resultCode).toBe(ResultCodes.NEED_CAPTCHA_AUTHORIZATION);
-    })
   });
 
   describe('AuthController - refresh', () => {

@@ -8,19 +8,17 @@ export class Logger extends ConsoleLogger {
         Logger.logToFile(message, stack, context);
     }
 
-    private static logToFile(message: any, stack?: string, context?: string)
-    {
+    public static logToFile(message: any, stack?: string, context?: string, isLogAsync = true) {
         const date = new Date();
         const year = date.getFullYear()
         const month = date.getMonth() + 1;
         const day = date.getDate();
-        const logDir = path.resolve(__dirname) + `/${year}/${month}/`;
-        if(!fs.existsSync(logDir))
-            fs.mkdirSync(logDir, { recursive: true })
+        const logDir = path.resolve(__dirname, './../../../', process.env.SERVER_LOGS) + `/${year}/${month}/`;
+        if(!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true })
 
         const data = `[YYYY/MM/DD HH:MM:SS][${year}/${month}/${day} ${date.toLocaleTimeString()}]\n[${message}]\n[${stack}]\n[${context}]\n\n`;
-        fs.appendFile(logDir + `${day}.ts`, data, "utf-8", (err) => {
-            if (err) return;
-        })
+        if(isLogAsync) {
+            fs.appendFile(logDir + `${day}.ts`, data, "utf-8", (err) => { if (err) return; })
+        } else fs.appendFileSync(logDir + `${day}.ts`, data, "utf-8");
     }
 }

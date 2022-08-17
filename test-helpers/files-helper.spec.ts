@@ -23,13 +23,20 @@ export const loadTestFile = (filePath: string, mockSizeInBytes: number, mockMime
 }
 
 export const removeTestStaticDir = () => {
-  if(existsSync(process.env.SERVER_STATIC))
-  {
+  removeTestDir(process.env.SERVER_STATIC);
+}
+
+export const removeTestLogsDir = () => {
+  removeTestDir(process.env.SERVER_LOGS);
+}
+
+const removeTestDir = (dir: string) => {
+  if(existsSync(dir)) {
     try {
-      rmdirSync(process.env.SERVER_STATIC,{ recursive: true });
+      rmdirSync(dir,{ recursive: true });
     } catch(error) {
       console.log(error);
     }
-    console.log(`Directory ${process.env.SERVER_STATIC} deleted successfully`);
+    console.log(`Directory ${dir} deleted successfully`);
   }
 }

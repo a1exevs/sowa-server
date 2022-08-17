@@ -1,7 +1,11 @@
 import {ApiProperty} from "@nestjs/swagger";
-import { IsEmail, IsNumber, IsString, Length } from "class-validator";
+import { IsString } from "class-validator";
 
 export class CreatePostDTO {
+  constructor(title, content) {
+    this.title = title;
+    this.content = content;
+  }
 
   @ApiProperty({example: "Пост о Post-запросах", description: "Заголовок Поста"})
   @IsString({message: "Должно быть строкой"})

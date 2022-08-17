@@ -9,6 +9,14 @@ import {SetContactReqDTO} from "./SetContactReqDTO";
 import { Type } from "class-transformer";
 
 export class SetProfileReqDTO {
+    constructor(fullName, aboutMe, lookingForAJob, lookingForAJobDescription, contacts = null) {
+        this.fullName = fullName;
+        this.aboutMe = aboutMe;
+        this.lookingForAJob = lookingForAJob;
+        this.lookingForAJobDescription = lookingForAJobDescription;
+        this.contacts = contacts;
+    }
+
     @ApiProperty({example: "Гарри Поттер", description: "Полное имя пользователя"})
     @IsString({message: "Должно быть строкой"})
     readonly fullName: string;

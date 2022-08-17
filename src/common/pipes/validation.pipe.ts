@@ -14,8 +14,7 @@ export class ValidationPipe implements PipeTransform<any> {
 
     const errors = await validate(obj);
 
-    if(errors.length)
-    {
+    if(errors.length) {
       let messages = this.getErrorsMessages(errors);
 
       throw new ValidationException(messages);
