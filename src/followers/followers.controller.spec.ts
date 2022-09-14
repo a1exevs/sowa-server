@@ -62,7 +62,7 @@ describe('FollowersController', () => {
       const req = { user: { id: followerId } };
       const userId = 2;
       const result = await followersController.follow(userId, req);
-      expect(result).toBeTruthy();
+      expect(result.result).toBeTruthy();
     });
     it('should throw exception (follower Id and user Id are equal)', async () => {
       jest.spyOn(followersService, 'follow').mockImplementation(() => {
@@ -103,7 +103,7 @@ describe('FollowersController', () => {
       const req = { user: { id: followerId } };
       const userId = 2;
       const result = await followersController.unfollow(userId, req);
-      expect(result).toBeTruthy();
+      expect(result.result).toBeTruthy();
     });
     it('should throw exception (follower Id and user Id are equal)', async () => {
       jest.spyOn(followersService, 'unfollow').mockImplementation(() => {
