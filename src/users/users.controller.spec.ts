@@ -197,7 +197,7 @@ describe('UsersController', () => {
       const result = await usersController.setStatus(req, dto);
       expect(usersService.setStatus).toBeCalledTimes(1);
       expect(usersService.setStatus).toBeCalledWith(dto, userId);
-      expect(result).toBeTruthy();
+      expect(result.result).toBeTruthy();
     });
   });
 });

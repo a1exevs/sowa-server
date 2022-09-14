@@ -303,7 +303,7 @@ describe('AuthController', () => {
 
       const response = await authController.logout(req, res);
 
-      expect(response).toEqual(mockServiceLogoutResponse);
+      expect(response.result).toEqual(mockServiceLogoutResponse);
       expect(res.cookies.refresh_token.value).toBe("");
       expect(mockLogoutF).toBeCalledTimes(1);
       expect(mockLogoutF).toBeCalledWith(refreshToken);

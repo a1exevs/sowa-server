@@ -23,6 +23,7 @@ import { GetUsersQuery } from "./queries/GetUsersQuery"
 import { GetUsersResponse } from "./ResDTO/get-users.response";
 import { Routes } from "../common/constants/routes";
 import { ParsePositiveIntPipe } from "../common/pipes/parse-positive-int.pipe";
+import { OperationResultResponseDto } from "../common/ResDTO/operation-result-response-dto";
 
 @ApiTags("Пользователи")
 @Controller(Routes.ENDPOINT_USERS)
@@ -72,11 +73,11 @@ export class UsersController {
   }
 
   @ApiOperation({summary: "Установить статус пользователю"})
-  @ApiResponse({status: 201, type: Boolean})
+  @ApiResponse({status: 201, type: OperationResultResponseDto })
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Put('/status')
   async setStatus(@Req() request, @Body() dto: SetUserStatusDTO) {
      await this.usersService.setStatus(dto, request.user.id);
-     return true;
+     return new OperationResultResponseDto(true);
   }
 }

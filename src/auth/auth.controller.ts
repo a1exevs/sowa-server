@@ -16,6 +16,7 @@ import { Routes } from "../common/constants/routes";
 import { ApiResult } from "./decorators/api-result.decorator";
 import { HttpExceptionFilter } from "../common/exceptions/filters/httpexceptionfilter";
 import { GetCurrentUserResponse } from "./DTO/get-current-user.response";
+import { OperationResultResponseDto } from "../common/ResDTO/operation-result-response-dto";
 
 @ApiTags("Авторизация")
 @Controller(Routes.ENDPOINT_AUTH)
@@ -72,13 +73,13 @@ export class AuthController {
   }
 
   @ApiOperation({summary: "Закрытие сессии"})
-  @ApiResponse({status: 200, type: Boolean})
+  @ApiResponse({status: 200, type: OperationResultResponseDto})
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Delete('/logout')
   async logout(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
     const result: boolean = await this.authService.logout(request.cookies.refresh_token);
     response.clearCookie("refresh_token");
-    return result;
+    return new OperationResultResponseDto(result);
   }
 
   private static setupCookies(response: Response, data: AuthenticationResponse)
