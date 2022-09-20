@@ -1,6 +1,8 @@
 import { ParsePositiveIntPipe } from "./parse-positive-int.pipe";
 import { ArgumentMetadata, HttpStatus } from "@nestjs/common";
 import { sendPseudoError } from "../../../test-helpers/tests-helper.spec";
+import { ErrorMessages } from "../constants/error-messages";
+import './../../../string.extensions'
 
 describe('ParsePositiveIntPipe', () => {
   beforeEach(() => {
@@ -32,7 +34,7 @@ describe('ParsePositiveIntPipe', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe('Numeric must not be less than 0');
+        expect(error.message).toBe(ErrorMessages.ru.NUMERIC_MUST_NOT_BE_LESS_THAN_N.format(0));
       }
     });
     it('should throw exception (value is string)', async () => {

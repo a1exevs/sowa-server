@@ -12,6 +12,7 @@ import {UserAvatarsService} from "./userAvatars.service";
 import { SetProfileReqDTO } from "./ReqDTO/SetProfileReqDto";
 import { User } from "../users/users.model";
 import { FilesService } from "../files/files.service";
+import { ErrorMessages } from "../common/constants/error-messages";
 
 @Injectable()
 export class ProfileService {
@@ -61,8 +62,7 @@ export class ProfileService {
     private buildGetProfileResponse(profile: Profile, contact: Contact, avatar: Avatar) : GetProfileResDTO
     {
         const contact_response = new GetContactResDto();
-        if(contact)
-        {
+        if(contact) {
             contact_response.vk = contact.vk ?? "";
             contact_response.facebook = contact.facebook ?? "";
             contact_response.github = contact.github ?? "";
@@ -74,15 +74,13 @@ export class ProfileService {
         }
 
         const avatar_response = new GetPhotosResDTO();
-        if(avatar)
-        {
+        if(avatar) {
             avatar_response.small = avatar.small ?? "";
             avatar_response.large = avatar.large ?? "";
         }
 
         const response = new GetProfileResDTO();
-        if(profile)
-        {
+        if(profile) {
             response.fullName = profile.fullName ?? "";
             response.aboutMe = profile.aboutMe ?? "";
             response.lookingForAJob = profile.lookingForAJob ?? false;
@@ -97,7 +95,7 @@ export class ProfileService {
     private async validateUserId(userId: number) : Promise<User> {
         const user = await this.usersService.getUserById(userId);
         if(!user)
-            throw new HttpException(`Пользователь с идентификатором ${userId} не найден`, HttpStatus.BAD_REQUEST);
+            throw new HttpException(ErrorMessages.ru.USER_N_NOT_FOUND.format(userId), HttpStatus.BAD_REQUEST);
         return user;
     }
 
@@ -110,8 +108,7 @@ export class ProfileService {
     private buildGetUserProfilePhotoResponse(avatars: Avatar) : { photos: GetPhotosResDTO }
     {
         const photos_response = new GetPhotosResDTO();
-        if(avatars)
-        {
+        if(avatars) {
             photos_response.small = avatars.small ?? "";
             photos_response.large = avatars.large ?? "";
         }

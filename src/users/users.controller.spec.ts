@@ -10,6 +10,8 @@ import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
 import { BanUserDTO } from "./ReqDTO/BanUserDTO";
 import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
 import { mockGetUsersResponse } from "../../test-helpers/users-helper.spec";
+import { ErrorMessages } from "../common/constants/error-messages";
+import './../../string.extensions'
 
 describe('UsersController', () => {
   let usersController: UsersController;
@@ -102,7 +104,7 @@ describe('UsersController', () => {
       const roleValue = 'admin';
       const reqDto: AddUserRoleDTO = { userId, value: roleValue };
       // @ts-ignore
-      const errorMessage = 'Пользователь уже имеет роль ${reqDto.value}';
+      const errorMessage = ErrorMessages.ru.USER_ALREADY_HAS_THE_ROLE_N.format(reqDto.value);
       const errorStatus = HttpStatus.BAD_REQUEST;
       // @ts-ignore
       jest.spyOn(usersService, 'addRole').mockImplementation(() => {
@@ -139,7 +141,7 @@ describe('UsersController', () => {
       const userId = 1;
       const reqDto: BanUserDTO = { userId, banReason: 'reason' };
       const errorStatus = HttpStatus.NOT_FOUND;
-      const errorMessage = "Не удалось найти пользователя";
+      const errorMessage = ErrorMessages.ru.FAILED_TO_FIND_USER;
       // @ts-ignore
       jest.spyOn(usersService, 'ban').mockImplementation(() => {
         throw new HttpException(errorMessage, errorStatus);

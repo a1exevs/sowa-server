@@ -1,5 +1,6 @@
 import { IsOptional, IsString, Length, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 export class LoginDto {
   constructor(email, password, captcha = null) {
@@ -10,15 +11,15 @@ export class LoginDto {
   }
 
   @ApiProperty({example: "user@yandex.ru", description: "Адрес электронной почты пользователя"})
-  @IsString({message: "Должно быть строкой"})
+  @IsString({message: ErrorMessages.ru.MUST_BE_A_STRING})
   readonly email: string;
 
   @ApiProperty({example: "1234", description: "Пароль пользователя от учетной записи"})
-  @IsString({message: "Должно быть строкой"})
+  @IsString({message: ErrorMessages.ru.MUST_BE_A_STRING})
   readonly password: string;
 
   @ApiProperty({example: "1234", description: "Текст капчи"})
-  @IsString({message: "Должно быть строкой"})
+  @IsString({message: ErrorMessages.ru.MUST_BE_A_STRING})
   @IsOptional()
   readonly captcha?: string;
 }

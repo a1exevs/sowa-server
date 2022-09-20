@@ -12,6 +12,7 @@ import { getModelToken } from "@nestjs/sequelize";
 import { CreatePostDTO } from "./DTO/CreatePostDTO";
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
+import { ErrorMessages } from "../common/constants/error-messages";
 
 describe('PostsService', () => {
   let postsService: PostsService;
@@ -115,7 +116,7 @@ describe('PostsService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe(`Не удалось создать пост. ${errorMessage}`)
+        expect(error.message).toBe(`${ErrorMessages.ru.FAILED_TO_CREATE_POST}. ${errorMessage}`)
         expect(filesService.createFile).toBeCalledTimes(1);
         expect(model.create).toBeCalledTimes(1);
         expect(model.create).toBeCalledWith({

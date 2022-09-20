@@ -7,6 +7,7 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "setupFiles": [
-    "../test-environment.ts"
+    "../test-environment.ts",
+    "../string.extensions.ts"
   ]
 }

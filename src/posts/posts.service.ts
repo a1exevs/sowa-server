@@ -3,6 +3,7 @@ import { CreatePostDTO } from "./DTO/CreatePostDTO";
 import { InjectModel } from "@nestjs/sequelize";
 import { Post } from './posts.model';
 import { FilesService } from "../files/files.service";
+import { ErrorMessages } from "../common/constants/error-messages";
 
 @Injectable()
 export class PostsService {
@@ -16,7 +17,7 @@ export class PostsService {
       post = await this.postRepository.create({...DTO, userId: userID, image: fileURL});
     }
     catch (e) {
-      throw new HttpException(`Не удалось создать пост. ${e.message}`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`${ErrorMessages.ru.FAILED_TO_CREATE_POST}. ${e.message}`, HttpStatus.BAD_REQUEST);
     }
     return post;
   }

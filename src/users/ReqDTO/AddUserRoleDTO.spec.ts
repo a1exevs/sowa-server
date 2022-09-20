@@ -1,5 +1,6 @@
 import { validateDto } from "../../../test-helpers/validation-helper.spec";
 import { AddUserRoleDTO } from "./AddUserRoleDTO";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 describe('AddUserRoleDto', () => {
   beforeEach(async () => {
@@ -15,9 +16,9 @@ describe('AddUserRoleDto', () => {
     it('should has errors (values have incorrect types)', async () => {
       const dto = new AddUserRoleDTO(1, '1');
       const errors = await validateDto(AddUserRoleDTO, dto);
-      expect(errors[0].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[0].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
       expect(errors[0].property).toBe('value');
-      expect(errors[1].constraints.isNumber).toBe('Должно быть числом');
+      expect(errors[1].constraints.isNumber).toBe(ErrorMessages.ru.MUST_BE_A_NUMBER);
       expect(errors[1].property).toBe('userId');
     });
   });

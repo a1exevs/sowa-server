@@ -5,6 +5,8 @@ import * as path from "path";
 import { SetProfileReqDTO } from "../src/profile/ReqDTO/SetProfileReqDto";
 import { SetContactReqDTO } from "../src/profile/ReqDTO/SetContactReqDTO";
 import { ResultCodes } from "../src/common/constants/resultcodes";
+import { ErrorMessages } from "../src/common/constants/error-messages";
+import './../string.extensions'
 
 describe('User workflow', () => {
   let URL;
@@ -54,8 +56,8 @@ describe('User workflow', () => {
             expect(response.body.data).toBeNull();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(2);
-            expect(response.body.messages[0]).toBe('email - Некорректный email, Должно быть строкой');
-            expect(response.body.messages[1]).toBe('password - Длина должна быть больше 8 и меньше 50 символов, Должно быть строкой');
+            expect(response.body.messages[0]).toBe( `email - ${ErrorMessages.ru.MUST_HAS_EMAIL_FORMAT}, ${ErrorMessages.ru.MUST_BE_A_STRING}`);
+            expect(response.body.messages[1]).toBe(`password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}, ${ErrorMessages.ru.MUST_BE_A_STRING}`);
             expect(response.body.fieldsErrors).toBeDefined();
             expect(response.body.fieldsErrors.length).toBe(0);
             expect(response.body.resultCode).toBeDefined();
@@ -71,8 +73,8 @@ describe('User workflow', () => {
             expect(response.body.data).toBeNull();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(2);
-            expect(response.body.messages[0]).toBe('email - Некорректный email');
-            expect(response.body.messages[1]).toBe('password - Длина должна быть больше 8 и меньше 50 символов');
+            expect(response.body.messages[0]).toBe(`email - ${ErrorMessages.ru.MUST_HAS_EMAIL_FORMAT}`);
+            expect(response.body.messages[1]).toBe(`password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}`);
             expect(response.body.fieldsErrors).toBeDefined();
             expect(response.body.fieldsErrors.length).toBe(0);
             expect(response.body.resultCode).toBeDefined();
@@ -88,7 +90,7 @@ describe('User workflow', () => {
             expect(response.body.data).toBeNull();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(1);
-            expect(response.body.messages[0]).toBe('password - Длина должна быть больше 8 и меньше 50 символов');
+            expect(response.body.messages[0]).toBe(`password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}`);
             expect(response.body.fieldsErrors).toBeDefined();
             expect(response.body.fieldsErrors.length).toBe(0);
             expect(response.body.resultCode).toBeDefined();
@@ -124,7 +126,7 @@ describe('User workflow', () => {
             expect(response.body.data).toBeNull();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(1);
-            expect(response.body.messages[0]).toBe('Пользователь уже существует');
+            expect(response.body.messages[0]).toBe(ErrorMessages.ru.USER_ALREADY_EXISTS);
             expect(response.body.fieldsErrors).toBeDefined();
             expect(response.body.fieldsErrors.length).toBe(0);
             expect(response.body.resultCode).toBeDefined();
@@ -163,7 +165,7 @@ describe('User workflow', () => {
             expect(response.body.data).toBeNull();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(1);
-            expect(response.body.messages[0]).toBe('Неверный email или пароль');
+            expect(response.body.messages[0]).toBe(ErrorMessages.ru.INVALID_EMAIL_OR_PASSWORD);
             expect(response.body.fieldsErrors).toBeDefined();
             expect(response.body.fieldsErrors.length).toBe(0);
             expect(response.body.resultCode).toBeDefined();
@@ -351,7 +353,7 @@ describe('User workflow', () => {
           .expect(HttpStatus.BAD_REQUEST)
           .expect((response) => {
             expect(response.body.length).toBe(1);
-            expect(response.body[0]).toBe('status - Длина должна быть меньше 30 символов');
+            expect(response.body[0]).toBe(`status - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_GREATER_THAN_N.format(30)}`);
           });
       });
       it('Set user status', () => {
@@ -512,7 +514,7 @@ describe('User workflow', () => {
             expect(response.body.data).toBeNull();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(1);
-            expect(response.body.messages[0]).toBe('Файл не был выбран');
+            expect(response.body.messages[0]).toBe(ErrorMessages.ru.FILE_NOT_SELECTED);
             expect(response.body.fieldsErrors).toBeDefined();
             expect(response.body.fieldsErrors.length).toBe(0);
             expect(response.body.resultCode).toBeDefined();
@@ -587,7 +589,7 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .expect(HttpStatus.BAD_REQUEST)
           .expect((response) => {
-            expect(response.body.message).toBe(`Пользователь id=${user1Id} уже является подписчиком пользователя id=${userId}`);
+            expect(response.body.message).toBe(ErrorMessages.ru.USER_M_IS_ALREADY_A_FOLLOWER_OF_USER_N.format(user1Id, userId));
           });
       })
     });
@@ -660,7 +662,7 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .expect(HttpStatus.BAD_REQUEST)
           .expect((response) => {
-            expect(response.body.message).toBe(`Пользователь id=${user1Id} не является подписчиком пользователя id=${userId}`);
+            expect(response.body.message).toBe(ErrorMessages.ru.USER_M_IS_NOT_A_FOLLOWER_OF_USER_N.format(user1Id, userId));
           });
       })
     });

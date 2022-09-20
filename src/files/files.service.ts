@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import * as path from "path"
 import * as fs from "fs"
 import * as uuid from "uuid"
+import { ErrorMessages } from "../common/constants/error-messages";
 
 export const COMPRESS_IMAGE_NAME_PREFIX = "small_"
 
@@ -51,8 +52,7 @@ export class FilesService {
 
       return {filePath, fileURL};
     }
-    catch (e)
-    {
+    catch (e) {
       throw e;
     }
   }
@@ -76,19 +76,19 @@ export class FilesService {
   private static checkForMimeType(file: any, haystack: string)
   {
     if(file.mimetype !== haystack)
-      throw new HttpException("Произошла ошибка при записи файла", HttpStatus.BAD_REQUEST);
+      throw new HttpException(ErrorMessages.ru.FILE_UPLOAD_ERROR, HttpStatus.BAD_REQUEST);
   }
 
   private static checkForSize(file: any, maxMBytes: number)
   {
     if(!file.size || file.size > maxMBytes * 1000000)
-      throw new HttpException(`Закружаемый файл не может привышать ${maxMBytes} МБт`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(ErrorMessages.ru.UPLOAD_FILE_SIZE_CANNOT_EXCEED_N_MBT.format(maxMBytes), HttpStatus.BAD_REQUEST);
   }
 
   private static checkForFileSelection(file: any)
   {
     if(!file)
-      throw new HttpException(`Файл не был выбран`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(ErrorMessages.ru.FILE_NOT_SELECTED, HttpStatus.BAD_REQUEST);
   }
 
   private async compressImage(filePath: string) : Promise<{filePath: string, fileURL: string}>
@@ -107,7 +107,7 @@ export class FilesService {
         })
         .toFile(compressFilePath);
     } catch (error) {
-      throw new HttpException(`Ошибка при компрессии image-файла`, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(ErrorMessages.ru.IMAGE_FILE_COMPRESSING_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     return { filePath: compressFilePath, fileURL: this.getStaticFileURLFromStaticFileFullPath(compressFilePath ) }

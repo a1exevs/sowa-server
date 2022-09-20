@@ -6,6 +6,8 @@ import { UsersService } from "../users/users.service";
 import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
 import { HttpStatus } from "@nestjs/common";
 import { Op } from "sequelize";
+import { ErrorMessages } from "../common/constants/error-messages";
+import './../../string.extensions'
 
 jest.mock("./followers.model")
 
@@ -148,7 +150,7 @@ describe('FollowersService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe(`Пользователь id=${followData.followerId} уже является подписчиком пользователя id=${followData.userId}`);
+        expect(error.message).toBe(ErrorMessages.ru.USER_M_IS_ALREADY_A_FOLLOWER_OF_USER_N.format(followData.followerId, followData.userId));
         expect(getUserByIdFn).toBeCalledTimes(2);
         expect(getUserByIdFn).toBeCalledWith(followerId);
         expect(getUserByIdFn).toBeCalledWith(userId);
@@ -249,7 +251,7 @@ describe('FollowersService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe(`Пользователь id=${unfollowData.followerId} не является подписчиком пользователя id=${unfollowData.userId}`);
+        expect(error.message).toBe(ErrorMessages.ru.USER_M_IS_NOT_A_FOLLOWER_OF_USER_N.format(unfollowData.followerId, unfollowData.userId));
         expect(getUserByIdFn).toBeCalledTimes(2);
         expect(getUserByIdFn).toBeCalledWith(followerId);
         expect(getUserByIdFn).toBeCalledWith(userId);

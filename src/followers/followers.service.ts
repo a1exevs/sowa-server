@@ -11,6 +11,7 @@ import { InjectModel } from "@nestjs/sequelize";
 import { Followers, IFollowers } from "./followers.model";
 import { UsersService } from "../users/users.service";
 import { Op } from "sequelize";
+import { ErrorMessages } from "../common/constants/error-messages";
 
 @Injectable()
 export class FollowersService {
@@ -20,7 +21,7 @@ export class FollowersService {
   public async follow(followData: IFollowers): Promise<boolean> {
     const uuid = await this.validateFollowRequest(followData);
     if(uuid)
-      throw new HttpException(`Пользователь id=${followData.followerId} уже является подписчиком пользователя id=${followData.userId}`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(ErrorMessages.ru.USER_M_IS_ALREADY_A_FOLLOWER_OF_USER_N.format(followData.followerId, followData.userId), HttpStatus.BAD_REQUEST);
 
     return !!await this.followerRepository.create(followData);
   }
@@ -28,7 +29,7 @@ export class FollowersService {
   public async unfollow(unfollowData: IFollowers): Promise<boolean> {
     const uuid = await this.validateFollowRequest(unfollowData);
     if(!uuid)
-      throw new HttpException(`Пользователь id=${unfollowData.followerId} не является подписчиком пользователя id=${unfollowData.userId}`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(ErrorMessages.ru.USER_M_IS_NOT_A_FOLLOWER_OF_USER_N.format(unfollowData.followerId, unfollowData.userId), HttpStatus.BAD_REQUEST);
 
     return !!await this.followerRepository.destroy({ where: unfollowData })
   }

@@ -4,6 +4,7 @@ import { sendResponse } from "../../common/helpers/exceptionfilters_helper";
 import { ResultCodes } from "../../common/constants/resultcodes";
 import { LoginDto } from "../DTO/LoginDto";
 import { ISession } from "../interfaces/ISession";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 export const MAX_AUTH_FAILED_COUNT = 5;
 
@@ -26,7 +27,7 @@ export class SvgCaptchaGuard implements CanActivate{
         new UnauthorizedException({message: ''}),
         response,
         ResultCodes.NEED_CAPTCHA_AUTHORIZATION,
-        ['Need authorization with captcha.']
+        [ErrorMessages.ru.NEED_AUTHORIZATION_WITH_CAPTCHA]
       );
       return false;
     }

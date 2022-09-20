@@ -8,6 +8,7 @@ import { CreateRoleDTO } from "./DTO/CreateRoleDTO";
 import { Role } from "./roles.model";
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
+import { ErrorMessages } from "../common/constants/error-messages";
 
 describe('RolesController', () => {
   let rolesController: RolesController;
@@ -70,7 +71,7 @@ describe('RolesController', () => {
     })
     it('should throw exception (error creating role)', async () => {
       const reqDto: CreateRoleDTO = { value: 'super star', description: 'Super user' };
-      const errorMessage = 'Не удалось создать роль.';
+      const errorMessage = ErrorMessages.ru.FAILED_TO_CREATE_ROLE;
       const errorStatus = HttpStatus.BAD_REQUEST;
       // @ts-ignore
       jest.spyOn(rolesService, 'createRole').mockImplementation(() => {

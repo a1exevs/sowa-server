@@ -16,6 +16,7 @@ import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
 import { BanUserDTO } from "./ReqDTO/BanUserDTO";
 import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
 import { UpdateOptions } from "sequelize";
+import { ErrorMessages } from "../common/constants/error-messages";
 
 jest.mock('../profile/profile.service.ts');
 jest.mock('./users.model');
@@ -119,7 +120,7 @@ describe('UsersService', () => {
         await usersService.createUser(dto);
       } catch (error) {
         expect(error.status).toBe(HttpStatus.FORBIDDEN);
-        expect(error.message).toBe('Сервис недоступен: отсутствует конфигурация ролей для пользователей.');
+        expect(error.message).toBe(`${ErrorMessages.ru.SERVICE_IS_UNAVAILABLE}: ${ErrorMessages.ru.USER_ROLE_CONFIGURATION_IS_MISSING.toLowerCase()}`);
         expect(rolesService.getRoleByValue).toBeCalledTimes(1);
         expect(rolesService.getRoleByValue).toBeCalledWith('user');
         expect(model.create).toBeCalledTimes(0);
@@ -141,7 +142,7 @@ describe('UsersService', () => {
         await usersService.createUser(dto);
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe(`Не удалось создать пользователя. ${errorMessage}`);
+        expect(error.message).toBe(`${ErrorMessages.ru.FAILED_TO_CREATE_USER}. ${errorMessage}`);
         expect(rolesService.getRoleByValue).toBeCalledTimes(1);
         expect(rolesService.getRoleByValue).toBeCalledWith('user');
         expect(model.create).toBeCalledTimes(1);
@@ -295,7 +296,7 @@ describe('UsersService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.NOT_FOUND);
-        expect(error.message).toBe(`Не удалось найти пользователя`);
+        expect(error.message).toBe(ErrorMessages.ru.FAILED_TO_FIND_USER);
         expect(model.findByPk).toBeCalledTimes(1);
         expect(model.findByPk).toBeCalledWith(userId, { include: { all: true }});
         expect(rolesService.getRoleByValue).toBeCalledTimes(0);
@@ -321,7 +322,7 @@ describe('UsersService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.NOT_FOUND);
-        expect(error.message).toBe(`Не удалось найти роль`);
+        expect(error.message).toBe(ErrorMessages.ru.FAILED_TO_FIND_ROLE);
         expect(model.findByPk).toBeCalledTimes(1);
         expect(model.findByPk).toBeCalledWith(userId, { include: { all: true }});
         expect(rolesService.getRoleByValue).toBeCalledTimes(1);
@@ -362,7 +363,7 @@ describe('UsersService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.NOT_FOUND);
-        expect(error.message).toBe('Не удалось найти пользователя');
+        expect(error.message).toBe(ErrorMessages.ru.FAILED_TO_FIND_USER);
         expect(model.findByPk).toBeCalledTimes(1);
         expect(model.findByPk).toBeCalledWith(dto.userId);
         expect(user.save).toBeCalledTimes(0);

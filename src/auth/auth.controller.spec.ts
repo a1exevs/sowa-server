@@ -13,14 +13,14 @@ import { RegisterDto } from "./DTO/RegisterDto";
 import { LoginDto } from "./DTO/LoginDto";
 import { UnauthorizedExceptionFilter } from "./exceptionfilters/unauthorizedexceptionfilter";
 import { SvgCaptchaGuard } from "./guards/svgcaptcha.guard";
-import { ResultCodes } from "../common/constants/resultcodes";
 import { GetCurrentUserResponse } from "./DTO/get-current-user.response";
 import { JwtAuthGuard } from "./guards/jwtAuth.guard";
 import { RefreshTokenGuard } from "./guards/refreshToken.guard";
 import { HttpExceptionFilter } from "../common/exceptions/filters/httpexceptionfilter";
 import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
 import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
-import { getMockArgumentsHostData } from "../../test-helpers/context-helper.spec";
+import { ErrorMessages } from "../common/constants/error-messages";
+import './../../string.extensions'
 
 const getValidationPipeDataForUserRegistration  = function(email, password) {
   let target: ValidationPipe = new ValidationPipe();
@@ -128,7 +128,7 @@ describe('AuthController', () => {
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(400);
-        expect(err.getResponse()).toContainEqual('email - Некорректный email');
+        expect(err.getResponse()).toContainEqual(`email - ${ErrorMessages.ru.MUST_HAS_EMAIL_FORMAT}`);
       }
     });
     it('Input params validation: should return bad request (incorrect small password)', async () => {
@@ -139,7 +139,7 @@ describe('AuthController', () => {
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(400);
-        expect(err.getResponse()).toContainEqual('password - Длина должна быть больше 8 и меньше 50 символов');
+        expect(err.getResponse()).toContainEqual(`password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}`);
       }
     });
     it('Input params validation: should return bad request (incorrect large password)', async () => {
@@ -153,7 +153,7 @@ describe('AuthController', () => {
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(400);
-        expect(err.getResponse()).toContainEqual('password - Длина должна быть больше 8 и меньше 50 символов');
+        expect(err.getResponse()).toContainEqual(`password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}`);
       }
     });
     it('Input params validation: should be successful', async () => {
@@ -186,7 +186,7 @@ describe('AuthController', () => {
     });
     it('Registration method: should return bad request (user already exists)', async () => {
       const res = createResponse();
-      const exceptionMessage = 'Пользователь уже существует';
+      const exceptionMessage = ErrorMessages.ru.USER_ALREADY_EXISTS;
       const registerDto = { email: "user@yandex.ru", password: '12345678' };
       jest.spyOn(authService, 'registration').mockImplementation(async () => {
         throw new HttpException(exceptionMessage, HttpStatus.BAD_REQUEST);
@@ -229,7 +229,7 @@ describe('AuthController', () => {
       req._setSessionVariable('authFailedCount', authFailedCount);
       const res = createResponse();
       const loginDto = { email: "user@yandex.ru", password: '12345678' };
-      const exceptionMessage = 'Неверный email или пароль';
+      const exceptionMessage = ErrorMessages.ru.INVALID_EMAIL_OR_PASSWORD;
       const errorObject = {message: exceptionMessage};
       jest.spyOn(authService, 'login').mockImplementation(async () => {
         throw new UnauthorizedException(errorObject);

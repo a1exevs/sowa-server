@@ -1,5 +1,6 @@
 import { CreatePostDTO } from "./CreatePostDTO";
 import { validateDto } from "../../../test-helpers/validation-helper.spec";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 describe('CreatePostDTO', () => {
   beforeEach(async () => {
@@ -17,9 +18,9 @@ describe('CreatePostDTO', () => {
       const errors = await validateDto(CreatePostDTO, dto);
       expect(errors.length).toBe(2);
       expect(errors[0].property).toBe('title');
-      expect(errors[0].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[0].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
       expect(errors[1].property).toBe('content');
-      expect(errors[1].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[1].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
     });
   })
 });

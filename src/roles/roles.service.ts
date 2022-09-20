@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Role } from "./roles.model";
 import { CreateRoleDTO } from "./DTO/CreateRoleDTO";
+import { ErrorMessages } from "../common/constants/error-messages";
 
 @Injectable()
 export class RolesService {
@@ -13,7 +14,7 @@ export class RolesService {
       role = await this.roleRepository.create(DTO);
     }
     catch (e) {
-      throw new HttpException(`Не удалось создать роль. ${e.message}`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`${ErrorMessages.ru.FAILED_TO_CREATE_ROLE}. ${e.message}`, HttpStatus.BAD_REQUEST);
     }
     return role;
   }

@@ -4,6 +4,7 @@ import { RolesService } from "./roles.service";
 import { Role } from "./roles.model";
 import { CreateRoleDTO } from "./DTO/CreateRoleDTO";
 import { HttpException, HttpStatus } from "@nestjs/common";
+import { ErrorMessages } from "../common/constants/error-messages";
 
 describe('RolesService', () => {
   let rolesService: RolesService;
@@ -61,7 +62,7 @@ describe('RolesService', () => {
         await rolesService.createRole(dto);
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe(`Не удалось создать роль. ${errorMessage}`);
+        expect(error.message).toBe(`${ErrorMessages.ru.FAILED_TO_CREATE_ROLE}. ${errorMessage}`);
         expect(model.create).toBeCalledTimes(1);
         expect(model.create).toBeCalledWith(dto);
       }

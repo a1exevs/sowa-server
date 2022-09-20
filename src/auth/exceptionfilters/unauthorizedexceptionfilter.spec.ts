@@ -2,6 +2,7 @@ import { getMockArgumentsHostData } from "../../../test-helpers/context-helper.s
 import { UnauthorizedException } from "@nestjs/common";
 import { ResultCodes } from "../../common/constants/resultcodes";
 import { UnauthorizedExceptionFilter } from "./unauthorizedexceptionfilter";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 describe('UnauthorizedExceptionFilter', () => {
   beforeEach(() => {
@@ -17,7 +18,7 @@ describe('UnauthorizedExceptionFilter', () => {
         ]
       })
 
-      const exceptionMessage = 'Неверный email или пароль';
+      const exceptionMessage = ErrorMessages.ru.INVALID_EMAIL_OR_PASSWORD;
       const errorObject = {message: exceptionMessage};
 
       const unauthorizedExceptionFilter = new UnauthorizedExceptionFilter();
@@ -31,7 +32,7 @@ describe('UnauthorizedExceptionFilter', () => {
       expect(body.resultCode).toBe(ResultCodes.NEED_CAPTCHA_AUTHORIZATION);
       expect(body.messages.length).toBe(2);
       expect(body.messages[0]).toBe(exceptionMessage);
-      expect(body.messages[1]).toBe('Need authorization with captcha.');
+      expect(body.messages[1]).toBe(ErrorMessages.ru.NEED_AUTHORIZATION_WITH_CAPTCHA);
     });
     it('should not send response with NEED_CAPTCHA_AUTHORIZATION code', async () => {
       const authFailedCount = '3';
@@ -41,7 +42,7 @@ describe('UnauthorizedExceptionFilter', () => {
         ]
       })
 
-      const exceptionMessage = 'Неверный email или пароль';
+      const exceptionMessage = ErrorMessages.ru.INVALID_EMAIL_OR_PASSWORD;
       const errorObject = {message: exceptionMessage};
 
       const unauthorizedExceptionFilter = new UnauthorizedExceptionFilter();

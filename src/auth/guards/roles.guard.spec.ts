@@ -5,6 +5,7 @@ import { getMockExecutionContextData } from "../../../test-helpers/context-helpe
 import { RolesGuard } from "./roles.quard";
 import { Reflector } from "@nestjs/core";
 import { ROLES_KEY } from "../decorators/authRoles.decorator";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 describe('RolesGuard', () => {
   beforeEach(() => {
@@ -80,7 +81,7 @@ describe('RolesGuard', () => {
           sendPseudoError();
         } catch (err) {
           expect(err.status).toBe(HttpStatus.FORBIDDEN);
-          expect(err.message).toBe('Нет доступа');
+          expect(err.message).toBe(ErrorMessages.ru.FORBIDDEN);
           expect(mockGetRequest).toBeCalledTimes(1);
           expect(reflector.getAllAndOverride).toBeCalledTimes(0);
         }
@@ -120,7 +121,7 @@ describe('RolesGuard', () => {
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.FORBIDDEN);
-        expect(err.message).toBe('Нет доступа');
+        expect(err.message).toBe(ErrorMessages.ru.FORBIDDEN);
         expect(mockGetRequest).toBeCalledTimes(1);
         expect(reflector.getAllAndOverride).toBeCalledTimes(0);
       }
@@ -158,7 +159,7 @@ describe('RolesGuard', () => {
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.FORBIDDEN);
-        expect(err.message).toBe('Нет доступа');
+        expect(err.message).toBe(ErrorMessages.ru.FORBIDDEN);
         expect(mockGetRequest).toBeCalledTimes(1);
         expect(reflector.getAllAndOverride).toBeCalledTimes(0);
       }
@@ -221,7 +222,7 @@ describe('RolesGuard', () => {
         sendPseudoError();
       } catch(error) {
         expect(error.status).toBe(HttpStatus.FORBIDDEN);
-        expect(error.message).toBe('Нет доступа');
+        expect(error.message).toBe(ErrorMessages.ru.FORBIDDEN);
         expect(mockGetRequest).toBeCalledTimes(1);
         expect(reflector.getAllAndOverride).toBeCalledTimes(1);
         expect(reflector.getAllAndOverride).toBeCalledWith(ROLES_KEY, [mockContext.getHandler(), mockContext.getClass()]);

@@ -6,6 +6,7 @@ import { RefreshTokensService } from "./refresh_tokens.service";
 import { SignOptions } from "jsonwebtoken";
 import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
 import { HttpStatus } from "@nestjs/common";
+import { ErrorMessages } from "../common/constants/error-messages";
 
 interface IMockUser {
   id: number,
@@ -242,7 +243,7 @@ describe('TokensService', () => {
           sendPseudoError();
         } catch (err) {
           expect(err.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-          expect(err.message).toBe('Refresh token expired');
+          expect(err.message).toBe(ErrorMessages.ru.REFRESH_TOKEN_EXPIRED);
           expect(tokensService.removeRefreshToken).toBeCalledTimes(0);
           expect(tokensService.generateRefreshToken).toBeCalledTimes(0);
           expect(tokensService.generateAccessToken).toBeCalledTimes(0);
@@ -267,7 +268,7 @@ describe('TokensService', () => {
           sendPseudoError();
         } catch (err) {
           expect(err.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-          expect(err.message).toBe('Refresh token is malformed');
+          expect(err.message).toBe(ErrorMessages.ru.REFRESH_TOKEN_IS_MALFORMED);
           expect(tokensService.removeRefreshToken).toBeCalledTimes(0);
           expect(tokensService.generateRefreshToken).toBeCalledTimes(0);
           expect(tokensService.generateAccessToken).toBeCalledTimes(0);
@@ -290,7 +291,7 @@ describe('TokensService', () => {
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-        expect(err.message).toBe('Refresh token is malformed');
+        expect(err.message).toBe(ErrorMessages.ru.REFRESH_TOKEN_IS_MALFORMED);
         expect(tokensService.removeRefreshToken).toBeCalledTimes(0);
         expect(tokensService.generateRefreshToken).toBeCalledTimes(0);
         expect(tokensService.generateAccessToken).toBeCalledTimes(0);
@@ -318,7 +319,7 @@ describe('TokensService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-        expect(error.message).toBe('Refresh token not found');
+        expect(error.message).toBe(ErrorMessages.ru.REFRESH_TOKEN_NOT_FOUND);
         expect(refreshTokensService.findTokenByUUId).toBeCalledTimes(1);
         expect(refreshTokensService.findTokenByUUId).toBeCalledWith(tokenUUID);
         expect(refreshTokensService.removeTokenByUUId).toBeCalledTimes(1);
@@ -355,7 +356,7 @@ describe('TokensService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-        expect(error.message).toBe('Refresh token revoked');
+        expect(error.message).toBe(ErrorMessages.ru.REFRESH_TOKEN_REVOKED);
         expect(refreshTokensService.findTokenByUUId).toBeCalledTimes(1);
         expect(refreshTokensService.findTokenByUUId).toBeCalledWith(tokenUUID);
         expect(refreshTokensService.removeTokenByUUId).toBeCalledTimes(1);
@@ -392,7 +393,7 @@ describe('TokensService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-        expect(error.message).toBe('Refresh token is malformed');
+        expect(error.message).toBe(ErrorMessages.ru.REFRESH_TOKEN_IS_MALFORMED);
         expect(refreshTokensService.findTokenByUUId).toBeCalledTimes(1);
         expect(refreshTokensService.findTokenByUUId).toBeCalledWith(tokenUUID);
         expect(refreshTokensService.removeTokenByUUId).toBeCalledTimes(1);
@@ -432,7 +433,7 @@ describe('TokensService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-        expect(error.message).toBe('Refresh token is malformed');
+        expect(error.message).toBe(ErrorMessages.ru.REFRESH_TOKEN_IS_MALFORMED);
         expect(refreshTokensService.findTokenByUUId).toBeCalledTimes(1);
         expect(refreshTokensService.findTokenByUUId).toBeCalledWith(tokenUUID);
         expect(refreshTokensService.removeTokenByUUId).toBeCalledTimes(1);
@@ -493,7 +494,7 @@ describe('TokensService', () => {
           sendPseudoError();
         } catch (err) {
           expect(err.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-          expect(err.message).toBe('Refresh token expired');
+          expect(err.message).toBe(ErrorMessages.ru.REFRESH_TOKEN_EXPIRED);
           expect(refreshTokensService.removeTokenByUUId).toBeCalledTimes(0);
         }
       }, expiresIn * 1000);
@@ -511,7 +512,7 @@ describe('TokensService', () => {
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-        expect(err.message).toBe('Refresh token is malformed');
+        expect(err.message).toBe(ErrorMessages.ru.REFRESH_TOKEN_IS_MALFORMED);
         expect(refreshTokensService.removeTokenByUUId).toBeCalledTimes(0);
       }
     })
@@ -528,7 +529,7 @@ describe('TokensService', () => {
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-        expect(err.message).toBe('Refresh token is malformed');
+        expect(err.message).toBe(ErrorMessages.ru.REFRESH_TOKEN_IS_MALFORMED);
         expect(refreshTokensService.removeTokenByUUId).toBeCalledTimes(0);
       }
     })

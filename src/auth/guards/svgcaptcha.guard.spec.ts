@@ -1,6 +1,7 @@
 import { MAX_AUTH_FAILED_COUNT, SvgCaptchaGuard } from "./svgcaptcha.guard";
 import { getMockExecutionContextData } from "../../../test-helpers/context-helper.spec";
 import { ResultCodes } from "../../common/constants/resultcodes";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 describe('SwgCaptchaGuard', () => {
   beforeEach(() => {
@@ -75,7 +76,7 @@ describe('SwgCaptchaGuard', () => {
       expect(mockGetResponse).toBeCalledTimes(1);
       expect(request.session['captcha']).toBeNull();
       expect(data.resultCode).toBe(ResultCodes.NEED_CAPTCHA_AUTHORIZATION);
-      expect(data.messages).toContainEqual('Need authorization with captcha.');
+      expect(data.messages).toContainEqual(ErrorMessages.ru.NEED_AUTHORIZATION_WITH_CAPTCHA);
       expect(data.data).toBeNull();
     })
     it('captcha text correct. Authorization failed MAX-1 times', async () => {

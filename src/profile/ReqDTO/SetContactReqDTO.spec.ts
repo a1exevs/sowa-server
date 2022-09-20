@@ -1,5 +1,6 @@
 import { validateDto } from "../../../test-helpers/validation-helper.spec";
 import { SetContactReqDTO } from "./SetContactReqDTO";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 describe('SetContactReqDTO', () => {
   beforeEach(async () => {
@@ -28,7 +29,7 @@ describe('SetContactReqDTO', () => {
       expect.assertions(1 + Object.keys(dto).length * 2);
       expect(errors.length).toBe(Object.keys(dto).length);
       errors.forEach((error, index: number) => {
-        expect(error.constraints.isString).toBe('Должно быть строкой');
+        expect(error.constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
         expect(error.property).toBe(Object.keys(dto)[index]);
       })
     });
