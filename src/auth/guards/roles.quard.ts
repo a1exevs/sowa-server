@@ -1,14 +1,13 @@
 import {
     CanActivate,
     ExecutionContext, ForbiddenException,
-    HttpException,
-    HttpStatus,
-    Injectable
+    Injectable, UnauthorizedException
 } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { JwtService } from "@nestjs/jwt";
 import { Reflector } from "@nestjs/core";
 import { ROLES_KEY } from "../decorators/authRoles.decorator";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -24,7 +23,7 @@ export class RolesGuard implements CanActivate {
             const bearer = authHeader.split(' ')[0];
             const token = authHeader.split(' ')[1];
             if(bearer !== 'Bearer' || !token)
-                throw new HttpException('Пользователь не авторизован', HttpStatus.FORBIDDEN);
+                throw new UnauthorizedException(ErrorMessages.ru.UNAUTHORIZED);
 
             const user = this.jstService.verify(token);
             request.user = user;
@@ -39,14 +38,14 @@ export class RolesGuard implements CanActivate {
                     haveRoles = haveRoles && user.roles.some(userRole => userRole.value == requiredRole);
                 })
                 if(!haveRoles)
-                    throw new HttpException('Не достаточно прав', HttpStatus.FORBIDDEN);
+                    throw new ForbiddenException(ErrorMessages.ru.NOT_ENOUGH_PERMISSIONS);
             }
             return true;
         }
         catch (e)
         {
             console.log(e);
-            throw new ForbiddenException('Нет доступа');
+            throw new ForbiddenException(ErrorMessages.ru.FORBIDDEN);
         }
     }
 }

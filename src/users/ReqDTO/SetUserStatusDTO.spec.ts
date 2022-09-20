@@ -1,5 +1,7 @@
 import { validateDto } from "../../../test-helpers/validation-helper.spec";
 import { SetUserStatusDTO } from "./SetUserStatusDTO";
+import { ErrorMessages } from "../../common/constants/error-messages";
+import './../../../string.extensions'
 
 describe('SetUserStatusDto', () => {
   beforeEach(async () => {
@@ -28,14 +30,14 @@ describe('SetUserStatusDto', () => {
       const errors = await validateDto(SetUserStatusDTO, dto);
       expect(errors.length).toBe(1);
       expect(errors[0].property).toBe('status');
-      expect(errors[0].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[0].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
     });
     it('should be successful result (status has greater symbols than 30)', async () => {
       const dto: SetUserStatusDTO = { status: '1234567890123456789012345678901' };
       const errors = await validateDto(SetUserStatusDTO, dto);
       expect(errors.length).toBe(1);
       expect(errors[0].property).toBe('status');
-      expect(errors[0].constraints.isLength).toBe('Длина должна быть меньше 30 символов');
+      expect(errors[0].constraints.isLength).toBe(ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_GREATER_THAN_N.format(30));
     });
   })
 });

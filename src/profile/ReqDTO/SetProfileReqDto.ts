@@ -7,6 +7,7 @@ import {
 } from "class-validator";
 import {SetContactReqDTO} from "./SetContactReqDTO";
 import { Type } from "class-transformer";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 export class SetProfileReqDTO {
     constructor(fullName, aboutMe, lookingForAJob, lookingForAJobDescription, contacts = null) {
@@ -18,19 +19,19 @@ export class SetProfileReqDTO {
     }
 
     @ApiProperty({example: "Гарри Поттер", description: "Полное имя пользователя"})
-    @IsString({message: "Должно быть строкой"})
+    @IsString({message: ErrorMessages.ru.MUST_BE_A_STRING})
     readonly fullName: string;
 
     @ApiProperty({example: "Frontend-developer", description: "Данные пользователя"})
-    @IsString({message: "Должно быть строкой"})
+    @IsString({message: ErrorMessages.ru.MUST_BE_A_STRING})
     readonly aboutMe: string;
 
     @ApiProperty({example: true, description: "Ищет ли Пользователь работу"})
-    @IsBoolean({message: "Должно быть булевым значением"})
+    @IsBoolean({message: ErrorMessages.ru.MUST_BE_A_BOOLEAN})
     readonly lookingForAJob: boolean;
 
     @ApiProperty({example: "Ищу работу удаленно", description: "Описания искомой вакансии"})
-    @IsString({message: "Должно быть строкой"})
+    @IsString({message: ErrorMessages.ru.MUST_BE_A_STRING})
     readonly lookingForAJobDescription: string;
 
     @ApiProperty({description: "Контакты"})

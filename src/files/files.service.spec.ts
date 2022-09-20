@@ -9,6 +9,7 @@ import {
   TEST_FILE_ORIGINAL_NAME,
   TEST_FILE_PATH
 } from "../../test-helpers/files-helper.spec";
+import { ErrorMessages } from "../common/constants/error-messages";
 
 describe('FilesService', () => {
   let filesService: FilesService;
@@ -80,7 +81,7 @@ describe('FilesService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe(`Файл не был выбран`);
+        expect(error.message).toBe(ErrorMessages.ru.FILE_NOT_SELECTED);
       }
     });
     it('should be throw exception (file has incorrect mime type', async  () => {
@@ -90,7 +91,7 @@ describe('FilesService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe('Произошла ошибка при записи файла');
+        expect(error.message).toBe(ErrorMessages.ru.FILE_UPLOAD_ERROR);
       }
     });
     it('should be throw exception (file has very large size (more then 50 MBytes)', async  () => {

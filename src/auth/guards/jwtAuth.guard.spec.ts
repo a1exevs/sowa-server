@@ -3,6 +3,7 @@ import { sendPseudoError } from "../../../test-helpers/tests-helper.spec";
 import { HttpStatus } from "@nestjs/common";
 import { getMockJWTServiceData } from "../../../test-helpers/jwt-helper.spec";
 import { getMockExecutionContextData } from "../../../test-helpers/context-helper.spec";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 describe('JwtAuthGuard', () => {
   beforeEach(() => {
@@ -61,7 +62,7 @@ describe('JwtAuthGuard', () => {
           sendPseudoError();
         } catch (err) {
           expect(err.status).toBe(HttpStatus.UNAUTHORIZED);
-          expect(err.message).toBe('Пользователь не авторизован');
+          expect(err.message).toBe(ErrorMessages.ru.UNAUTHORIZED);
           expect(mockGetRequest).toBeCalledTimes(1);
         }
       }, expiresIn * 1000);
@@ -91,7 +92,7 @@ describe('JwtAuthGuard', () => {
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.UNAUTHORIZED);
-        expect(err.message).toBe('Пользователь не авторизован');
+        expect(err.message).toBe(ErrorMessages.ru.UNAUTHORIZED);
         expect(mockGetRequest).toBeCalledTimes(1);
       }
     });
@@ -119,7 +120,7 @@ describe('JwtAuthGuard', () => {
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.UNAUTHORIZED);
-        expect(err.message).toBe('Пользователь не авторизован');
+        expect(err.message).toBe(ErrorMessages.ru.UNAUTHORIZED);
         expect(mockGetRequest).toBeCalledTimes(1);
       }
     });

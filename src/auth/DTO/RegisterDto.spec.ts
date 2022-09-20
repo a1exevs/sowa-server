@@ -1,5 +1,7 @@
 import { RegisterDto } from "./RegisterDto";
 import { validateDto } from "../../../test-helpers/validation-helper.spec";
+import { ErrorMessages } from "../../common/constants/error-messages";
+import './../../../string.extensions'
 
 describe('RegisterDto', () => {
   beforeEach(async () => {
@@ -22,11 +24,11 @@ describe('RegisterDto', () => {
       const errors = await validateDto(RegisterDto, dto);
       expect(errors.length).toBe(2);
       expect(errors[0].property).toBe('email');
-      expect(errors[0].constraints.isString).toBe('Должно быть строкой');
-      expect(errors[0].constraints.isEmail).toBe('Некорректный email');
+      expect(errors[0].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
+      expect(errors[0].constraints.isEmail).toBe(ErrorMessages.ru.MUST_HAS_EMAIL_FORMAT);
       expect(errors[1].property).toBe('password');
-      expect(errors[1].constraints.isString).toBe('Должно быть строкой');
-      expect(errors[1].constraints.isLength).toBe('Длина должна быть больше 8 и меньше 50 символов');
+      expect(errors[1].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
+      expect(errors[1].constraints.isLength).toBe(ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50));
     });
     it('should has error (incorrect email)', async () => {
       const dto = new RegisterDto('emailmailcom', '12345678');
@@ -34,7 +36,7 @@ describe('RegisterDto', () => {
       expect(errors.length).toBe(1);
       expect(errors[0].property).toBe('email');
       expect(errors[0].constraints.isString).toBeUndefined();
-      expect(errors[0].constraints.isEmail).toBe('Некорректный email');
+      expect(errors[0].constraints.isEmail).toBe(ErrorMessages.ru.MUST_HAS_EMAIL_FORMAT);
     });
     it('should has error (password has less symbols than 8)', async () => {
       const dto = new RegisterDto('email@mail.com', '1234567');
@@ -42,7 +44,7 @@ describe('RegisterDto', () => {
       expect(errors.length).toBe(1);
       expect(errors[0].property).toBe('password');
       expect(errors[0].constraints.isString).toBeUndefined();
-      expect(errors[0].constraints.isLength).toBe('Длина должна быть больше 8 и меньше 50 символов');
+      expect(errors[0].constraints.isLength).toBe(ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50));
     });
     it('should has error (password has greater symbols than 50)', async () => {
       const dto = new RegisterDto('email@mail.com', '123456789012345678901234567890123456789012345678901');
@@ -50,7 +52,7 @@ describe('RegisterDto', () => {
       expect(errors.length).toBe(1);
       expect(errors[0].property).toBe('password');
       expect(errors[0].constraints.isString).toBeUndefined();
-      expect(errors[0].constraints.isLength).toBe('Длина должна быть больше 8 и меньше 50 символов');
+      expect(errors[0].constraints.isLength).toBe(ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50));
     });
   })
 });

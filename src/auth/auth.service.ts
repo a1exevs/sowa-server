@@ -9,6 +9,7 @@ import { RegisterDto } from "./DTO/RegisterDto";
 import { LoginDto } from "./DTO/LoginDto";
 import { AuthenticationResponse } from "./DTO/AuthenticationResponse";
 import { GetCurrentUserResponse } from "./DTO/get-current-user.response";
+import { ErrorMessages } from "../common/constants/error-messages";
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,7 @@ export class AuthService {
   public async registration(dto: RegisterDto) : Promise<AuthenticationResponse> {
     const candidate = await this.userService.getUserByEmail(dto.email);
     if(candidate)
-      throw new HttpException("Пользователь уже существует", HttpStatus.BAD_REQUEST);
+      throw new HttpException(ErrorMessages.ru.USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
     const hashPassword = await bcrypt.hash(dto.password, 5);
     const user = await this.userService.createUser({...dto, password: hashPassword});
 
@@ -48,7 +49,7 @@ export class AuthService {
   {
     const user = await this.userService.getUserById(userId)
     if(!user)
-      throw new UnauthorizedException({message: 'Пользователь не авторизован'});
+      throw new UnauthorizedException({message: ErrorMessages.ru.UNAUTHORIZED});
 
     return new GetCurrentUserResponse.User({
       id: user.id,
@@ -69,7 +70,7 @@ export class AuthService {
       if (passwordsEqual)
         return user;
     }
-    throw new UnauthorizedException({message: 'Неверный email или пароль'});
+    throw new UnauthorizedException({message: ErrorMessages.ru.INVALID_EMAIL_OR_PASSWORD});
   }
 
   private static buildResponsePayload (user: User, accessToken: string, refreshToken: string, expiration: Date): AuthenticationResponse {

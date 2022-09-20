@@ -1,5 +1,6 @@
 import { validateDto } from "../../../test-helpers/validation-helper.spec";
 import { SetPhotosReqDTO } from "./SetPhotosReqDto";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 describe('SetPhotosReqDto', () => {
   beforeEach(async () => {
@@ -15,9 +16,9 @@ describe('SetPhotosReqDto', () => {
     it('should has errors (values are not strings)', async () => {
       const dto = new SetPhotosReqDTO(1, 2);
       const errors = await validateDto(SetPhotosReqDTO, dto);
-      expect(errors[0].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[0].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
       expect(errors[0].property).toBe('small');
-      expect(errors[1].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[1].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
       expect(errors[1].property).toBe('large');
     });
   });

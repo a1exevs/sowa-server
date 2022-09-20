@@ -1,5 +1,6 @@
 import { validateDto } from "../../../test-helpers/validation-helper.spec";
 import { LoginDto } from "./LoginDto";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 describe('LoginDto', () => {
   beforeEach(async () => {
@@ -22,10 +23,10 @@ describe('LoginDto', () => {
       const errors = await validateDto(LoginDto, dto);
       expect(errors.length).toBe(2);
       expect(errors[0].property).toBe('email');
-      expect(errors[0].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[0].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
       expect(errors[0].constraints.isEmail).toBeUndefined();
       expect(errors[1].property).toBe('password');
-      expect(errors[1].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[1].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
       expect(errors[1].constraints.isLength).toBeUndefined();
     });
     it('should has errors (values are not strings. With captcha)', async () => {
@@ -33,13 +34,13 @@ describe('LoginDto', () => {
       const errors = await validateDto(LoginDto, dto);
       expect(errors.length).toBe(3);
       expect(errors[0].property).toBe('email');
-      expect(errors[0].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[0].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
       expect(errors[0].constraints.isEmail).toBeUndefined();
       expect(errors[1].property).toBe('password');
-      expect(errors[1].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[1].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
       expect(errors[1].constraints.isLength).toBeUndefined();
       expect(errors[2].property).toBe('captcha');
-      expect(errors[2].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[2].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
     });
   })
 });

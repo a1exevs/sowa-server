@@ -98,7 +98,8 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "setupFiles": [
-      "../test-environment.ts"
+      "../test-environment.ts",
+      "../string.extensions.ts"
     ]
   }
 }

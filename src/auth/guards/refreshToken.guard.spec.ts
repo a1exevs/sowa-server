@@ -3,6 +3,7 @@ import { getMockExecutionContextData } from "../../../test-helpers/context-helpe
 import { sendPseudoError } from "../../../test-helpers/tests-helper.spec";
 import { HttpStatus } from "@nestjs/common";
 import { RefreshTokenGuard } from "./refreshToken.guard";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 describe('RefreshTokenGuard', () => {
   beforeEach(() => {
@@ -41,7 +42,7 @@ describe('RefreshTokenGuard', () => {
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.FORBIDDEN);
-        expect(err.message).toBe('Нет доступа');
+        expect(err.message).toBe(ErrorMessages.ru.FORBIDDEN);
         expect(mockGetRequest).toBeCalledTimes(1);
       }
     });

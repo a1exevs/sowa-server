@@ -14,6 +14,8 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
 import { SetProfileReqDTO } from "./ReqDTO/SetProfileReqDto";
 import { loadTestFile, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from "../../test-helpers/files-helper.spec";
+import { ErrorMessages } from "../common/constants/error-messages";
+import './../../string.extensions'
 
 describe('ProfileController', () => {
   let profileService: ProfileService;
@@ -223,7 +225,7 @@ describe('ProfileController', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe(`Пользователь с идентификатором ${userId} не найден`);
+        expect(error.message).toBe(ErrorMessages.ru.USER_N_NOT_FOUND.format(userId));
         expect(usersService.getUserById).toBeCalledTimes(1);
         expect(usersService.getUserById).toBeCalledWith(userId);
         expect(userAvatarsService.getAvatarByUserId).toBeCalledTimes(0);
@@ -377,7 +379,7 @@ describe('ProfileController', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe(`Пользователь с идентификатором ${userId} не найден`);
+        expect(error.message).toBe(ErrorMessages.ru.USER_N_NOT_FOUND.format(userId));
         expect(usersService.getUserById).toBeCalledTimes(1);
         expect(usersService.getUserById).toBeCalledWith(userId);
         expect(userCommonInfoService.setCommonInfo).toBeCalledTimes(0);
@@ -439,7 +441,7 @@ describe('ProfileController', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe(`Пользователь с идентификатором ${userId} не найден`);
+        expect(error.message).toBe(ErrorMessages.ru.USER_N_NOT_FOUND.format(userId));
         expect(usersService.getUserById).toBeCalledTimes(1);
         expect(usersService.getUserById).toBeCalledWith(userId);
         expect(filesService.addJPEGFile).toBeCalledTimes(0);
@@ -450,7 +452,7 @@ describe('ProfileController', () => {
       const userId = 1;
       const user: Partial<User> = { id: userId }
       const file = null;
-      const errorMessage = `Файл не был выбран`;
+      const errorMessage = ErrorMessages.ru.FILE_NOT_SELECTED;
       // @ts-ignore
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(user);

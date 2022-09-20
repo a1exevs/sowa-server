@@ -77,7 +77,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Delete('/logout')
   async logout(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
-    const result: boolean = await this.authService.logout(request.cookies.refresh_token);
+    const result = await this.authService.logout(request.cookies.refresh_token);
     response.clearCookie("refresh_token");
     return new OperationResultResponseDto(result);
   }

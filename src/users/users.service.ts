@@ -10,6 +10,7 @@ import { GetUsersResponse } from "./ResDTO/get-users.response";
 import { FindOptions } from "sequelize/dist/lib/model";
 import { FollowersService } from "../followers/followers.service";
 import { ProfileService } from "../profile/profile.service";
+import { ErrorMessages } from "../common/constants/error-messages";
 
 @Injectable()
 export class UsersService {
@@ -23,12 +24,12 @@ export class UsersService {
   async createUser(DTO: CreateUserDTO): Promise<User> {
     const role = await this.roleService.getRoleByValue("user");
     if(!role)
-      throw new HttpException('Сервис недоступен: отсутствует конфигурация ролей для пользователей.', HttpStatus.FORBIDDEN);
+      throw new HttpException( `${ErrorMessages.ru.SERVICE_IS_UNAVAILABLE}: ${ErrorMessages.ru.USER_ROLE_CONFIGURATION_IS_MISSING.toLowerCase()}`, HttpStatus.FORBIDDEN);
     let user: User;
     try {
       user = await this.userRepository.create(DTO);
     } catch (e) {
-      throw new HttpException(`Не удалось создать пользователя. ${e.message}`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`${ErrorMessages.ru.FAILED_TO_CREATE_USER}. ${e.message}`, HttpStatus.BAD_REQUEST);
     }
     await user.$set("roles", [role.id]);
     user.roles = [role];
@@ -82,13 +83,13 @@ export class UsersService {
   async addRole(dto: AddUserRoleDTO) {
     const user = await this.userRepository.findByPk(dto.userId, { include: { all: true } });
     if(!user)
-      throw new HttpException("Не удалось найти пользователя", HttpStatus.NOT_FOUND);
+      throw new HttpException(ErrorMessages.ru.FAILED_TO_FIND_USER, HttpStatus.NOT_FOUND);
     const hasRole = user.roles.some(role => role.value == dto.value);
     if (hasRole)
-      throw new HttpException(`Пользователь уже имеет роль ${dto.value}`, HttpStatus.NOT_ACCEPTABLE);
+      throw new HttpException(ErrorMessages.ru.USER_ALREADY_HAS_THE_ROLE_N.format(dto.value), HttpStatus.NOT_ACCEPTABLE);
     const role = await this.roleService.getRoleByValue(dto.value);
     if (!role)
-      throw new HttpException("Не удалось найти роль", HttpStatus.NOT_FOUND);
+      throw new HttpException(ErrorMessages.ru.FAILED_TO_FIND_ROLE, HttpStatus.NOT_FOUND);
 
     await user.$add("roles", role.id);
     return user;
@@ -97,7 +98,7 @@ export class UsersService {
   async ban(dto: BanUserDTO) {
     const user = await this.userRepository.findByPk(dto.userId);
     if (!user)
-      throw new HttpException("Не удалось найти пользователя", HttpStatus.NOT_FOUND);
+      throw new HttpException(ErrorMessages.ru.FAILED_TO_FIND_USER, HttpStatus.NOT_FOUND);
 
     user.banned = true;
     user.banReason = dto.banReason;

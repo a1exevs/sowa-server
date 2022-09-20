@@ -1,6 +1,7 @@
 import { validateDto } from "../../../test-helpers/validation-helper.spec";
 import { SetProfileReqDTO } from "./SetProfileReqDto";
 import { SetContactReqDTO } from "./SetContactReqDTO";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 describe('SetProfileReqDto', () => {
   beforeEach(async () => {
@@ -32,13 +33,13 @@ describe('SetProfileReqDto', () => {
       const dto = new SetProfileReqDTO(1, 1, 1, 1);
       const errors = await validateDto(SetProfileReqDTO, dto);
       expect(errors.length).toBe(4);
-      expect(errors[0].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[0].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
       expect(errors[0].property).toBe('fullName');
-      expect(errors[1].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[1].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
       expect(errors[1].property).toBe('aboutMe');
-      expect(errors[2].constraints.isBoolean).toBe('Должно быть булевым значением');
+      expect(errors[2].constraints.isBoolean).toBe(ErrorMessages.ru.MUST_BE_A_BOOLEAN);
       expect(errors[2].property).toBe('lookingForAJob');
-      expect(errors[3].constraints.isString).toBe('Должно быть строкой');
+      expect(errors[3].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
       expect(errors[3].property).toBe('lookingForAJobDescription');
     });
     it('should has errors (nested object fields have not requirement types)', async () => {
@@ -60,7 +61,7 @@ describe('SetProfileReqDto', () => {
       expect(errors[0].property).toBe('contacts');
       expect(errors[0].children.length).toBe(contactsFieldsCount);
       Object.keys(contacts).forEach((contact, index) => {
-        expect(errors[0].children[index].constraints.isString).toBe('Должно быть строкой');
+        expect(errors[0].children[index].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
         expect(errors[0].children[index].property).toBe(contact);
       });
     });

@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber, IsString } from "class-validator";
+import { ErrorMessages } from "../../common/constants/error-messages";
 
 export class BanUserDTO {
   constructor(userId, banReason) {
@@ -8,10 +9,10 @@ export class BanUserDTO {
   }
 
   @ApiProperty({example: 1, description: "Идентификатор пользователя"})
-  @IsNumber({},{message: "Должно быть числом"})
+  @IsNumber({},{message: ErrorMessages.ru.MUST_BE_A_NUMBER})
   readonly userId: number;
 
   @ApiProperty({example: "Спам", description: "Причина бана"})
-  @IsString({message: "Должно быть строкой"})
+  @IsString({message: ErrorMessages.ru.MUST_BE_A_STRING})
   readonly banReason: string;
 }
