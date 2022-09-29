@@ -1,0 +1,28 @@
+import { ApiResult } from "./api-result.decorator";
+import { CommonResponse } from "../dto/common.response";
+
+const STATUS = 5
+const DESCRIPTION = 'DESCRIPTION'
+
+class TestType {}
+
+class TestClass {
+  @ApiResult({status: STATUS, description: DESCRIPTION, type: TestType})
+  public testFunction() {}
+}
+
+describe('ApiResultDecorator', () => {
+  beforeEach(async () => {
+    jest.clearAllMocks();
+  });
+
+  it('should set metadata with apiExtraModels and apiResponse decorators keys', () => {
+    const testClass = new TestClass();
+    testClass.testFunction();
+    const models = Reflect.getMetadata('swagger/apiExtraModels', TestClass.prototype.testFunction);
+    const responseData = Reflect.getMetadata('swagger/apiResponse', TestClass.prototype.testFunction)
+    expect(models).toEqual([CommonResponse.Dto, TestType]);
+    expect(responseData[STATUS]).toBeDefined();
+    expect(responseData[STATUS].description).toBe(DESCRIPTION);
+  });
+});

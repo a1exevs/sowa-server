@@ -1,24 +1,24 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { ProfileService} from "../profile/profile.service";
+import { ProfilesService} from "../profile/profiles.service";
 import { UsersService } from "./users.service";
 import { User } from "./users.model";
 import { RolesService } from "../roles/roles.service";
 import { FollowersService } from "../followers/followers.service";
 import { getModelToken } from "@nestjs/sequelize";
 import { Role } from "../roles/roles.model";
-import { CreateUserDTO } from "./ReqDTO/CreateUserDTO";
+import { CreateUserRequest } from "./dto/create-user.request";
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { mockUsers } from "../../test-helpers/users-helper.spec";
+import { mockUsers } from "../../test/unit/helpers/users-helper.spec";
 import { Followers } from "../followers/followers.model";
 import { FindOptions } from "sequelize/dist/lib/model";
-import { AddUserRoleDTO } from "./ReqDTO/AddUserRoleDTO";
-import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
-import { BanUserDTO } from "./ReqDTO/BanUserDTO";
-import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
+import { AddRoleRequest } from "./dto/add-role.request";
+import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
+import { BanUserRequest } from "./dto/ban-user.request";
+import { SetUserStatusRequest } from "./dto/set-user-status.request";
 import { UpdateOptions } from "sequelize";
 import { ErrorMessages } from "../common/constants/error-messages";
 
-jest.mock('../profile/profile.service.ts');
+jest.mock('../profile/profiles.service.ts');
 jest.mock('./users.model');
 
 describe('UsersService', () => {
@@ -26,7 +26,7 @@ describe('UsersService', () => {
   let model: typeof User;
   let rolesService: RolesService;
   let followersService: FollowersService;
-  let profileService: ProfileService;
+  let profilesService: ProfilesService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -59,7 +59,7 @@ describe('UsersService', () => {
           }
         },
         {
-          provide: ProfileService,
+          provide: ProfilesService,
           useValue: {
             getUserProfile: jest.fn(x => x)
           }
@@ -70,7 +70,7 @@ describe('UsersService', () => {
     model = moduleRef.get<typeof User>(getModelToken(User));
     rolesService = moduleRef.get<RolesService>(RolesService);
     followersService = moduleRef.get<FollowersService>(FollowersService);
-    profileService = moduleRef.get<ProfileService>(ProfileService);
+    profilesService = moduleRef.get<ProfilesService>(ProfilesService);
   });
 
   describe('UsersService - definition', () => {
@@ -86,14 +86,14 @@ describe('UsersService', () => {
     it('FollowersService - should be defined', () => {
       expect(followersService).toBeDefined();
     });
-    it('ProfileService - should be defined', () => {
-      expect(profileService).toBeDefined();
+    it('ProfilesService - should be defined', () => {
+      expect(profilesService).toBeDefined();
     });
   });
 
   describe('UsersService - createUser', () => {
     it('should be successful result', async () => {
-      const dto: CreateUserDTO = { email: 'email', password: 'password' };
+      const dto: CreateUserRequest.Dto = { email: 'email', password: 'password' };
       const mockRole: Partial<Role> = { id: 1, value: 'user' };
       const mockUser: Partial<User> = { $set: jest.fn(() => Promise.resolve(null)), id: 1, roles: [] };
       // @ts-ignore
@@ -114,7 +114,7 @@ describe('UsersService', () => {
       expect(mockUser.$set).toBeCalledWith('roles', [mockRole.id]);
     });
     it('should throw exception (roles configuration was missing)', async () => {
-      const dto: CreateUserDTO = { email: 'email', password: 'password' };
+      const dto: CreateUserRequest.Dto = { email: 'email', password: 'password' };
       jest.spyOn(rolesService, 'getRoleByValue').mockImplementation(() => null);
       try {
         await usersService.createUser(dto);
@@ -127,7 +127,7 @@ describe('UsersService', () => {
       }
     });
     it('should throw exception (user creation error)', async () => {
-      const dto: CreateUserDTO = { email: 'email', password: 'password' };
+      const dto: CreateUserRequest.Dto = { email: 'email', password: 'password' };
       const mockRole: Partial<Role> = { id: 1, value: 'user' };
       const mockUser: Partial<User> = { $set: jest.fn(() => Promise.resolve(null)), id: 1, roles: [] };
       const errorMessage = 'errorMessage';
@@ -171,7 +171,7 @@ describe('UsersService', () => {
         return Promise.resolve(mockFollowRows);
       });
       // @ts-ignore
-      jest.spyOn(profileService, 'getUserProfile').mockImplementation((userId: number) => {
+      jest.spyOn(profilesService, 'getUserProfile').mockImplementation((userId: number) => {
         return Promise.resolve({ photos: { small: `small${userId}`, large: `large${userId}` } })
       });
       const result = await usersService.getUsers(page, count, userId);
@@ -182,9 +182,9 @@ describe('UsersService', () => {
       expect(model.count).toBeCalledTimes(1);
       expect(followersService.findFollowRows).toBeCalledTimes(1);
       expect(followersService.findFollowRows).toBeCalledWith(userId, users.map( user => user.id ));
-      expect(profileService.getUserProfile).toBeCalledTimes(users.length);
-      expect(profileService.getUserProfile).toBeCalledWith(users[0].id);
-      expect(profileService.getUserProfile).toBeCalledWith(users[users.length - 1].id);
+      expect(profilesService.getUserProfile).toBeCalledTimes(users.length);
+      expect(profilesService.getUserProfile).toBeCalledWith(users[0].id);
+      expect(profilesService.getUserProfile).toBeCalledWith(users[users.length - 1].id);
     })
   });
 
@@ -240,7 +240,7 @@ describe('UsersService', () => {
       }) };
       const userId = user.id;
       const roleId = 1;
-      const dto: AddUserRoleDTO = { userId, value: roleValue }
+      const dto: AddRoleRequest.Dto = { userId, value: roleValue }
       // @ts-ignore
       jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
         return Promise.resolve(id === user.id ? user : null);
@@ -263,7 +263,7 @@ describe('UsersService', () => {
       const roleValue = 'admin';
       const user = { ...mockUsers(1)[0], roles: [{ id: 1, value: roleValue }], $add: jest.fn() };
       const userId = user.id;
-      const dto: AddUserRoleDTO = { userId, value: roleValue }
+      const dto: AddRoleRequest.Dto = { userId, value: roleValue }
       // @ts-ignore
       jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
         return Promise.resolve(id === user.id ? user : null);
@@ -285,7 +285,7 @@ describe('UsersService', () => {
       const roleValue = 'admin';
       const user = { ...mockUsers(1)[0], roles: [{ id: 1, value: roleValue }], $add: jest.fn() };
       const userId = user.id + 1;
-      const dto: AddUserRoleDTO = { userId, value: roleValue }
+      const dto: AddRoleRequest.Dto = { userId, value: roleValue }
       // @ts-ignore
       jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
         return Promise.resolve(id === user.id ? user : null);
@@ -307,7 +307,7 @@ describe('UsersService', () => {
       const roleValue = 'admin';
       const user = { ...mockUsers(1)[0], $add: jest.fn() };
       const userId = user.id;
-      const dto: AddUserRoleDTO = { userId, value: roleValue }
+      const dto: AddRoleRequest.Dto = { userId, value: roleValue }
       // @ts-ignore
       jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
         return Promise.resolve(id === user.id ? user : null);
@@ -336,7 +336,7 @@ describe('UsersService', () => {
     it('should be successful result', async () => {
       const user = { ...mockUsers(1)[0], save: jest.fn(), banned: false, banReason: '' };
       const userId = user.id;
-      const dto: BanUserDTO = { userId, banReason: 'banReason' };
+      const dto: BanUserRequest.Dto = { userId, banReason: 'banReason' };
       // @ts-ignore
       jest.spyOn(model, 'findByPk').mockImplementation((id: number) => {
         return Promise.resolve(id === user.id ? user : null);
@@ -353,7 +353,7 @@ describe('UsersService', () => {
     it('should throw exception (user was not found)', async () => {
       const user = { ...mockUsers(1)[0], save: jest.fn(), banned: false, banReason: '' };
       const userId = user.id + 1;
-      const dto: BanUserDTO = { userId, banReason: 'banReason' };
+      const dto: BanUserRequest.Dto = { userId, banReason: 'banReason' };
       // @ts-ignore
       jest.spyOn(model, 'findByPk').mockImplementation((id: number) => {
         return Promise.resolve(id === user.id ? user : null);
@@ -407,7 +407,7 @@ describe('UsersService', () => {
       const userId = user.id;
       const status = 'new status';
       const updatedRowsCount = 1;
-      const dto: SetUserStatusDTO = { status };
+      const dto: SetUserStatusRequest.Dto = { status };
       // @ts-ignore
       jest.spyOn(model, 'update').mockImplementation((values: { status }, options: UpdateOptions) => {
         if (options.where['id'] === userId) {

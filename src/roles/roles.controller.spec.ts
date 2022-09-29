@@ -1,13 +1,13 @@
 import { RolesController } from "./roles.controller";
 import { RolesService } from "./roles.service";
-import { RolesGuard } from "../auth/guards/roles.quard";
-import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
+import { RolesGuard } from "../common/guards/roles.quard";
+import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
 import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
-import { CreateRoleDTO } from "./DTO/CreateRoleDTO";
+import { CreateRoleRequest } from "./dto/create-role.request";
 import { Role } from "./roles.model";
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
+import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
 import { ErrorMessages } from "../common/constants/error-messages";
 
 describe('RolesController', () => {
@@ -57,7 +57,7 @@ describe('RolesController', () => {
 
   describe('RolesController - create', () => {
     it('should be successful result', async () => {
-      const reqDto: CreateRoleDTO = { value: 'super star', description: 'Super user' };
+      const reqDto: CreateRoleRequest.Dto = { value: 'super star', description: 'Super user' };
       const createdRole: Partial<Role> = { id: 1, ...reqDto }
       // @ts-ignore
       jest.spyOn(rolesService, 'createRole').mockImplementation(() => {
@@ -70,7 +70,7 @@ describe('RolesController', () => {
       expect(rolesService.createRole).toBeCalledWith(reqDto);
     })
     it('should throw exception (error creating role)', async () => {
-      const reqDto: CreateRoleDTO = { value: 'super star', description: 'Super user' };
+      const reqDto: CreateRoleRequest.Dto = { value: 'super star', description: 'Super user' };
       const errorMessage = ErrorMessages.ru.FAILED_TO_CREATE_ROLE;
       const errorStatus = HttpStatus.BAD_REQUEST;
       // @ts-ignore

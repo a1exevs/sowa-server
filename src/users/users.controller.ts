@@ -12,18 +12,18 @@ import {
 import { UsersService } from "./users.service";
 import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { User } from "./users.model";
-import { JwtAuthGuard } from "../auth/guards/jwtAuth.guard";
-import {RolesGuard} from "../auth/guards/roles.quard";
-import {Roles} from "../auth/decorators/authRoles.decorator";
-import { AddUserRoleDTO } from "./ReqDTO/AddUserRoleDTO";
-import { BanUserDTO } from "./ReqDTO/BanUserDTO";
-import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
-import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
-import { GetUsersQuery } from "./queries/GetUsersQuery"
-import { GetUsersResponse } from "./ResDTO/get-users.response";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
+import {RolesGuard} from "../common/guards/roles.quard";
+import {Roles} from "../common/decorators/auth-roles.decorator";
+import { AddRoleRequest } from "./dto/add-role.request";
+import { BanUserRequest } from "./dto/ban-user.request";
+import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
+import { SetUserStatusRequest } from "./dto/set-user-status.request";
+import { GetUsersQuery } from "./queries/get-users.query"
+import { GetUsersResponse } from "./dto/get-users.response";
 import { Routes } from "../common/constants/routes";
 import { ParsePositiveIntPipe } from "../common/pipes/parse-positive-int.pipe";
-import { OperationResultResponseDto } from "../common/ResDTO/operation-result-response-dto";
+import { OperationResultResponse } from "../common/dto/operation-result.response";
 
 @ApiTags("Пользователи")
 @Controller(Routes.ENDPOINT_USERS)
@@ -35,7 +35,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Get()
   getUsers(
-    @Query() queryParams: GetUsersQuery,
+    @Query() queryParams: GetUsersQuery.Swagger.GetUsersQueryParams,
     @Req() request
   ): Promise<GetUsersResponse.Data> {
     const userId = request.user.id
@@ -51,7 +51,7 @@ export class UsersController {
   @Roles('admin')
   @UseGuards(RolesGuard, RefreshTokenGuard)
   @Post('/role')
-  addRole(@Body() dto: AddUserRoleDTO) {
+  addRole(@Body() dto: AddRoleRequest.Dto) {
     return this.usersService.addRole(dto);
   }
 
@@ -60,7 +60,7 @@ export class UsersController {
   @Roles('admin')
   @UseGuards(RolesGuard, RefreshTokenGuard)
   @Post('/ban')
-  ban(@Body() dto: BanUserDTO) {
+  ban(@Body() dto: BanUserRequest.Dto) {
     return this.usersService.ban(dto);
   }
 
@@ -73,11 +73,11 @@ export class UsersController {
   }
 
   @ApiOperation({summary: "Установить статус пользователю"})
-  @ApiResponse({status: 201, type: OperationResultResponseDto })
+  @ApiResponse({status: 201, type: OperationResultResponse.Swagger.OperationResultResponseDto })
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Put('/status')
-  async setStatus(@Req() request, @Body() dto: SetUserStatusDTO) {
+  async setStatus(@Req() request, @Body() dto: SetUserStatusRequest.Dto) {
      await this.usersService.setStatus(dto, request.user.id);
-     return new OperationResultResponseDto(true);
+     return new OperationResultResponse.Dto({ result: true });
   }
 }

@@ -1,4 +1,4 @@
-process.env.SERVER_STATIC = 'staticTest';
+process.env.SERVER_STATIC = 'static-test';
 process.env.SERVER_URL='http://localhost';
 process.env.PORT='5000';
-process.env.SERVER_LOGS='logsTest'
+process.env.SERVER_LOGS='logger-test'

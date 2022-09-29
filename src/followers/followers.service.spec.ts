@@ -3,7 +3,7 @@ import { getModelToken } from "@nestjs/sequelize";
 import { FollowersService } from "./followers.service";
 import { Followers } from "./followers.model";
 import { UsersService } from "../users/users.service";
-import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
+import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
 import { HttpStatus } from "@nestjs/common";
 import { Op } from "sequelize";
 import { ErrorMessages } from "../common/constants/error-messages";

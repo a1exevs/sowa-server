@@ -1,9 +1,9 @@
 import { Controller, Get, Req, UseInterceptors } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { SecurityService } from "./security.service";
-import { CommonResDTO } from "../common/ResDTO/CommonResDTO";
-import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
-import { ISession } from "../auth/interfaces/ISession";
+import { CommonResponse } from "../common/dto/common.response";
+import { ResponseInterceptor } from "../common/interceptors/response.Interceptor";
+import { Isession } from "../auth/interfaces/isession";
 import { Routes } from "../common/constants/routes";
 
 @ApiTags("Безопасность")
@@ -12,7 +12,7 @@ export class SecurityController {
   constructor(private securityService: SecurityService) {}
 
   @ApiOperation({summary: "Получение ссылки на Капчу"})
-  @ApiResponse({status: 200, type: CommonResDTO})
+  @ApiResponse({status: 200, type: CommonResponse.Swagger.CommonResponseDto})
   @UseInterceptors(ResponseInterceptor)
   @Get('get-captcha-url')
   public async getCaptchaURL(@Req() request) {
@@ -22,7 +22,7 @@ export class SecurityController {
   }
 
   private static setSessionCaptchaText(request, captchaText: string) {
-    const session: ISession = request.session;
+    const session: Isession = request.session;
     session.captcha = captchaText;
   }
 }

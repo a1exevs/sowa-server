@@ -1,15 +1,15 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { User } from "./users.model";
-import { CreateUserDTO } from "./ReqDTO/CreateUserDTO";
+import { CreateUserRequest } from "./dto/create-user.request";
 import { RolesService } from "../roles/roles.service";
-import { AddUserRoleDTO } from "./ReqDTO/AddUserRoleDTO";
-import { BanUserDTO } from "./ReqDTO/BanUserDTO";
-import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
-import { GetUsersResponse } from "./ResDTO/get-users.response";
+import { AddRoleRequest } from "./dto/add-role.request";
+import { BanUserRequest } from "./dto/ban-user.request";
+import { SetUserStatusRequest } from "./dto/set-user-status.request";
+import { GetUsersResponse } from "./dto/get-users.response";
 import { FindOptions } from "sequelize/dist/lib/model";
 import { FollowersService } from "../followers/followers.service";
-import { ProfileService } from "../profile/profile.service";
+import { ProfilesService } from "../profile/profiles.service";
 import { ErrorMessages } from "../common/constants/error-messages";
 
 @Injectable()
@@ -18,16 +18,16 @@ export class UsersService {
     @InjectModel(User) private userRepository: typeof User,
     private roleService: RolesService,
     private followersService: FollowersService,
-    private profileService: ProfileService
+    private profilesService: ProfilesService
   ) {}
 
-  async createUser(DTO: CreateUserDTO): Promise<User> {
+  async createUser(dto: CreateUserRequest.Dto): Promise<User> {
     const role = await this.roleService.getRoleByValue("user");
     if(!role)
       throw new HttpException( `${ErrorMessages.ru.SERVICE_IS_UNAVAILABLE}: ${ErrorMessages.ru.USER_ROLE_CONFIGURATION_IS_MISSING.toLowerCase()}`, HttpStatus.FORBIDDEN);
     let user: User;
     try {
-      user = await this.userRepository.create(DTO);
+      user = await this.userRepository.create(dto);
     } catch (e) {
       throw new HttpException(`${ErrorMessages.ru.FAILED_TO_CREATE_USER}. ${e.message}`, HttpStatus.BAD_REQUEST);
     }
@@ -49,7 +49,7 @@ export class UsersService {
     const followRows = await this.followersService.findFollowRows(userId, userIds);
 
     const userItems = await Promise.all(users.map(async (user): Promise<GetUsersResponse.User> => {
-      const profile = await this.profileService.getUserProfile(user.id);
+      const profile = await this.profilesService.getUserProfile(user.id);
       return new GetUsersResponse.User({
         id: user.id,
         email: user.email,
@@ -80,7 +80,7 @@ export class UsersService {
     return await this.userRepository.findOne({ where: { id }, include: { all: true } });
   }
 
-  async addRole(dto: AddUserRoleDTO) {
+  async addRole(dto: AddRoleRequest.Dto) {
     const user = await this.userRepository.findByPk(dto.userId, { include: { all: true } });
     if(!user)
       throw new HttpException(ErrorMessages.ru.FAILED_TO_FIND_USER, HttpStatus.NOT_FOUND);
@@ -95,7 +95,7 @@ export class UsersService {
     return user;
   }
 
-  async ban(dto: BanUserDTO) {
+  async ban(dto: BanUserRequest.Dto) {
     const user = await this.userRepository.findByPk(dto.userId);
     if (!user)
       throw new HttpException(ErrorMessages.ru.FAILED_TO_FIND_USER, HttpStatus.NOT_FOUND);
@@ -112,7 +112,7 @@ export class UsersService {
     return status;
   }
 
-  public async setStatus(dto: SetUserStatusDTO, userId: number) {
+  public async setStatus(dto: SetUserStatusRequest.Dto, userId: number) {
     return await this.userRepository.update({ status: dto.status }, { where: { id: userId } });
   }
 }

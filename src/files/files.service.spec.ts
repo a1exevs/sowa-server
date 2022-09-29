@@ -2,13 +2,13 @@ import { COMPRESS_IMAGE_NAME_PREFIX, FilesService } from "./files.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { existsSync } from "fs";
 import { HttpStatus } from "@nestjs/common";
-import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
+import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
 import {
   loadTestFile,
   removeTestStaticDir,
   TEST_FILE_ORIGINAL_NAME,
   TEST_FILE_PATH
-} from "../../test-helpers/files-helper.spec";
+} from "../../test/unit/helpers/files-helper.spec";
 import { ErrorMessages } from "../common/constants/error-messages";
 
 describe('FilesService', () => {

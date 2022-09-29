@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SecurityController } from "./security.controller";
 import { SecurityService } from "./security.service";
-import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
+import { ResponseInterceptor } from "../common/interceptors/response.Interceptor";
 import { createRequest } from "node-mocks-http";
 
 describe('SecurityController', () => {

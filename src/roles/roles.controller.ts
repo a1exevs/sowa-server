@@ -2,10 +2,10 @@ import {Controller, Get, Post, Body, Param, UseGuards} from "@nestjs/common";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import { RolesService } from "./roles.service";
 import { Role } from "./roles.model";
-import { CreateRoleDTO } from "./DTO/CreateRoleDTO";
-import {Roles} from "../auth/decorators/authRoles.decorator";
-import {RolesGuard} from "../auth/guards/roles.quard";
-import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
+import { CreateRoleRequest } from "./dto/create-role.request";
+import {Roles} from "../common/decorators/auth-roles.decorator";
+import {RolesGuard} from "../common/guards/roles.quard";
+import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
 import { Routes } from "../common/constants/routes";
 
 @ApiTags("Роли")
@@ -18,7 +18,7 @@ export class RolesController {
   @Roles('admin')
   @UseGuards(RolesGuard, RefreshTokenGuard)
   @Post()
-  create(@Body() dto: CreateRoleDTO) : Promise<Role> {
+  create(@Body() dto: CreateRoleRequest.Dto) : Promise<Role> {
     return this.roleService.createRole(dto);
   }
 

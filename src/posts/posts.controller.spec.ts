@@ -1,11 +1,11 @@
-import { JwtAuthGuard } from "../auth/guards/jwtAuth.guard";
-import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
+import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
 import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 import { PostsService } from "./posts.service";
 import { PostsController } from "./posts.controller";
-import { CreatePostDTO } from "./DTO/CreatePostDTO";
-import { loadTestFile, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from "../../test-helpers/files-helper.spec";
+import { CreatePostRequest } from "./dto/create-post.request";
+import { loadTestFile, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from "../../test/unit/helpers/files-helper.spec";
 import { REQUEST } from "@nestjs/core";
 
 describe('PostsController', () => {
@@ -62,7 +62,7 @@ describe('PostsController', () => {
       const postId = 1;
       const title = 'It is test post';
       const content = 'It is content of test post';
-      const dto: CreatePostDTO = { title, content };
+      const dto: CreatePostRequest.Dto = { title, content };
       const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
       // @ts-ignore
       jest.spyOn(postsService, 'createPost').mockImplementation(() => {

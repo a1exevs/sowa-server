@@ -2,14 +2,14 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { UsersController } from "./users.controller";
 import { UsersService } from "./users.service";
 import { JwtService } from "@nestjs/jwt";
-import { GetUsersQuery } from "./queries/GetUsersQuery";
-import { AddUserRoleDTO } from "./ReqDTO/AddUserRoleDTO";
+import { GetUsersQuery } from "./queries/get-users.query";
+import { AddRoleRequest } from "./dto/add-role.request";
 import { User } from "./users.model";
 import { HttpException, HttpStatus, NotFoundException } from "@nestjs/common";
-import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
-import { BanUserDTO } from "./ReqDTO/BanUserDTO";
-import { SetUserStatusDTO } from "./ReqDTO/SetUserStatusDTO";
-import { mockGetUsersResponse } from "../../test-helpers/users-helper.spec";
+import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
+import { BanUserRequest } from "./dto/ban-user.request";
+import { SetUserStatusRequest } from "./dto/set-user-status.request";
+import { mockGetUsersResponse } from "../../test/unit/helpers/users-helper.spec";
 import { ErrorMessages } from "../common/constants/error-messages";
 import './../../string.extensions'
 
@@ -55,7 +55,7 @@ describe('UsersController', () => {
     it('should be successful result', async () => {
       const userId = 1;
       const req = { user: { id: userId }};
-      const queryParams: GetUsersQuery = { page: 1, count: 3 };
+      const queryParams: GetUsersQuery.Params = { page: 1, count: 3 };
       const mockResponse = mockGetUsersResponse();
       jest.spyOn(usersService, 'getUsers').mockImplementation(() => {
         return Promise.resolve(mockResponse);
@@ -87,7 +87,7 @@ describe('UsersController', () => {
     it('should be successful result', async () => {
       const userId = 1;
       const roleValue = 'admin';
-      const reqDto: AddUserRoleDTO = { userId, value: roleValue };
+      const reqDto: AddRoleRequest.Dto = { userId, value: roleValue };
       // @ts-ignore
       const mockUser: Partial<User> = { id: userId, roles: [{value: roleValue, id: 1 }] };
       // @ts-ignore
@@ -102,7 +102,7 @@ describe('UsersController', () => {
     it('should throw error (user already has the role)', async () => {
       const userId = 1;
       const roleValue = 'admin';
-      const reqDto: AddUserRoleDTO = { userId, value: roleValue };
+      const reqDto: AddRoleRequest.Dto = { userId, value: roleValue };
       // @ts-ignore
       const errorMessage = ErrorMessages.ru.USER_ALREADY_HAS_THE_ROLE_N.format(reqDto.value);
       const errorStatus = HttpStatus.BAD_REQUEST;
@@ -126,7 +126,7 @@ describe('UsersController', () => {
     it('should be successful result', async () => {
       const userId = 1;
       const banReason = 'banReason';
-      const reqDto: BanUserDTO = { userId, banReason: 'reason' };
+      const reqDto: BanUserRequest.Dto = { userId, banReason: 'reason' };
       const mockUser: Partial<User> = { id: userId, banned: true, banReason };
       // @ts-ignore
       jest.spyOn(usersService, 'ban').mockImplementation(() => {
@@ -139,7 +139,7 @@ describe('UsersController', () => {
     });
     it('should throw exception (user was not found)', async () => {
       const userId = 1;
-      const reqDto: BanUserDTO = { userId, banReason: 'reason' };
+      const reqDto: BanUserRequest.Dto = { userId, banReason: 'reason' };
       const errorStatus = HttpStatus.NOT_FOUND;
       const errorMessage = ErrorMessages.ru.FAILED_TO_FIND_USER;
       // @ts-ignore
@@ -189,7 +189,7 @@ describe('UsersController', () => {
 
   describe('UsersController - setStatus', () => {
     it('should be successful result', async () => {
-      const dto: SetUserStatusDTO = { status: 'new status' };
+      const dto: SetUserStatusRequest.Dto = { status: 'new status' };
       const userId = 1;
       const req = { user: { id: userId } };
       // @ts-ignore

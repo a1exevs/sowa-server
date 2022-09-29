@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { getModelToken } from "@nestjs/sequelize";
 import { RolesService } from "./roles.service";
 import { Role } from "./roles.model";
-import { CreateRoleDTO } from "./DTO/CreateRoleDTO";
+import { CreateRoleRequest } from "./dto/create-role.request";
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { ErrorMessages } from "../common/constants/error-messages";
 
@@ -40,7 +40,7 @@ describe('RolesService', () => {
 
   describe('RolesService - createRole', () => {
     it('should be successful result', async () => {
-      const dto: CreateRoleDTO = { value: 'admin', description: 'Admin role' };
+      const dto: CreateRoleRequest.Dto = { value: 'admin', description: 'Admin role' };
       const mockCreatedRole: Partial<Role> = { id: 1, ...dto };
       jest.spyOn(model, 'create').mockImplementation(() => {
         return Promise.resolve(mockCreatedRole);
@@ -52,7 +52,7 @@ describe('RolesService', () => {
       expect(model.create).toBeCalledWith(dto);
     });
     it('should throw exception (error creation role)', async () => {
-      const dto: CreateRoleDTO = { value: 'admin', description: 'Admin role' };
+      const dto: CreateRoleRequest.Dto = { value: 'admin', description: 'Admin role' };
       const errorMessage = 'Duplicate';
       jest.spyOn(model, 'create').mockImplementation(() => {
         throw new HttpException(errorMessage, HttpStatus.BAD_REQUEST);

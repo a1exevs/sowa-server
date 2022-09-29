@@ -5,7 +5,7 @@ import { AppModule } from "./app.module";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ValidationPipe } from "./common/pipes/validation.pipe";
 import * as cookieParser from 'cookie-parser';
-import {Logger} from "./common/logs/Logger";
+import {Logger} from "./logger/logger";
 import {INestApplication} from "@nestjs/common";
 import * as session from 'express-session';
 

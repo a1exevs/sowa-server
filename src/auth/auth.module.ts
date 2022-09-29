@@ -3,10 +3,10 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from "../users/users.module";
 import { JwtModule } from "@nestjs/jwt";
-import { RefreshTokensService } from "./refresh_tokens.service";
+import { RefreshTokensService } from "./refresh-tokens.service";
 import { TokensService } from "./tokens.service";
 import { SequelizeModule } from "@nestjs/sequelize";
-import { RefreshToken } from "./refresh_tokens.model";
+import { RefreshToken } from "./refresh-tokens.model";
 import {User} from "../users/users.model";
 
 @Module({

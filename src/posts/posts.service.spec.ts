@@ -5,13 +5,13 @@ import {
   removeTestStaticDir,
   TEST_FILE_ORIGINAL_NAME,
   TEST_FILE_PATH
-} from "../../test-helpers/files-helper.spec";
+} from "../../test/unit/helpers/files-helper.spec";
 import { PostsService } from "./posts.service";
 import { Post } from "./posts.model";
 import { getModelToken } from "@nestjs/sequelize";
-import { CreatePostDTO } from "./DTO/CreatePostDTO";
+import { CreatePostRequest } from "./dto/create-post.request";
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
+import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
 import { ErrorMessages } from "../common/constants/error-messages";
 
 describe('PostsService', () => {
@@ -61,7 +61,7 @@ describe('PostsService', () => {
       const postId = 1;
       const title = 'It is test post';
       const content = 'It is content of test post';
-      const dto: CreatePostDTO = { title, content };
+      const dto: CreatePostRequest.Dto = { title, content };
       const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
       const imageURL = 'test-server.com/posts-images/sowa.jpg'
 
@@ -98,7 +98,7 @@ describe('PostsService', () => {
       const userId = 1;
       const title = 'It is test post';
       const content = 'It is content of test post';
-      const dto: CreatePostDTO = { title, content };
+      const dto: CreatePostRequest.Dto = { title, content };
       const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
       const imageURL = 'test-server.com/posts-images/sowa.jpg'
       const errorMessage = "DB Error";

@@ -1,14 +1,14 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
-import { CreateUserDTO } from "../users/ReqDTO/CreateUserDTO";
+import { CreateUserRequest } from "../users/dto/create-user.request";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
 import { User } from "../users/users.model";
 import { TokensService } from "./tokens.service";
-import { RegisterDto } from "./DTO/RegisterDto";
-import { LoginDto } from "./DTO/LoginDto";
-import { AuthenticationResponse } from "./DTO/AuthenticationResponse";
-import { GetCurrentUserResponse } from "./DTO/get-current-user.response";
+import { RegisterRequest } from "./dto/register.request";
+import { LoginRequest } from "./dto/login.request";
+import { IAuthenticationResult } from "./interfaces/iauthentication.result";
+import { GetCurrentUserResponse } from "./dto/get-current-user.response";
 import { ErrorMessages } from "../common/constants/error-messages";
 
 @Injectable()
@@ -17,7 +17,7 @@ export class AuthService {
               private jwtService: JwtService,
               private tokensService: TokensService) {}
 
-  public async registration(dto: RegisterDto) : Promise<AuthenticationResponse> {
+  public async registration(dto: RegisterRequest.Dto) : Promise<IAuthenticationResult> {
     const candidate = await this.userService.getUserByEmail(dto.email);
     if(candidate)
       throw new HttpException(ErrorMessages.ru.USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
@@ -30,7 +30,7 @@ export class AuthService {
     return AuthService.buildResponsePayload(user, token, refresh, this.tokensService.getRefreshTokenExpiration())
   }
 
-  async login(dto: LoginDto) : Promise<AuthenticationResponse> {
+  async login(dto: LoginRequest.Dto) : Promise<IAuthenticationResult> {
     const user = await this.validateUser(dto);
 
     const token = await this.tokensService.generateAccessToken(user)
@@ -39,31 +39,29 @@ export class AuthService {
     return AuthService.buildResponsePayload(user, token, refresh, this.tokensService.getRefreshTokenExpiration());
   }
 
-  public async refresh(currentRefreshToken: string) : Promise<AuthenticationResponse>
+  public async refresh(currentRefreshToken: string) : Promise<IAuthenticationResult>
   {
     const { user, access_token, refresh_token } = await this.tokensService.updateAccessRefreshTokensFromRefreshToken(currentRefreshToken)
     return AuthService.buildResponsePayload(user, access_token, refresh_token, this.tokensService.getRefreshTokenExpiration())
   }
 
-  public async me(userId: number) : Promise<GetCurrentUserResponse.User>
+  public async me(userId: number) : Promise<GetCurrentUserResponse.Dto>
   {
     const user = await this.userService.getUserById(userId)
     if(!user)
       throw new UnauthorizedException({message: ErrorMessages.ru.UNAUTHORIZED});
 
-    return new GetCurrentUserResponse.User({
+    return new GetCurrentUserResponse.Dto({
       id: user.id,
       email: user.email
     });
   }
 
-  public async logout(refreshToken: string) : Promise<boolean>
-  {
+  public async logout(refreshToken: string) : Promise<boolean> {
     return await this.tokensService.removeRefreshToken(refreshToken);
   }
 
-  private async validateUser(dto: CreateUserDTO)
-  {
+  private async validateUser(dto: CreateUserRequest.Dto) {
     const user = await this.userService.getUserByEmail(dto.email, true);
     if(user) {
       const passwordsEqual = await bcrypt.compare(dto.password, user.password);
@@ -73,18 +71,20 @@ export class AuthService {
     throw new UnauthorizedException({message: ErrorMessages.ru.INVALID_EMAIL_OR_PASSWORD});
   }
 
-  private static buildResponsePayload (user: User, accessToken: string, refreshToken: string, expiration: Date): AuthenticationResponse {
-    const resp = new AuthenticationResponse;
-    resp.status = "success";
-    resp.data = {
-      user: user,
-      payload: {
-        type: 'bearer',
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        refresh_token_expiration: expiration
+  private static buildResponsePayload (user: User, accessToken: string, refreshToken: string, expiration: Date): IAuthenticationResult {
+    return ({
+      status: "success",
+      data: {
+        user: {
+          id: user.id
+        },
+        payload: {
+          type: 'bearer',
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          refresh_token_expiration: expiration
+        }
       }
-    }
-    return resp;
+    });
   }
 }

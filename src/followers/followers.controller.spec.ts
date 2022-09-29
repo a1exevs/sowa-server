@@ -2,10 +2,10 @@ import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 import { FollowersController } from "./followers.controller";
 import { FollowersService } from "./followers.service";
-import { JwtAuthGuard } from "../auth/guards/jwtAuth.guard";
-import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
+import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
 import { BadRequestException, HttpStatus, NotFoundException } from "@nestjs/common";
-import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
+import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
 
 describe('FollowersController', () => {
   let followersController: FollowersController;

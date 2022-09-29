@@ -1,6 +1,6 @@
 import { ParsePositiveIntPipe } from "./parse-positive-int.pipe";
 import { ArgumentMetadata, HttpStatus } from "@nestjs/common";
-import { sendPseudoError } from "../../../test-helpers/tests-helper.spec";
+import { sendPseudoError } from "../../../test/unit/helpers/tests-helper.spec";
 import { ErrorMessages } from "../constants/error-messages";
 import './../../../string.extensions'
 

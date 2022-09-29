@@ -3,33 +3,33 @@ import { AuthService } from './auth.service';
 import { AuthController } from "./auth.controller";
 import { JwtService } from "@nestjs/jwt";
 import { createResponse, createRequest } from "node-mocks-http";
-import { AuthenticationResponse } from "./DTO/AuthenticationResponse";
+import { IAuthenticationResult } from "./interfaces/iauthentication.result";
 import { UsersService } from "../users/users.service";
 import { TokensService } from "./tokens.service";
-import { AuthenticationResDto } from "./DTO/AuthenticationResDto";
+import { AuthenticationResponse } from "./dto/authentication.response";
 import { ValidationPipe } from "../common/pipes/validation.pipe";
 import { ArgumentMetadata, HttpException, HttpStatus, UnauthorizedException } from "@nestjs/common";
-import { RegisterDto } from "./DTO/RegisterDto";
-import { LoginDto } from "./DTO/LoginDto";
-import { UnauthorizedExceptionFilter } from "./exceptionfilters/unauthorizedexceptionfilter";
-import { SvgCaptchaGuard } from "./guards/svgcaptcha.guard";
-import { GetCurrentUserResponse } from "./DTO/get-current-user.response";
-import { JwtAuthGuard } from "./guards/jwtAuth.guard";
-import { RefreshTokenGuard } from "./guards/refreshToken.guard";
-import { HttpExceptionFilter } from "../common/exceptions/filters/httpexceptionfilter";
-import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
-import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
+import { RegisterRequest } from "./dto/register.request";
+import { LoginRequest } from "./dto/login.request";
+import { UnauthorizedExceptionFilter } from "./exception-filters/unauthorized.exception-filter";
+import { SvgCaptchaGuard } from "./guards/svg-captcha.guard";
+import { GetCurrentUserResponse } from "./dto/get-current-user.response";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
+import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
+import { HttpExceptionFilter } from "../common/exception-filters/http.exception-filter";
+import { ResponseInterceptor } from "../common/interceptors/response.Interceptor";
+import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
 import { ErrorMessages } from "../common/constants/error-messages";
 import './../../string.extensions'
 
 const getValidationPipeDataForUserRegistration  = function(email, password) {
   let target: ValidationPipe = new ValidationPipe();
-  const registerDto: RegisterDto = { email, password};
-  const metadata: ArgumentMetadata = { type: 'body', metatype: RegisterDto };
+  const registerDto: RegisterRequest.Dto = { email, password};
+  const metadata: ArgumentMetadata = { type: 'body', metatype: RegisterRequest.Dto };
   return {target, metadata, registerDto};
 }
 
-const getMockAuthenticationResponse = function(userId, accessToken, refreshToken): AuthenticationResponse {
+const getMockAuthenticationResponse = function(userId, accessToken, refreshToken): IAuthenticationResult {
   return {
     status: 'success',
     data: {
@@ -176,7 +176,7 @@ describe('AuthController', () => {
         getMockAuthenticationResponse(userId, accessToken, refreshToken);
       const registerDto = { email: "user@yandex.ru", password: '12345678' };
       const mockRegistrationF = jest.spyOn(authService, 'registration').mockImplementation(async () => serviceRegisterResponseMock);
-      const controllerRegisterResponse = new AuthenticationResDto(userId, accessToken);
+      const controllerRegisterResponse = new AuthenticationResponse.Dto({ userId, accessToken });
       const response = await authController.registration(registerDto, res);
       expect(response).toEqual(controllerRegisterResponse);
       expect(res.cookies.refresh_token.value).toBe(refreshToken);
@@ -212,9 +212,9 @@ describe('AuthController', () => {
       const refreshToken = '12345fsagasdsdfsdf';
       const serviceLoginResponseMock =
         getMockAuthenticationResponse(userId, accessToken, refreshToken);
-      const loginDto: LoginDto = { email: "user@yandex.ru", password: '0000' };
+      const loginDto: LoginRequest.Dto = { email: "user@yandex.ru", password: '0000' };
       const mockLoginF = jest.spyOn(authService, 'login').mockImplementation(async () => Promise.resolve(serviceLoginResponseMock));
-      const controllerLoginResponse = new AuthenticationResDto(userId, accessToken);
+      const controllerLoginResponse = new AuthenticationResponse.Dto({ userId, accessToken });
       const response = await authController.login(loginDto, res, req);
       expect(response).toEqual(controllerLoginResponse);
       expect(res.cookies.refresh_token.value).toBe(refreshToken);
@@ -260,7 +260,7 @@ describe('AuthController', () => {
       const mockAuthenticationResponse =
         getMockAuthenticationResponse(userId, accessToken, newRefreshToken);
       const mockRefreshF = jest.spyOn(authService, 'refresh').mockImplementation(async () => Promise.resolve(mockAuthenticationResponse));
-      const controllerLoginResponse = new AuthenticationResDto(userId, accessToken);
+      const controllerLoginResponse = new AuthenticationResponse.Dto({ userId, accessToken });
       const response = await authController.refresh(req, res);
       expect(response).toEqual(controllerLoginResponse);
       expect(res.cookies.refresh_token.value).toBe(newRefreshToken);
@@ -279,14 +279,14 @@ describe('AuthController', () => {
         }
       };
 
-      const mockGetCurrentUserResponseUser: GetCurrentUserResponse.User = {
+      const mockGetCurrentUserResponseDto: GetCurrentUserResponse.Dto = {
         id: userId,
         email: 'user@yandex.ru'
       }
-      const mockMeF = jest.spyOn(authService, 'me').mockImplementation(async () => Promise.resolve(mockGetCurrentUserResponseUser));
+      const mockMeF = jest.spyOn(authService, 'me').mockImplementation(async () => Promise.resolve(mockGetCurrentUserResponseDto));
 
       const response = await authController.me(req);
-      expect(response).toEqual(mockGetCurrentUserResponseUser);
+      expect(response).toEqual(mockGetCurrentUserResponseDto);
       expect(mockMeF).toBeCalledTimes(1);
       expect(mockMeF).toBeCalledWith(userId);
     });

@@ -1,4 +1,4 @@
-import { formatString } from "./src/common/utils/formatters";
+import { formatString } from "./src/common/utils/formatters.util";
 
 declare global {
   interface String {

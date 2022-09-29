@@ -3,10 +3,10 @@ import { AuthService } from "./auth.service";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import { TokensService } from "./tokens.service";
-import { LoginDto } from "./DTO/LoginDto";
+import { LoginRequest } from "./dto/login.request";
 import * as bcrypt from "bcryptjs";
-import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
-import { RegisterDto } from "./DTO/RegisterDto";
+import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
+import { RegisterRequest } from "./dto/register.request";
 import { UnprocessableEntityException } from "@nestjs/common";
 import { ErrorMessages } from "../common/constants/error-messages";
 
@@ -75,7 +75,7 @@ describe('AuthService', () => {
       const accessToken = 'asdfsdfsdf';
       const refreshToken = 'asdfsdfsdf';
 
-      const registerDto: RegisterDto = { email, password };
+      const registerDto: RegisterRequest.Dto = { email, password };
       const mockCreatedUser = {
         email,
         password: hashedPassword
@@ -126,7 +126,7 @@ describe('AuthService', () => {
       const password = '1234';
       const hashedPassword = await bcrypt.hash(password, 5);
 
-      const registerDto: RegisterDto = { email, password };
+      const registerDto: RegisterRequest.Dto = { email, password };
       const mockCreatedUser = {
         email,
         password: hashedPassword
@@ -164,7 +164,7 @@ describe('AuthService', () => {
       const accessToken = 'asdfsdfsdf';
       const refreshToken = 'asdfsdfsdf';
 
-      const loginDto: LoginDto = { email, password };
+      const loginDto: LoginRequest.Dto = { email, password };
       const mockUser = {
         email,
         password: hashedPassword
@@ -203,7 +203,7 @@ describe('AuthService', () => {
       const email = 'user@yandex.com';
       const password = '1234';
 
-      const loginDto: LoginDto = { email, password };
+      const loginDto: LoginRequest.Dto = { email, password };
 
       // @ts-ignore
       jest.spyOn(userService, 'getUserByEmail').mockImplementation(async () => {
@@ -228,7 +228,7 @@ describe('AuthService', () => {
       const hashedPassword = await bcrypt.hash(password, 5);
       const incorrectPassword = password + 'sadf';
 
-      const loginDto: LoginDto = { email, password: incorrectPassword };
+      const loginDto: LoginRequest.Dto = { email, password: incorrectPassword };
       const mockUser = {
         email,
         password: hashedPassword

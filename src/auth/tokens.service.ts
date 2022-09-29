@@ -2,9 +2,9 @@ import { UnprocessableEntityException, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { SignOptions, TokenExpiredError } from 'jsonwebtoken'
 import { User } from '../users/users.model'
-import { RefreshToken } from './refresh_tokens.model'
+import { RefreshToken } from './refresh-tokens.model'
 import { UsersService } from '../users/users.service'
-import { RefreshTokensService } from './refresh_tokens.service'
+import { RefreshTokensService } from './refresh-tokens.service'
 import { ErrorMessages } from "../common/constants/error-messages";
 
 const BASE_OPTIONS: SignOptions = {

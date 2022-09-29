@@ -7,7 +7,7 @@ import { RolesModule } from "../roles/roles.module";
 import { AuthModule } from "../auth/auth.module";
 import { FollowersModule } from "../followers/followers.module";
 import { FollowersService } from "../followers/followers.service";
-import { ProfileModule } from "../profile/profile.module";
+import { ProfilesModule } from "../profile/profiles.module";
 
 @Module({
   controllers: [UsersController],
@@ -17,7 +17,7 @@ import { ProfileModule } from "../profile/profile.module";
     RolesModule,
     forwardRef(() => AuthModule),
     forwardRef(() => FollowersModule),
-    forwardRef( () => ProfileModule)
+    forwardRef( () => ProfilesModule)
   ],
   exports: [
     UsersService
