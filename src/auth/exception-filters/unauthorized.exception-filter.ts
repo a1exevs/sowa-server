@@ -1,9 +1,9 @@
 import { ExceptionFilter, Catch, ArgumentsHost, UnauthorizedException } from '@nestjs/common';
-import { sendResponse } from "../../common/functions/exception-filters.functions";
-import { ResultCodes } from "../../common/constants/result-codes";
-import { Isession } from "../interfaces/isession";
-import { MAX_AUTH_FAILED_COUNT } from "../guards/svg-captcha.guard";
-import { ErrorMessages } from "../../common/constants/error-messages";
+
+import { sendResponse } from "@common/functions";
+import { ResultCodes, ErrorMessages } from "@common/constants";
+import { Isession } from "@auth/interfaces";
+import { MAX_AUTH_FAILED_COUNT } from "@auth/guards";
 
 @Catch(UnauthorizedException)
 export class UnauthorizedExceptionFilter implements ExceptionFilter {

@@ -1,17 +1,18 @@
+import '@root/string.extensions'
+
 import { Test, TestingModule } from "@nestjs/testing";
-import { UsersController } from "./users.controller";
-import { UsersService } from "./users.service";
 import { JwtService } from "@nestjs/jwt";
-import { GetUsersQuery } from "./queries/get-users.query";
-import { AddRoleRequest } from "./dto/add-role.request";
-import { User } from "./users.model";
 import { HttpException, HttpStatus, NotFoundException } from "@nestjs/common";
-import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
-import { BanUserRequest } from "./dto/ban-user.request";
-import { SetUserStatusRequest } from "./dto/set-user-status.request";
-import { mockGetUsersResponse } from "../../test/unit/helpers/users-helper.spec";
-import { ErrorMessages } from "../common/constants/error-messages";
-import './../../string.extensions'
+
+import { UsersController } from "@users/users.controller";
+import { UsersService } from "@users/users.service";
+import { GetUsersQuery } from "@users/queries";
+import { AddRoleRequest } from "@users/dto";
+import { User } from "@users/users.model";
+import { sendPseudoError } from "@test/unit/helpers";
+import { BanUserRequest, SetUserStatusRequest } from "@users/dto";
+import { mockGetUsersResponse } from "@test/unit/helpers";
+import { ErrorMessages } from "@common/constants";
 
 describe('UsersController', () => {
   let usersController: UsersController;

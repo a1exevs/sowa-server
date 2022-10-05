@@ -1,6 +1,8 @@
-import { Routes } from "../../src/common/constants/routes";
-import * as request from "supertest";
 import { HttpStatus } from "@nestjs/common";
+
+import { Routes } from "@common/constants";
+
+import * as request from "supertest";
 import * as path from "path";
 
 describe('Authorized user methods', () => {
@@ -75,7 +77,7 @@ describe('Authorized user methods', () => {
 
     describe(Routes.ENDPOINT_PROFILES, () => {
       describe('/ PUT', () => {
-        it('Change user profile', () => {
+        it('Change user profiles', () => {
           return request(URL + Routes.ENDPOINT_PROFILES)
             .put('')
             .send({})
@@ -84,7 +86,7 @@ describe('Authorized user methods', () => {
       });
 
       describe('/:userId GET', () => {
-        it('Get user profile', () => {
+        it('Get user profiles', () => {
           const userId = 1;
           return request(URL + Routes.ENDPOINT_PROFILES)
             .get(`/${userId}`)
@@ -93,7 +95,7 @@ describe('Authorized user methods', () => {
       });
 
       describe('/photo PUT', () => {
-        it('Change user profile photo', () => {
+        it('Change user profiles photo', () => {
           return request(URL + Routes.ENDPOINT_PROFILES)
             .put('/photo')
             .attach('image', path.resolve(__dirname, './../../assets/sowa.jpg'))

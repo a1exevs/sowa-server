@@ -1,10 +1,10 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { sendResponse } from "../../common/functions/exception-filters.functions";
-import { ResultCodes } from "../../common/constants/result-codes";
-import { LoginRequest } from "../dto/login.request";
-import { Isession } from "../interfaces/isession";
-import { ErrorMessages } from "../../common/constants/error-messages";
+
+import { sendResponse } from "@common/functions";
+import { ResultCodes, ErrorMessages } from "@common/constants";
+import { LoginRequest } from "@auth/dto";
+import { Isession } from "@auth/interfaces";
 
 export const MAX_AUTH_FAILED_COUNT = 5;
 

@@ -1,11 +1,10 @@
-import { sendPseudoError } from "../../../test/unit/helpers/tests-helper.spec";
 import { HttpStatus } from "@nestjs/common";
-import { getMockJWTServiceData } from "../../../test/unit/helpers/jwt-helper.spec";
-import { getMockExecutionContextData } from "../../../test/unit/helpers/context-helper.spec";
-import { RolesGuard } from "./roles.quard";
 import { Reflector } from "@nestjs/core";
-import { ROLES_KEY } from "../decorators/auth-roles.decorator";
-import { ErrorMessages } from "../constants/error-messages";
+
+import { sendPseudoError, getMockJWTServiceData, getMockExecutionContextData } from "@test/unit/helpers";
+import { RolesGuard } from "@common/guards";
+import { ROLES_KEY } from "@common/decorators";
+import { ErrorMessages } from "@common/constants";
 
 describe('RolesGuard', () => {
   beforeEach(() => {

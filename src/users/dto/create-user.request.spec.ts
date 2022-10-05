@@ -1,7 +1,8 @@
-import { validateDto } from "../../../test/unit/helpers/validation-helper.spec";
-import { CreateUserRequest } from "./create-user.request";
-import { ErrorMessages } from "../../common/constants/error-messages";
-import '../../../string.extensions'
+import '@root/string.extensions'
+
+import { validateDto } from "@test/unit/helpers";
+import { CreateUserRequest } from "@users/dto/create-user.request";
+import { ErrorMessages } from "@common/constants";
 
 describe('CreateUserRequest', () => {
   beforeEach(async () => {

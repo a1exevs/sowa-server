@@ -1,6 +1,7 @@
 import { IsEmail, IsString, Length } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { ErrorMessages } from "../../common/constants/error-messages";
+
+import { ErrorMessages } from "@common/constants";
 
 export namespace RegisterRequest {
   export class Dto {

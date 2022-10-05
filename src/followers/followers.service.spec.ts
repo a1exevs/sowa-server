@@ -1,19 +1,21 @@
+import '@root/string.extensions'
+
 import { Test, TestingModule } from "@nestjs/testing";
 import { getModelToken } from "@nestjs/sequelize";
-import { FollowersService } from "./followers.service";
-import { Followers } from "./followers.model";
-import { UsersService } from "../users/users.service";
-import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
 import { HttpStatus } from "@nestjs/common";
 import { Op } from "sequelize";
-import { ErrorMessages } from "../common/constants/error-messages";
-import './../../string.extensions'
+
+import { FollowersService } from "@followers/followers.service";
+import { Follower } from "@followers/followers.model";
+import { UsersService } from "@users/users.service";
+import { sendPseudoError } from "@test/unit/helpers";
+import { ErrorMessages } from "@common/constants";
 
 jest.mock("./followers.model")
 
 describe('FollowersService', () => {
   let followersService: FollowersService;
-  let model: typeof Followers;
+  let model: typeof Follower;
   let usersService: UsersService;
 
   beforeEach(async () => {
@@ -23,7 +25,7 @@ describe('FollowersService', () => {
       providers: [
         FollowersService,
         {
-          provide: getModelToken(Followers),
+          provide: getModelToken(Follower),
           useValue: {
             findOne: jest.fn(x => x),
             create: jest.fn(x => x),
@@ -40,7 +42,7 @@ describe('FollowersService', () => {
       ],
     }).compile();
     followersService = module.get<FollowersService>(FollowersService);
-    model = module.get<typeof Followers>(getModelToken(Followers));
+    model = module.get<typeof Follower>(getModelToken(Follower));
     usersService = module.get<UsersService>(UsersService);
   });
 

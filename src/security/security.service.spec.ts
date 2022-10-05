@@ -1,6 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { SecurityService } from "./security.service";
-import { FilesService } from "../files/files.service";
+
+import { SecurityService } from "@security/security.service";
+import { FilesService } from "@files/files.service";
+
 import * as svgCaptcha from 'svg-captcha'
 
 jest.mock('svg-captcha')

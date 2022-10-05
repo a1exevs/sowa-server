@@ -1,14 +1,14 @@
-import { RolesController } from "./roles.controller";
-import { RolesService } from "./roles.service";
-import { RolesGuard } from "../common/guards/roles.quard";
-import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
 import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
-import { CreateRoleRequest } from "./dto/create-role.request";
-import { Role } from "./roles.model";
+
+import { RolesController } from "@roles/roles.controller";
+import { RolesService } from "@roles/roles.service";
+import { RolesGuard, RefreshTokenGuard } from "@common/guards";
+import { CreateRoleRequest } from "@roles/dto";
+import { Role } from "@roles/roles.model";
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
-import { ErrorMessages } from "../common/constants/error-messages";
+import { sendPseudoError } from "@test/unit/helpers";
+import { ErrorMessages } from "@common/constants";
 
 describe('RolesController', () => {
   let rolesController: RolesController;

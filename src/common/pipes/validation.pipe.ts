@@ -1,7 +1,8 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
-import { ValidationException } from "../exceptions/validation.exception"
+
+import { ValidationException } from "@common/exceptions"
 
 @Injectable()
 export class ValidationPipe implements PipeTransform<any> {

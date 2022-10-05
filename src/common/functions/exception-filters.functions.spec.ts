@@ -1,7 +1,8 @@
 import { createResponse } from "node-mocks-http";
-import { sendResponse } from "./exception-filters.functions";
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { ResultCodes } from "../constants/result-codes";
+
+import { sendResponse } from "@common/functions";
+import { ResultCodes } from "@common/constants";
 
 describe('ExceptionFiltersHelper', () => {
   beforeEach(() => {

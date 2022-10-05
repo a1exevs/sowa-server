@@ -1,7 +1,8 @@
-import { validateDto } from "../../../test/unit/helpers/validation-helper.spec";
-import { SetUserStatusRequest } from "./set-user-status.request";
-import { ErrorMessages } from "../../common/constants/error-messages";
-import '../../../string.extensions'
+import '@root/string.extensions'
+
+import { validateDto } from "@test/unit/helpers";
+import { SetUserStatusRequest } from "@users/dto/set-user-status.request";
+import { ErrorMessages } from "@common/constants";
 
 describe('SetUserStatusRequest', () => {
   beforeEach(async () => {

@@ -1,6 +1,6 @@
-import { ResponseInterceptor } from "./response.Interceptor";
-import { getMockCallHandler, getMockExecutionContextData } from "../../../test/unit/helpers/context-helper.spec";
-import { ResultCodes } from "../constants/result-codes";
+import { ResponseInterceptor } from "@common/interceptors";
+import { getMockCallHandler, getMockExecutionContextData } from "@test/unit/helpers";
+import { ResultCodes } from "@common/constants";
 
 describe('ResponseInterceptor', () => {
   beforeEach(() => {

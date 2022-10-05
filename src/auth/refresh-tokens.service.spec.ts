@@ -1,7 +1,8 @@
-import { RefreshTokensService } from "./refresh-tokens.service";
 import { Test, TestingModule } from "@nestjs/testing";
-import { RefreshToken } from "./refresh-tokens.model";
 import { getModelToken } from "@nestjs/sequelize";
+
+import { RefreshToken } from "@auth/refresh-tokens.model";
+import { RefreshTokensService } from "@auth/refresh-tokens.service";
 
 jest.mock("./refresh-tokens.model")
 

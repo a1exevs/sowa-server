@@ -1,8 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+
+import { ErrorMessages } from "@common/constants";
+
 import * as path from "path"
 import * as fs from "fs"
 import * as uuid from "uuid"
-import { ErrorMessages } from "../common/constants/error-messages";
 
 export const COMPRESS_IMAGE_NAME_PREFIX = "small_"
 

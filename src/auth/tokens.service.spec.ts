@@ -1,12 +1,13 @@
-import { TokensService } from "./tokens.service";
 import { Test, TestingModule } from "@nestjs/testing";
-import { UsersService } from "../users/users.service";
 import { JwtModule, JwtService } from "@nestjs/jwt";
-import { RefreshTokensService } from "./refresh-tokens.service";
 import { SignOptions } from "jsonwebtoken";
-import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
 import { HttpStatus } from "@nestjs/common";
-import { ErrorMessages } from "../common/constants/error-messages";
+
+import { TokensService } from "@auth/tokens.service";
+import { RefreshTokensService } from "@auth/refresh-tokens.service";
+import { UsersService } from "@users/users.service";
+import { sendPseudoError } from "@test/unit/helpers";
+import { ErrorMessages } from "@common/constants";
 
 interface IMockUser {
   id: number,

@@ -1,7 +1,8 @@
 import { IsInt, Max, Min } from "class-validator";
 import { Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
-import { ErrorMessages } from "../../common/constants/error-messages";
+
+import { ErrorMessages } from "@common/constants";
 
 export namespace GetUsersQuery{
   export class Params {

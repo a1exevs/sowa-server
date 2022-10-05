@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber, IsString } from "class-validator";
-import { ErrorMessages } from "../../common/constants/error-messages";
+
+import { ErrorMessages } from "@common/constants";
 
 export namespace BanUserRequest {
   export class Dto {

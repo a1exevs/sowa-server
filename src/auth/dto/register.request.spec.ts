@@ -1,7 +1,8 @@
-import { RegisterRequest } from "./register.request";
-import { validateDto } from "../../../test/unit/helpers/validation-helper.spec";
-import { ErrorMessages } from "../../common/constants/error-messages";
-import './../../../string.extensions'
+import '@root/string.extensions'
+
+import { RegisterRequest } from "@auth/dto";
+import { validateDto } from "@test/unit/helpers";
+import { ErrorMessages } from "@common/constants";
 
 describe('RegisterRequest', () => {
   beforeEach(async () => {

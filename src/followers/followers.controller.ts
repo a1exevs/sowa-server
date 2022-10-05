@@ -1,11 +1,11 @@
 import { Controller, Delete, Param, Post, Req, UseGuards } from "@nestjs/common";
-import { Routes } from "../common/constants/routes";
-import { FollowersService } from "./followers.service";
 import { ApiBadRequestResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
-import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
-import { ParsePositiveIntPipe } from "../common/pipes/parse-positive-int.pipe";
-import { OperationResultResponse } from "../common/dto/operation-result.response";
+
+import { Routes } from "@common/constants";
+import { FollowersService } from "@followers/followers.service";
+import { JwtAuthGuard, RefreshTokenGuard } from "@common/guards";
+import { ParsePositiveIntPipe } from "@common/pipes";
+import { OperationResultResponse } from "@common/dto";
 
 @ApiTags("Подписчики")
 @Controller(Routes.ENDPOINT_FOLLOWERS)

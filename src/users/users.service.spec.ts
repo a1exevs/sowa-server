@@ -1,24 +1,22 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { ProfilesService} from "../profile/profiles.service";
-import { UsersService } from "./users.service";
-import { User } from "./users.model";
-import { RolesService } from "../roles/roles.service";
-import { FollowersService } from "../followers/followers.service";
 import { getModelToken } from "@nestjs/sequelize";
-import { Role } from "../roles/roles.model";
-import { CreateUserRequest } from "./dto/create-user.request";
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { mockUsers } from "../../test/unit/helpers/users-helper.spec";
-import { Followers } from "../followers/followers.model";
-import { FindOptions } from "sequelize/dist/lib/model";
-import { AddRoleRequest } from "./dto/add-role.request";
-import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
-import { BanUserRequest } from "./dto/ban-user.request";
-import { SetUserStatusRequest } from "./dto/set-user-status.request";
 import { UpdateOptions } from "sequelize";
-import { ErrorMessages } from "../common/constants/error-messages";
+import { FindOptions } from "sequelize/dist/lib/model";
 
-jest.mock('../profile/profiles.service.ts');
+import { ProfilesService} from "@profiles/profiles.service";
+import { UsersService } from "@users/users.service";
+import { User } from "@users/users.model";
+import { RolesService } from "@roles/roles.service";
+import { FollowersService } from "@followers/followers.service";
+import { Role } from "@roles/roles.model";
+import { CreateUserRequest, AddRoleRequest, BanUserRequest, SetUserStatusRequest } from "@users/dto";
+import { mockUsers } from "@test/unit/helpers";
+import { Follower } from "@followers/followers.model";
+import { sendPseudoError } from "@test/unit/helpers";
+import { ErrorMessages } from "@common/constants";
+
+jest.mock('../profiles/profiles.service.ts');
 jest.mock('./users.model');
 
 describe('UsersService', () => {
@@ -165,7 +163,7 @@ describe('UsersService', () => {
       jest.spyOn(model, 'count').mockImplementation(() => {
         return Promise.resolve(users.length);
       });
-      const mockFollowRows: Partial<Followers>[] = [{ followerId: userId, userId: users[1].id }];
+      const mockFollowRows: Partial<Follower>[] = [{ followerId: userId, userId: users[1].id }];
       // @ts-ignore
       jest.spyOn(followersService, 'findFollowRows').mockImplementation(() => {
         return Promise.resolve(mockFollowRows);

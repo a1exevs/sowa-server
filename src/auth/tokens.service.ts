@@ -1,11 +1,12 @@
 import { UnprocessableEntityException, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { SignOptions, TokenExpiredError } from 'jsonwebtoken'
-import { User } from '../users/users.model'
-import { RefreshToken } from './refresh-tokens.model'
-import { UsersService } from '../users/users.service'
-import { RefreshTokensService } from './refresh-tokens.service'
-import { ErrorMessages } from "../common/constants/error-messages";
+
+import { User } from "@users/users.model"
+import { RefreshToken } from '@auth/refresh-tokens.model'
+import { UsersService } from "@users/users.service"
+import { RefreshTokensService } from '@auth/refresh-tokens.service'
+import { ErrorMessages } from "@common/constants";
 
 const BASE_OPTIONS: SignOptions = {
   issuer: 'https://sowa-api.com',

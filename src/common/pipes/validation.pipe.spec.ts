@@ -1,8 +1,9 @@
 import { ArgumentMetadata, HttpStatus } from "@nestjs/common";
-import { ValidationPipe } from "./validation.pipe";
 import { IsBoolean, isInstance, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
-import { sendPseudoError } from "../../../test/unit/helpers/tests-helper.spec";
 import { Type } from "class-transformer";
+
+import { ValidationPipe } from "@common/pipes";
+import { sendPseudoError } from "@test/unit/helpers";
 
 class TestNestedClass {
   @IsString()

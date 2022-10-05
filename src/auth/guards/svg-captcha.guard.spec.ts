@@ -1,7 +1,6 @@
-import { MAX_AUTH_FAILED_COUNT, SvgCaptchaGuard } from "./svg-captcha.guard";
-import { getMockExecutionContextData } from "../../../test/unit/helpers/context-helper.spec";
-import { ResultCodes } from "../../common/constants/result-codes";
-import { ErrorMessages } from "../../common/constants/error-messages";
+import { MAX_AUTH_FAILED_COUNT, SvgCaptchaGuard } from "@auth/guards";
+import { getMockExecutionContextData } from "@test/unit/helpers";
+import { ResultCodes, ErrorMessages } from "@common/constants";
 
 describe('SwgCaptchaGuard', () => {
   beforeEach(() => {

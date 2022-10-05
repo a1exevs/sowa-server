@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { FilesService } from "../files/files.service";
+
+import { FilesService } from "@files/files.service";
+
 import * as svgCaptcha from 'svg-captcha'
 
 @Injectable()

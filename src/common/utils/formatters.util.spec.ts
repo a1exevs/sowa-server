@@ -1,5 +1,6 @@
-import { formatString } from "./formatters.util";
-import './../../../string.extensions'
+import '@root/string.extensions'
+
+import { formatString } from "@common/utils";
 
 describe('FormattersUtil', () => {
   beforeEach(() => {

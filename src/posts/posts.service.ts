@@ -1,9 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { CreatePostRequest } from "./dto/create-post.request";
 import { InjectModel } from "@nestjs/sequelize";
-import { Post } from './posts.model';
-import { FilesService } from "../files/files.service";
-import { ErrorMessages } from "../common/constants/error-messages";
+
+import { CreatePostRequest } from "@posts/dto";
+import { Post } from '@posts/posts.model';
+import { FilesService } from "@files/files.service";
+import { ErrorMessages } from "@common/constants";
 
 @Injectable()
 export class PostsService {

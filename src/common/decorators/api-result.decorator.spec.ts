@@ -1,5 +1,6 @@
-import { ApiResult } from "./api-result.decorator";
-import { CommonResponse } from "../dto/common.response";
+import { ApiResult } from "@common/decorators";
+
+import { CommonResponse } from "@common/dto";
 
 const STATUS = 5
 const DESCRIPTION = 'DESCRIPTION'

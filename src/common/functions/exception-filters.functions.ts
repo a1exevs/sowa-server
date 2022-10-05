@@ -1,7 +1,8 @@
-import { CommonResponse } from "../dto/common.response";
 import { HttpException } from '@nestjs/common';
 import { Response } from 'express';
-import { ResultCodes } from '../constants/result-codes'
+
+import { CommonResponse } from "@common/dto";
+import { ResultCodes } from "@common/constants"
 
 export const sendResponse = (exception: HttpException, response: Response, resultCode: number = ResultCodes.ERROR, messages: string[] = []) => {
   const status = exception.getStatus();

@@ -1,5 +1,5 @@
-import { AuthenticationResponse } from "./authentication.response";
-import { checkForApiProperties } from "../../../test/unit/helpers/response-dto-helper.spec";
+import { AuthenticationResponse } from "@auth/dto";
+import { checkForApiProperties } from "@test/unit/helpers";
 
 describe('AuthenticationResponse', () => {
   beforeEach(async () => {

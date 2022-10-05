@@ -1,5 +1,5 @@
-import { checkForApiProperties } from "../../../test/unit/helpers/response-dto-helper.spec";
-import { GetCurrentUserResponse } from "./get-current-user.response";
+import { checkForApiProperties } from "@test/unit/helpers";
+import { GetCurrentUserResponse } from "@auth/dto";
 
 describe('GetCurrentUserResponse', () => {
   beforeEach(async () => {

@@ -1,7 +1,8 @@
 import {Table, Column, Model, DataType, ForeignKey} from "sequelize-typescript";
 import { ApiProperty } from "@nestjs/swagger";
 import { UUIDV4 } from "sequelize";
-import {User} from "../users/users.model";
+
+import {User} from "@users/users.model";
 
 @Table({ tableName: 'refresh_tokens', createdAt: false, updatedAt: false, underscored: true})
 export class RefreshToken extends Model<RefreshToken> {

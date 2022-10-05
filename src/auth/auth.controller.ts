@@ -1,22 +1,18 @@
 import { Body, Controller, Delete, Get, Post, Req, Res, UseFilters, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { AuthService } from "./auth.service";
-import { LoginRequest } from "./dto/login.request";
-import { RegisterRequest } from "./dto/register.request";
-import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { Request, Response } from "express";
-import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
-import { SvgCaptchaGuard } from "./guards/svg-captcha.guard";
-import { UnauthorizedExceptionFilter } from "./exception-filters/unauthorized.exception-filter";
-import { Isession } from "./interfaces/isession";
-import { AuthenticationResponse } from "./dto/authentication.response";
-import { ResponseInterceptor } from "../common/interceptors/response.Interceptor";
-import { Routes } from "../common/constants/routes";
-import { ApiResult } from "../common/decorators/api-result.decorator";
-import { HttpExceptionFilter } from "../common/exception-filters/http.exception-filter";
-import { GetCurrentUserResponse } from "./dto/get-current-user.response";
-import { OperationResultResponse } from "../common/dto/operation-result.response";
-import { IAuthenticationResult } from "./interfaces/iauthentication.result";
+
+import { AuthService } from "@auth/auth.service";
+import { LoginRequest, RegisterRequest, AuthenticationResponse, GetCurrentUserResponse } from "@auth/dto";
+import { JwtAuthGuard, RefreshTokenGuard } from "@common/guards";
+import { SvgCaptchaGuard } from "@auth/guards";
+import { UnauthorizedExceptionFilter } from "@auth/exception-filters";
+import { IAuthenticationResult, Isession } from "@auth/interfaces";
+import { ResponseInterceptor } from "@common/interceptors";
+import { Routes } from "@common/constants";
+import { ApiResult } from "@common/decorators";
+import { HttpExceptionFilter } from "@common/exception-filters";
+import { OperationResultResponse } from "@common/dto";
 
 @ApiTags("Авторизация")
 @Controller(Routes.ENDPOINT_AUTH)

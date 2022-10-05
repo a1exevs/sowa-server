@@ -7,7 +7,8 @@ import {
   UnauthorizedException
 } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { ErrorMessages } from "../constants/error-messages";
+
+import { ErrorMessages } from "@common/constants";
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate{
