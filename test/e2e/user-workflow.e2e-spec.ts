@@ -1,12 +1,12 @@
-import * as request from 'supertest';
+import '@root/string.extensions'
+
 import { HttpStatus } from "@nestjs/common";
-import { Routes } from "../../src/common/constants/routes";
+
+import { Routes, ResultCodes, ErrorMessages } from "@common/constants";
+import { SetProfileRequest, SetUserContactRequest } from "@profiles/dto";
+
 import * as path from "path";
-import { SetProfileRequest } from "../../src/profile/dto/set-profile.request";
-import { SetUserContactRequest } from "../../src/profile/dto/set-user-contact.request";
-import { ResultCodes } from "../../src/common/constants/result-codes";
-import { ErrorMessages } from "../../src/common/constants/error-messages";
-import '../../string.extensions'
+import * as request from 'supertest';
 
 describe('User workflow', () => {
   let URL;
@@ -450,7 +450,7 @@ describe('User workflow', () => {
 
   describe(Routes.ENDPOINT_PROFILES, () => {
     describe('/ PUT', () => {
-      it('Change user profile (bad request - profile fields have incorrect types)', () => {
+      it('Change user profiles (bad request - profiles fields have incorrect types)', () => {
         const contacts = new SetUserContactRequest.Dto(1, 2, 3, 4, 5, 6, 7, 8);
         const requestDto = new SetProfileRequest.Dto(1, 2, 3, 4, contacts);
         return request(URL + Routes.ENDPOINT_PROFILES)
@@ -464,7 +464,7 @@ describe('User workflow', () => {
             expect(response.body[response.body.length - 1].length).toBe(Object.keys(contacts).length);
           });
       });
-      it('Change user profile (with empty contact data', () => {
+      it('Change user profiles (with empty contact data', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .put('')
           .auth(accessToken, { type: 'bearer'})
@@ -483,7 +483,7 @@ describe('User workflow', () => {
             expect(response.body.photos.large).toBe('');
           });
       });
-      it('Change user profile', () => {
+      it('Change user profiles', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .put('')
           .auth(accessToken, { type: 'bearer'})
@@ -504,21 +504,21 @@ describe('User workflow', () => {
       });
     });
     describe('/${userId} GET', () => {
-      it('Get user profile (bad request - user id is a string)', () => {
+      it('Get user profiles (bad request - user id is a string)', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .get(`/${user1Id}a`)
           .auth(accessToken, { type: 'bearer'})
           .set('Cookie', cookies)
           .expect(HttpStatus.BAD_REQUEST);
       });
-      it('Get user profile (bad request - user is not found)', () => {
+      it('Get user profiles (bad request - user is not found)', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .get(`/555`)
           .auth(accessToken, { type: 'bearer'})
           .set('Cookie', cookies)
           .expect(HttpStatus.BAD_REQUEST);
       });
-      it('Get user profile', () => {
+      it('Get user profiles', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .get(`/${user1Id}`)
           .auth(accessToken, { type: 'bearer'})
@@ -538,7 +538,7 @@ describe('User workflow', () => {
     });
 
     describe('/photo PUT', () => {
-      it('Change user profile photo (bad request = file is not selected)', () => {
+      it('Change user profiles photo (bad request = file is not selected)', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .put('/photo')
           .auth(accessToken, { type: 'bearer'})
@@ -556,7 +556,7 @@ describe('User workflow', () => {
             expect(response.body.resultCode).toBe(ResultCodes.ERROR);
           });
       });
-      it('Change user profile photo', () => {
+      it('Change user profiles photo', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .put('/photo')
           .auth(accessToken, { type: 'bearer'})

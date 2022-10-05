@@ -1,13 +1,14 @@
 import { forwardRef, Module } from "@nestjs/common";
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { UsersModule } from "../users/users.module";
 import { JwtModule } from "@nestjs/jwt";
-import { RefreshTokensService } from "./refresh-tokens.service";
-import { TokensService } from "./tokens.service";
 import { SequelizeModule } from "@nestjs/sequelize";
-import { RefreshToken } from "./refresh-tokens.model";
-import {User} from "../users/users.model";
+
+import { AuthController } from "@auth/auth.controller";
+import { AuthService } from "@auth/auth.service";
+import { UsersModule } from "@users/users.module";
+import { RefreshTokensService } from "@auth/refresh-tokens.service";
+import { TokensService } from "@auth/tokens.service";
+import { RefreshToken } from "@auth/refresh-tokens.model";
+import { User } from "@users/users.model";
 
 @Module({
   controllers: [AuthController],

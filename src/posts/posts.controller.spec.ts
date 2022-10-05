@@ -1,12 +1,12 @@
-import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
-import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
 import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
-import { PostsService } from "./posts.service";
-import { PostsController } from "./posts.controller";
-import { CreatePostRequest } from "./dto/create-post.request";
-import { loadTestFile, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from "../../test/unit/helpers/files-helper.spec";
 import { REQUEST } from "@nestjs/core";
+
+import { JwtAuthGuard, RefreshTokenGuard } from "@common/guards";
+import { PostsService } from "@posts/posts.service";
+import { PostsController } from "@posts/posts.controller";
+import { CreatePostRequest } from "@posts/dto";
+import { loadTestFile, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from "@test/unit/helpers";
 
 describe('PostsController', () => {
   let postsController: PostsController;

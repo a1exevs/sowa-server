@@ -1,8 +1,8 @@
-import { getMockArgumentsHostData } from "../../../test/unit/helpers/context-helper.spec";
 import { UnauthorizedException } from "@nestjs/common";
-import { ResultCodes } from "../../common/constants/result-codes";
-import { UnauthorizedExceptionFilter } from "./unauthorized.exception-filter";
-import { ErrorMessages } from "../../common/constants/error-messages";
+
+import { getMockArgumentsHostData } from "@test/unit/helpers";
+import { ResultCodes, ErrorMessages } from "@common/constants";
+import { UnauthorizedExceptionFilter } from "@auth/exception-filters";
 
 describe('UnauthorizedExceptionFilter', () => {
   beforeEach(() => {

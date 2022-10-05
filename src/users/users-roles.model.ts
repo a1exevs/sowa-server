@@ -1,10 +1,11 @@
 import { Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
 import { ApiProperty } from "@nestjs/swagger";
-import { User } from "./users.model";
-import { Role } from "../roles/roles.model";
+
+import { User } from "@users/users.model";
+import { Role } from "@roles/roles.model";
 
 @Table({ tableName: "users_roles", createdAt: false, updatedAt: false, underscored: true })
-export class UsersRoles extends Model<UsersRoles> {
+export class UserRole extends Model<UserRole> {
   @ApiProperty({ example: "1", description: "Уникальный идентификатор" })
   @Column({ type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true })
   id: number;

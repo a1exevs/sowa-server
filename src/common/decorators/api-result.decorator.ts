@@ -1,6 +1,7 @@
 import { ApiExtraModels, ApiResponse, getSchemaPath } from "@nestjs/swagger";
-import { CommonResponse } from "../dto/common.response";
 import { applyDecorators } from "@nestjs/common";
+
+import { CommonResponse } from "@common/dto";
 
 interface ApiResultOptions {
   type: Function,

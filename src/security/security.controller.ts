@@ -1,10 +1,11 @@
 import { Controller, Get, Req, UseInterceptors } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { SecurityService } from "./security.service";
-import { CommonResponse } from "../common/dto/common.response";
-import { ResponseInterceptor } from "../common/interceptors/response.Interceptor";
-import { Isession } from "../auth/interfaces/isession";
-import { Routes } from "../common/constants/routes";
+
+import { SecurityService } from "@security/security.service";
+import { CommonResponse } from "@common/dto";
+import { ResponseInterceptor } from "@common/interceptors";
+import { Isession } from "@auth/interfaces";
+import { Routes } from "@common/constants";
 
 @ApiTags("Безопасность")
 @Controller(Routes.ENDPOINT_SECURITY)

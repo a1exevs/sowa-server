@@ -1,8 +1,10 @@
-import { ParsePositiveIntPipe } from "./parse-positive-int.pipe";
+import '@root/string.extensions'
+
 import { ArgumentMetadata, HttpStatus } from "@nestjs/common";
-import { sendPseudoError } from "../../../test/unit/helpers/tests-helper.spec";
-import { ErrorMessages } from "../constants/error-messages";
-import './../../../string.extensions'
+
+import { ParsePositiveIntPipe } from "@common/pipes";
+import { sendPseudoError } from "@test/unit/helpers";
+import { ErrorMessages } from "@common/constants";
 
 describe('ParsePositiveIntPipe', () => {
   beforeEach(() => {

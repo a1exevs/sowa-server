@@ -1,6 +1,7 @@
-import { IsOptional, IsString, Length, MinLength } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { ErrorMessages } from "../../common/constants/error-messages";
+
+import { ErrorMessages } from "@common/constants";
 
 export namespace LoginRequest {
   export class Dto {

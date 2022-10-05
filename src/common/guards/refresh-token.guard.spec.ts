@@ -1,9 +1,8 @@
-import { getMockJWTServiceData } from "../../../test/unit/helpers/jwt-helper.spec";
-import { getMockExecutionContextData } from "../../../test/unit/helpers/context-helper.spec";
-import { sendPseudoError } from "../../../test/unit/helpers/tests-helper.spec";
 import { HttpStatus } from "@nestjs/common";
-import { RefreshTokenGuard } from "./refresh-token.guard";
-import { ErrorMessages } from "../constants/error-messages";
+
+import { getMockJWTServiceData, getMockExecutionContextData, sendPseudoError } from "@test/unit/helpers";
+import { RefreshTokenGuard } from "@common/guards";
+import { ErrorMessages } from "@common/constants";
 
 describe('RefreshTokenGuard', () => {
   beforeEach(() => {

@@ -1,16 +1,13 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { User } from "./users.model";
-import { CreateUserRequest } from "./dto/create-user.request";
-import { RolesService } from "../roles/roles.service";
-import { AddRoleRequest } from "./dto/add-role.request";
-import { BanUserRequest } from "./dto/ban-user.request";
-import { SetUserStatusRequest } from "./dto/set-user-status.request";
-import { GetUsersResponse } from "./dto/get-users.response";
 import { FindOptions } from "sequelize/dist/lib/model";
-import { FollowersService } from "../followers/followers.service";
-import { ProfilesService } from "../profile/profiles.service";
-import { ErrorMessages } from "../common/constants/error-messages";
+
+import { User } from "@users/users.model";
+import { CreateUserRequest, AddRoleRequest, BanUserRequest, SetUserStatusRequest, GetUsersResponse } from "@users/dto";
+import { RolesService } from "@roles/roles.service";
+import { FollowersService } from "@followers/followers.service";
+import { ProfilesService } from "@profiles/profiles.service";
+import { ErrorMessages } from "@common/constants";
 
 @Injectable()
 export class UsersService {

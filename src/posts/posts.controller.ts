@@ -1,13 +1,13 @@
 import { Body, Controller, Inject, Post, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { PostsService } from "./posts.service";
-import {Post as post} from "./posts.model"
-import { CreatePostRequest } from "./dto/create-post.request";
 import { FileInterceptor} from "@nestjs/platform-express";
-import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { REQUEST } from "@nestjs/core";
-import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
-import { Routes } from "../common/constants/routes";
+
+import { PostsService } from "@posts/posts.service";
+import { Post as post } from "@posts/posts.model"
+import { CreatePostRequest } from "@posts/dto";
+import { JwtAuthGuard, RefreshTokenGuard } from "@common/guards";
+import { Routes } from "@common/constants";
 
 @ApiTags("Посты")
 @Controller(Routes.ENDPOINT_POSTS)

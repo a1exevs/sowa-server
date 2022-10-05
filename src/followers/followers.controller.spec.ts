@@ -1,11 +1,12 @@
 import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
-import { FollowersController } from "./followers.controller";
-import { FollowersService } from "./followers.service";
-import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
-import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
 import { BadRequestException, HttpStatus, NotFoundException } from "@nestjs/common";
-import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
+
+import { FollowersController } from "@followers/followers.controller";
+import { FollowersService } from "@followers/followers.service";
+import { JwtAuthGuard } from "@common/guards";
+import { RefreshTokenGuard } from "@common/guards";
+import { sendPseudoError } from "@test/unit/helpers";
 
 describe('FollowersController', () => {
   let followersController: FollowersController;

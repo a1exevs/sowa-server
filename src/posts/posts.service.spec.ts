@@ -1,18 +1,19 @@
-import { FilesService } from "../files/files.service";
 import { Test, TestingModule } from "@nestjs/testing";
+import { getModelToken } from "@nestjs/sequelize";
+import { HttpException, HttpStatus } from "@nestjs/common";
+
+import { FilesService } from "@files/files.service";
 import {
   loadTestFile,
   removeTestStaticDir,
   TEST_FILE_ORIGINAL_NAME,
   TEST_FILE_PATH
-} from "../../test/unit/helpers/files-helper.spec";
-import { PostsService } from "./posts.service";
-import { Post } from "./posts.model";
-import { getModelToken } from "@nestjs/sequelize";
-import { CreatePostRequest } from "./dto/create-post.request";
-import { HttpException, HttpStatus } from "@nestjs/common";
-import { sendPseudoError } from "../../test/unit/helpers/tests-helper.spec";
-import { ErrorMessages } from "../common/constants/error-messages";
+} from "@test/unit/helpers";
+import { PostsService } from "@posts/posts.service";
+import { Post } from "@posts/posts.model";
+import { CreatePostRequest } from "@posts/dto";
+import { sendPseudoError } from "@test/unit/helpers";
+import { ErrorMessages } from "@common/constants";
 
 describe('PostsService', () => {
   let postsService: PostsService;

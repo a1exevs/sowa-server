@@ -8,17 +8,18 @@ import {
   NotFoundException
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { Followers, IFollowers } from "./followers.model";
-import { UsersService } from "../users/users.service";
 import { Op } from "sequelize";
-import { ErrorMessages } from "../common/constants/error-messages";
+
+import { Follower, IFollower } from "@followers/followers.model";
+import { UsersService } from "@users/users.service";
+import { ErrorMessages } from "@common/constants";
 
 @Injectable()
 export class FollowersService {
-  constructor(@InjectModel(Followers) private followerRepository: typeof Followers,
+  constructor(@InjectModel(Follower) private followerRepository: typeof Follower,
               @Inject(forwardRef(() => UsersService)) private usersService: UsersService) {}
 
-  public async follow(followData: IFollowers): Promise<boolean> {
+  public async follow(followData: IFollower): Promise<boolean> {
     const uuid = await this.validateFollowRequest(followData);
     if(uuid)
       throw new HttpException(ErrorMessages.ru.USER_M_IS_ALREADY_A_FOLLOWER_OF_USER_N.format(followData.followerId, followData.userId), HttpStatus.BAD_REQUEST);
@@ -26,7 +27,7 @@ export class FollowersService {
     return !!await this.followerRepository.create(followData);
   }
 
-  public async unfollow(unfollowData: IFollowers): Promise<boolean> {
+  public async unfollow(unfollowData: IFollower): Promise<boolean> {
     const uuid = await this.validateFollowRequest(unfollowData);
     if(!uuid)
       throw new HttpException(ErrorMessages.ru.USER_M_IS_NOT_A_FOLLOWER_OF_USER_N.format(unfollowData.followerId, unfollowData.userId), HttpStatus.BAD_REQUEST);
@@ -34,7 +35,7 @@ export class FollowersService {
     return !!await this.followerRepository.destroy({ where: unfollowData })
   }
 
-  public async findFollowRows(followerId: number, userIds: number[]): Promise<Followers[]> {
+  public async findFollowRows(followerId: number, userIds: number[]): Promise<Follower[]> {
     return await this.followerRepository.findAll({
       where: {
         followerId,
@@ -43,7 +44,7 @@ export class FollowersService {
     });
   }
 
-  private async validateFollowRequest(followData: IFollowers): Promise<string | null> {
+  private async validateFollowRequest(followData: IFollower): Promise<string | null> {
     if(followData.followerId === followData.userId)
       throw new BadRequestException;
 
@@ -55,8 +56,8 @@ export class FollowersService {
     return await this.existRow(followData);
   }
 
-  private async existRow(followData: IFollowers): Promise<string | null> {
-    const row: Followers = await this.followerRepository.findOne({ where: followData });
+  private async existRow(followData: IFollower): Promise<string | null> {
+    const row: Follower = await this.followerRepository.findOne({ where: followData });
     return row ? row.uuid : null;
   }
 }

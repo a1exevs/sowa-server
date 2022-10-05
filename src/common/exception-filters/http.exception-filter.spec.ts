@@ -1,6 +1,7 @@
-import { getMockArgumentsHostData } from "../../../test/unit/helpers/context-helper.spec";
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { HttpExceptionFilter } from "./http.exception-filter";
+
+import { getMockArgumentsHostData } from "@test/unit/helpers";
+import { HttpExceptionFilter } from "@common/exception-filters";
 
 describe('HttpExceptionFilter', () => {
   beforeEach(() => {

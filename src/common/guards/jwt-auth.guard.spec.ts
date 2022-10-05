@@ -1,9 +1,9 @@
-import { JwtAuthGuard } from "./jwt-auth.guard";
-import { sendPseudoError } from "../../../test/unit/helpers/tests-helper.spec";
 import { HttpStatus } from "@nestjs/common";
-import { getMockJWTServiceData } from "../../../test/unit/helpers/jwt-helper.spec";
-import { getMockExecutionContextData } from "../../../test/unit/helpers/context-helper.spec";
-import { ErrorMessages } from "../constants/error-messages";
+
+import { JwtAuthGuard } from "@common/guards";
+import { sendPseudoError } from "@test/unit/helpers";
+import { getMockJWTServiceData, getMockExecutionContextData } from "@test/unit/helpers";
+import { ErrorMessages } from "@common/constants";
 
 describe('JwtAuthGuard', () => {
   beforeEach(() => {

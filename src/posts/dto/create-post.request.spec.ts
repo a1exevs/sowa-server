@@ -1,6 +1,6 @@
-import { CreatePostRequest } from "./create-post.request";
-import { validateDto } from "../../../test/unit/helpers/validation-helper.spec";
-import { ErrorMessages } from "../../common/constants/error-messages";
+import { CreatePostRequest } from "@posts/dto";
+import { validateDto } from "@test/unit/helpers";
+import { ErrorMessages } from "@common/constants";
 
 describe('CreatePostRequest', () => {
   beforeEach(async () => {

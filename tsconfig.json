@@ -16,10 +16,26 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@root/*": ["./*"],
+      "@src/*": ["src/*"],
+      "@auth/*": ["src/auth/*"],
+      "@common/*": ["src/common/*"],
+      "@files/*": ["src/files/*"],
+      "@followers/*": ["src/followers/*"],
+      "@logger/*": ["src/logger/*"],
+      "@posts/*": ["src/posts/*"],
+      "@profiles/*": ["src/profiles/*"],
+      "@roles/*": ["src/roles/*"],
+      "@security/*": ["src/security/*"],
+      "@users/*": ["src/users/*"],
+      "@test/*": ["test/*"],
+      "@assets/*": ["assets/*"],
+    }
   },
   "exclude": [
     "test",
     "**/*spec.ts"
-  ]
+  ],
 }
