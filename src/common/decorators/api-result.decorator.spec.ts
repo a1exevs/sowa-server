@@ -1,14 +1,14 @@
-import { ApiResult } from "@common/decorators";
+import { ApiResult } from '@common/decorators';
 
-import { CommonResponse } from "@common/dto";
+import { CommonResponse } from '@common/dto';
 
-const STATUS = 5
-const DESCRIPTION = 'DESCRIPTION'
+const STATUS = 5;
+const DESCRIPTION = 'DESCRIPTION';
 
 class TestType {}
 
 class TestClass {
-  @ApiResult({status: STATUS, description: DESCRIPTION, type: TestType})
+  @ApiResult({ status: STATUS, description: DESCRIPTION, type: TestType })
   public testFunction() {}
 }
 
@@ -21,7 +21,7 @@ describe('ApiResultDecorator', () => {
     const testClass = new TestClass();
     testClass.testFunction();
     const models = Reflect.getMetadata('swagger/apiExtraModels', TestClass.prototype.testFunction);
-    const responseData = Reflect.getMetadata('swagger/apiResponse', TestClass.prototype.testFunction)
+    const responseData = Reflect.getMetadata('swagger/apiResponse', TestClass.prototype.testFunction);
     expect(models).toEqual([CommonResponse.Dto, TestType]);
     expect(responseData[STATUS]).toBeDefined();
     expect(responseData[STATUS].description).toBe(DESCRIPTION);

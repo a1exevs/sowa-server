@@ -1,6 +1,6 @@
-import { validateDto } from "@test/unit/helpers";
-import { SetUserAvatarRequest } from "@profiles/dto";
-import { ErrorMessages } from "@common/constants";
+import { validateDto } from '@test/unit/helpers';
+import { SetUserAvatarRequest } from '@profiles/dto';
+import { ErrorMessages } from '@common/constants';
 
 describe('SetUserAvatarRequest', () => {
   beforeEach(async () => {

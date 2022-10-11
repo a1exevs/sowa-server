@@ -1,21 +1,21 @@
-import '@root/string.extensions'
+import '@root/string.extensions';
 
-import { Test, TestingModule } from "@nestjs/testing";
-import { HttpException, HttpStatus } from "@nestjs/common";
+import { Test, TestingModule } from '@nestjs/testing';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
-import { ProfilesService } from "@profiles/profiles.service";
-import { UserAvatarsService } from "@profiles/user-avatars.service";
-import { UserCommonInfoService } from "@profiles/user-common-Info.service";
-import { UserContactsService } from "@profiles/user-contacts.service";
-import { UsersService } from "@users/users.service";
-import { FilesService } from "@files/files.service";
-import { UserCommonInfo } from "@profiles/user-common-info.model";
-import { UserAvatar } from "@profiles/user-avatars.model";
-import { UserContact } from "@profiles/user-contacts.model";
-import { User } from "@users/users.model";
-import { SetProfileRequest } from "@profiles/dto";
-import { sendPseudoError, loadTestFile, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from "@test/unit/helpers";
-import { ErrorMessages } from "@common/constants";
+import { ProfilesService } from '@profiles/profiles.service';
+import { UserAvatarsService } from '@profiles/user-avatars.service';
+import { UserCommonInfoService } from '@profiles/user-common-Info.service';
+import { UserContactsService } from '@profiles/user-contacts.service';
+import { UsersService } from '@users/users.service';
+import { FilesService } from '@files/files.service';
+import { UserCommonInfo } from '@profiles/user-common-info.model';
+import { UserAvatar } from '@profiles/user-avatars.model';
+import { UserContact } from '@profiles/user-contacts.model';
+import { User } from '@users/users.model';
+import { SetProfileRequest } from '@profiles/dto';
+import { sendPseudoError, loadTestFile, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from '@test/unit/helpers';
+import { ErrorMessages } from '@common/constants';
 
 describe('ProfilesController', () => {
   let profilesService: ProfilesService;
@@ -36,36 +36,36 @@ describe('ProfilesController', () => {
           provide: UserAvatarsService,
           useValue: {
             getAvatarByUserId: jest.fn(x => x),
-            setAvatarData: jest.fn(x => x)
-          }
+            setAvatarData: jest.fn(x => x),
+          },
         },
         {
           provide: UserCommonInfoService,
           useValue: {
             getCommonInfoByUserId: jest.fn(x => x),
-            setCommonInfo: jest.fn(x => x)
-          }
+            setCommonInfo: jest.fn(x => x),
+          },
         },
         {
           provide: UserContactsService,
           useValue: {
             getContactsByUserId: jest.fn(x => x),
-            setContacts: jest.fn(x => x)
-          }
+            setContacts: jest.fn(x => x),
+          },
         },
         {
           provide: UsersService,
           useValue: {
-            getUserById: jest.fn(x => x)
-          }
+            getUserById: jest.fn(x => x),
+          },
         },
         {
           provide: FilesService,
           useValue: {
-            addJPEGFile: jest.fn(x => x)
-          }
+            addJPEGFile: jest.fn(x => x),
+          },
         },
-      ]
+      ],
     }).compile();
     profilesService = moduleRef.get<ProfilesService>(ProfilesService);
     userAvatarsService = moduleRef.get<UserAvatarsService>(UserAvatarsService);
@@ -102,7 +102,7 @@ describe('ProfilesController', () => {
       const fullName = 'lord Voldemort';
       const aboutMe = 'I am super wizard in the World';
       const lookingForAJob = false;
-      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians"
+      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians";
       const largeUploadedPhotoURL = 'sowa.com/profiles/1/large-photo';
       const smallUploadedPhotoURL = 'sowa.com/profiles/1/small-photo';
       const vk = 'volodya.vk.com';
@@ -117,12 +117,12 @@ describe('ProfilesController', () => {
         fullName,
         aboutMe,
         lookingForAJob,
-        lookingForAJobDescription
-      }
+        lookingForAJobDescription,
+      };
       const avatar: Partial<UserAvatar> = {
         small: smallUploadedPhotoURL,
-        large: largeUploadedPhotoURL
-      }
+        large: largeUploadedPhotoURL,
+      };
       const contact: Partial<UserContact> = {
         vk,
         facebook,
@@ -131,21 +131,21 @@ describe('ProfilesController', () => {
         instagram,
         mainLink,
         website,
-        youtube
-      }
-      const user: Partial<User> = { id: userId }
+        youtube,
+      };
+      const user: Partial<User> = { id: userId };
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(user as User);
-      })
+      });
       jest.spyOn(userCommonInfoService, 'getCommonInfoByUserId').mockImplementation(() => {
         return Promise.resolve(commonInfo as UserCommonInfo);
-      })
+      });
       jest.spyOn(userAvatarsService, 'getAvatarByUserId').mockImplementation(() => {
         return Promise.resolve(avatar as UserAvatar);
-      })
+      });
       jest.spyOn(userContactsService, 'getContactsByUserId').mockImplementation(() => {
         return Promise.resolve(contact as UserContact);
-      })
+      });
 
       const profileData = await profilesService.getUserProfile(userId);
 
@@ -166,19 +166,19 @@ describe('ProfilesController', () => {
     });
     it('should be successful result (with empty fields if data does not exist yet)', async () => {
       const userId = 1;
-      const user: Partial<User> = { id: userId }
+      const user: Partial<User> = { id: userId };
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(user as User);
-      })
+      });
       jest.spyOn(userCommonInfoService, 'getCommonInfoByUserId').mockImplementation(() => {
         return Promise.resolve(null);
-      })
+      });
       jest.spyOn(userAvatarsService, 'getAvatarByUserId').mockImplementation(() => {
         return Promise.resolve(null);
-      })
+      });
       jest.spyOn(userContactsService, 'getContactsByUserId').mockImplementation(() => {
         return Promise.resolve(null);
-      })
+      });
 
       const profileData = await profilesService.getUserProfile(userId);
 
@@ -204,12 +204,12 @@ describe('ProfilesController', () => {
       expect(userCommonInfoService.getCommonInfoByUserId).toBeCalledWith(userId);
       expect(userContactsService.getContactsByUserId).toBeCalledTimes(1);
       expect(userContactsService.getContactsByUserId).toBeCalledWith(userId);
-    })
+    });
     it('should throw exception (user with ID was not found', async () => {
       const userId = 2;
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(null);
-      })
+      });
 
       try {
         await profilesService.getUserProfile(userId);
@@ -223,7 +223,7 @@ describe('ProfilesController', () => {
         expect(userCommonInfoService.getCommonInfoByUserId).toBeCalledTimes(0);
         expect(userContactsService.getContactsByUserId).toBeCalledTimes(0);
       }
-    })
+    });
   });
 
   describe('ProfilesService - setUserProfile', () => {
@@ -232,7 +232,7 @@ describe('ProfilesController', () => {
       const fullName = 'lord Voldemort';
       const aboutMe = 'I am super wizard in the World';
       const lookingForAJob = false;
-      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians"
+      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians";
       const vk = 'volodya.vk.com';
       const facebook = 'volodya.facebook.com';
       const github = 'volodya.github.com';
@@ -245,8 +245,8 @@ describe('ProfilesController', () => {
         fullName,
         aboutMe,
         lookingForAJob,
-        lookingForAJobDescription
-      }
+        lookingForAJobDescription,
+      };
       const contact: Partial<UserContact> = {
         vk,
         facebook,
@@ -255,9 +255,9 @@ describe('ProfilesController', () => {
         instagram,
         mainLink,
         website,
-        youtube
-      }
-      const user: Partial<User> = { id: userId }
+        youtube,
+      };
+      const user: Partial<User> = { id: userId };
       const dto: SetProfileRequest.Dto = {
         fullName,
         aboutMe,
@@ -271,19 +271,19 @@ describe('ProfilesController', () => {
           instagram,
           mainLink,
           website,
-          youtube
-        }
-      }
+          youtube,
+        },
+      };
 
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(user as User);
-      })
+      });
       jest.spyOn(userCommonInfoService, 'setCommonInfo').mockImplementation(() => {
         return Promise.resolve(commonInfo as UserCommonInfo);
-      })
+      });
       jest.spyOn(userContactsService, 'setContacts').mockImplementation(() => {
         return Promise.resolve(contact as UserContact);
-      })
+      });
 
       const profileData = await profilesService.setUserProfile(userId, dto);
 
@@ -305,30 +305,30 @@ describe('ProfilesController', () => {
       const fullName = 'lord Voldemort';
       const aboutMe = 'I am super wizard in the World';
       const lookingForAJob = false;
-      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians"
+      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians";
       const commonInfo: Partial<UserCommonInfo> = {
         fullName,
         aboutMe,
         lookingForAJob,
-        lookingForAJobDescription
-      }
-      const user: Partial<User> = { id: userId }
+        lookingForAJobDescription,
+      };
+      const user: Partial<User> = { id: userId };
       const dto: SetProfileRequest.Dto = {
         fullName,
         aboutMe,
         lookingForAJob,
         lookingForAJobDescription,
-      }
+      };
 
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(user as User);
-      })
+      });
       jest.spyOn(userCommonInfoService, 'setCommonInfo').mockImplementation(() => {
         return Promise.resolve(commonInfo as UserCommonInfo);
-      })
+      });
       jest.spyOn(userContactsService, 'getContactsByUserId').mockImplementation(() => {
         return Promise.resolve(null);
-      })
+      });
 
       const profileData = await profilesService.setUserProfile(userId, dto);
 
@@ -356,7 +356,7 @@ describe('ProfilesController', () => {
       const userId = 2;
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(null);
-      })
+      });
 
       try {
         await profilesService.setUserProfile(userId, null);
@@ -376,28 +376,28 @@ describe('ProfilesController', () => {
   describe('ProfilesService - setUserProfilePhoto', () => {
     it('should be successful result', async () => {
       const userId = 1;
-      const user: Partial<User> = { id: userId }
+      const user: Partial<User> = { id: userId };
       const photo = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
       const originalImageURL = 'originalImageURL';
       const smallImageURL = 'smallImageURL';
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(user as User);
-      })
+      });
       jest.spyOn(filesService, 'addJPEGFile').mockImplementation(() => {
         return Promise.resolve({
           originalImageURL,
           originalImagePath: 'originalImagePath',
           smallImageURL,
-          smallImagePath: 'smallImagePath'
+          smallImagePath: 'smallImagePath',
         });
-      })
+      });
       jest.spyOn(userAvatarsService, 'setAvatarData').mockImplementation(() => {
         return Promise.resolve({
           userId,
           large: originalImageURL,
-          small: smallImageURL
+          small: smallImageURL,
         } as UserAvatar);
-      })
+      });
 
       const profilePhotoData = await profilesService.setUserProfilePhoto(photo, userId);
 
@@ -408,14 +408,17 @@ describe('ProfilesController', () => {
       expect(filesService.addJPEGFile).toBeCalledTimes(1);
       expect(filesService.addJPEGFile).toBeCalledWith(photo, '', `/users/${userId}/`);
       expect(userAvatarsService.setAvatarData).toBeCalledTimes(1);
-      expect(userAvatarsService.setAvatarData).toBeCalledWith({ small: smallImageURL, large: originalImageURL }, userId);
+      expect(userAvatarsService.setAvatarData).toBeCalledWith(
+        { small: smallImageURL, large: originalImageURL },
+        userId,
+      );
     });
     it('should throw exception (user with ID was not found)', async () => {
       const userId = 1;
       const photo = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(null);
-      })
+      });
 
       try {
         await profilesService.setUserProfilePhoto(photo, userId);
@@ -431,15 +434,15 @@ describe('ProfilesController', () => {
     });
     it('should throw exception (image adding error)', async () => {
       const userId = 1;
-      const user: Partial<User> = { id: userId }
+      const user: Partial<User> = { id: userId };
       const file = null;
       const errorMessage = ErrorMessages.ru.FILE_NOT_SELECTED;
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(user as User);
-      })
+      });
       jest.spyOn(filesService, 'addJPEGFile').mockImplementation(() => {
         throw new HttpException(errorMessage, HttpStatus.BAD_REQUEST);
-      })
+      });
       try {
         await profilesService.setUserProfilePhoto(file, userId);
         sendPseudoError();

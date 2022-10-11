@@ -1,18 +1,18 @@
-import { HttpStatus } from "@nestjs/common";
+import { HttpStatus } from '@nestjs/common';
 
-import { Routes } from "@common/constants";
+import { Routes } from '@common/constants';
 
-import * as request from "supertest";
-import * as path from "path";
+import * as request from 'supertest';
+import * as path from 'path';
 
 describe('Authorized user methods', () => {
   let URL;
 
   beforeAll(() => {
-    const baseURL = process.env.SERVER_URL
-    const port = process.env.PORT
-    URL = `${baseURL}:${port}/api/1.0/`
-  })
+    const baseURL = process.env.SERVER_URL;
+    const port = process.env.PORT;
+    URL = `${baseURL}:${port}/api/1.0/`;
+  });
 
   describe(Routes.ENDPOINT_AUTH, () => {
     describe('/me GET', () => {
@@ -119,7 +119,7 @@ describe('Authorized user methods', () => {
           return request(URL + Routes.ENDPOINT_FOLLOWERS)
             .delete(`/${userId}`)
             .expect(HttpStatus.UNAUTHORIZED);
-        })
+        });
       });
     });
 

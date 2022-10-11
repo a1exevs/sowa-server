@@ -1,6 +1,6 @@
-import { validateDto } from "@test/unit/helpers";
-import { CreateRoleRequest } from "@roles/dto/create-role.request";
-import { ErrorMessages } from "@common/constants";
+import { validateDto } from '@test/unit/helpers';
+import { CreateRoleRequest } from '@roles/dto/create-role.request';
+import { ErrorMessages } from '@common/constants';
 
 describe('CreateRoleRequest', () => {
   beforeEach(async () => {

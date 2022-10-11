@@ -1,8 +1,8 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { getModelToken } from "@nestjs/sequelize";
+import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/sequelize';
 
-import { UserContactsService } from "@profiles/user-contacts.service";
-import { UserContact } from "@profiles/user-contacts.model";
+import { UserContactsService } from '@profiles/user-contacts.service';
+import { UserContact } from '@profiles/user-contacts.model';
 
 describe('UserContactsService', () => {
   let userContactsService: UserContactsService;
@@ -18,9 +18,9 @@ describe('UserContactsService', () => {
           provide: getModelToken(UserContact),
           useValue: {
             findOne: jest.fn(x => x),
-            upsert: jest.fn(x => x)
-          }
-        }
+            upsert: jest.fn(x => x),
+          },
+        },
       ],
     }).compile();
     userContactsService = module.get<UserContactsService>(UserContactsService);
@@ -55,11 +55,11 @@ describe('UserContactsService', () => {
         instagram,
         mainLink,
         website,
-        youtube
-      }
+        youtube,
+      };
       jest.spyOn(model, 'findOne').mockImplementation(() => {
         return Promise.resolve({ userId, ...contact } as UserContact);
-      })
+      });
       const contactsData = await userContactsService.getContactsByUserId(userId);
 
       expect(contactsData.userId).toBe(userId);
@@ -72,7 +72,7 @@ describe('UserContactsService', () => {
       expect(contactsData.website).toBe(website);
       expect(contactsData.youtube).toBe(youtube);
       expect(model.findOne).toBeCalledTimes(1);
-      expect(model.findOne).toBeCalledWith({ where: { userId }});
+      expect(model.findOne).toBeCalledWith({ where: { userId } });
     });
   });
 
@@ -95,15 +95,15 @@ describe('UserContactsService', () => {
         instagram,
         mainLink,
         website,
-        youtube
-      }
-      const contact: Partial<UserContact> = { userId, ...contactData }
+        youtube,
+      };
+      const contact: Partial<UserContact> = { userId, ...contactData };
       jest.spyOn(model, 'findOne').mockImplementation(() => {
         return Promise.resolve(contact as UserContact);
-      })
+      });
       jest.spyOn(model, 'upsert').mockImplementation(() => {
-        return Promise.resolve([{} as UserContact, true])
-      })
+        return Promise.resolve([{} as UserContact, true]);
+      });
       const result = await userContactsService.setContacts(userId, contactData);
       expect(result.userId).toBe(userId);
       expect(result.vk).toBe(vk);
@@ -117,7 +117,7 @@ describe('UserContactsService', () => {
       expect(model.upsert).toBeCalledTimes(1);
       expect(model.upsert).toBeCalledWith({ ...contactData, userId }, { returning: true });
       expect(model.findOne).toBeCalledTimes(1);
-      expect(model.findOne).toBeCalledWith({ where: { userId }});
+      expect(model.findOne).toBeCalledWith({ where: { userId } });
     });
   });
 });

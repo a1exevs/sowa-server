@@ -1,5 +1,5 @@
-import { checkForApiProperties } from "@test/unit/helpers";
-import { GetUserContactResponse } from "@profiles/dto";
+import { checkForApiProperties } from '@test/unit/helpers';
+import { GetUserContactResponse } from '@profiles/dto';
 
 describe('GetUserContactResponse', () => {
   beforeEach(async () => {
@@ -15,7 +15,7 @@ describe('GetUserContactResponse', () => {
       youtube: 'youtube',
       github: 'github',
       vk: 'vk',
-      mainLink: 'mainLink'
+      mainLink: 'mainLink',
     });
     checkForApiProperties(dto, GetUserContactResponse.Dto);
   });

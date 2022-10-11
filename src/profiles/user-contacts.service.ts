@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 
-import { SetUserContactRequest } from "@profiles/dto";
-import { UserContact } from "@profiles/user-contacts.model";
+import { SetUserContactRequest } from '@profiles/dto';
+import { UserContact } from '@profiles/user-contacts.model';
 
 @Injectable()
 export class UserContactsService {

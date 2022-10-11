@@ -1,11 +1,11 @@
-import '@root/string.extensions'
+import '@root/string.extensions';
 
-import { HttpStatus } from "@nestjs/common";
+import { HttpStatus } from '@nestjs/common';
 
-import { Routes, ResultCodes, ErrorMessages } from "@common/constants";
-import { SetProfileRequest, SetUserContactRequest } from "@profiles/dto";
+import { Routes, ResultCodes, ErrorMessages } from '@common/constants';
+import { SetProfileRequest, SetUserContactRequest } from '@profiles/dto';
 
-import * as path from "path";
+import * as path from 'path';
 import * as request from 'supertest';
 
 describe('User workflow', () => {
@@ -22,44 +22,35 @@ describe('User workflow', () => {
   const user2Password = '87654321';
 
   const user1Contacts = new SetUserContactRequest.Dto(
-  'facebook',
-  'website',
-  'twitter',
-  'instagram',
-  'youtube',
-  'github',
-  'vk',
-  'mainLink'
+    'facebook',
+    'website',
+    'twitter',
+    'instagram',
+    'youtube',
+    'github',
+    'vk',
+    'mainLink',
   );
-  const emptyUser1Contacts = new SetUserContactRequest.Dto(
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    ''
-  );
+  const emptyUser1Contacts = new SetUserContactRequest.Dto('', '', '', '', '', '', '', '');
   const user1Profile = new SetProfileRequest.Dto(
-  'lord Voldemort',
-  'I am super wizard in the World',
-  false,
-  "I don't need to work. I need to seize power in the world of magicians",
-    user1Contacts
+    'lord Voldemort',
+    'I am super wizard in the World',
+    false,
+    "I don't need to work. I need to seize power in the world of magicians",
+    user1Contacts,
   );
   const user1ProfileWithoutContacts = new SetProfileRequest.Dto(
     'lord Voldemort',
     'I am super wizard in the World',
     false,
-    "I don't need to work. I need to seize power in the world of magicians"
+    "I don't need to work. I need to seize power in the world of magicians",
   );
 
   beforeAll(() => {
-    const baseURL = process.env.SERVER_URL
-    const port = process.env.PORT
-    URL = `${baseURL}:${port}/api/1.0/`
-  })
+    const baseURL = process.env.SERVER_URL;
+    const port = process.env.PORT;
+    URL = `${baseURL}:${port}/api/1.0/`;
+  });
 
   describe(Routes.ENDPOINT_AUTH, () => {
     describe('/registration POST', () => {
@@ -68,12 +59,18 @@ describe('User workflow', () => {
           .post('/registration')
           .send({ email: 1, password: 2 })
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeNull();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(2);
-            expect(response.body.messages[0]).toBe( `email - ${ErrorMessages.ru.MUST_HAS_EMAIL_FORMAT}, ${ErrorMessages.ru.MUST_BE_A_STRING}`);
-            expect(response.body.messages[1]).toBe(`password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}, ${ErrorMessages.ru.MUST_BE_A_STRING}`);
+            expect(response.body.messages[0]).toBe(
+              `email - ${ErrorMessages.ru.MUST_HAS_EMAIL_FORMAT}, ${ErrorMessages.ru.MUST_BE_A_STRING}`,
+            );
+            expect(response.body.messages[1]).toBe(
+              `password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}, ${
+                ErrorMessages.ru.MUST_BE_A_STRING
+              }`,
+            );
             expect(response.body.fieldsErrors).toBeDefined();
             expect(response.body.fieldsErrors.length).toBe(0);
             expect(response.body.resultCode).toBeDefined();
@@ -85,12 +82,14 @@ describe('User workflow', () => {
           .post('/registration')
           .send({ email: 'user1gmail.com', password: 'pass' })
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeNull();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(2);
             expect(response.body.messages[0]).toBe(`email - ${ErrorMessages.ru.MUST_HAS_EMAIL_FORMAT}`);
-            expect(response.body.messages[1]).toBe(`password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}`);
+            expect(response.body.messages[1]).toBe(
+              `password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}`,
+            );
             expect(response.body.fieldsErrors).toBeDefined();
             expect(response.body.fieldsErrors.length).toBe(0);
             expect(response.body.resultCode).toBeDefined();
@@ -102,11 +101,13 @@ describe('User workflow', () => {
           .post('/registration')
           .send({ email: 'user1@gmail.com', password: '123456789012345678901234567890123456789012345678901' })
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeNull();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(1);
-            expect(response.body.messages[0]).toBe(`password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}`);
+            expect(response.body.messages[0]).toBe(
+              `password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}`,
+            );
             expect(response.body.fieldsErrors).toBeDefined();
             expect(response.body.fieldsErrors.length).toBe(0);
             expect(response.body.resultCode).toBeDefined();
@@ -118,7 +119,7 @@ describe('User workflow', () => {
           .post('/registration')
           .send({ email: user1Email, password: user1Password })
           .expect(HttpStatus.CREATED)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeDefined();
             expect(response.body.data.userId).toBeDefined();
             user1Id = response.body.data.userId;
@@ -138,7 +139,7 @@ describe('User workflow', () => {
           .post('/registration')
           .send({ email: user1Email, password: user1Password })
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeNull();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(1);
@@ -154,7 +155,7 @@ describe('User workflow', () => {
           .post('/registration')
           .send({ email: user2Email, password: user2Password })
           .expect(HttpStatus.CREATED)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeDefined();
             expect(response.body.data.userId).toBeDefined();
             user2Id = response.body.data.userId;
@@ -177,7 +178,7 @@ describe('User workflow', () => {
           .post('/login')
           .send({ email: user1Email, password: user1Password + '123' })
           .expect(HttpStatus.UNAUTHORIZED)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeNull();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(1);
@@ -193,7 +194,7 @@ describe('User workflow', () => {
           .post('/login')
           .send({ email: user1Email, password: user1Password })
           .expect(HttpStatus.CREATED)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeDefined();
             expect(response.body.data.userId).toBe(user1Id);
             user1Id = response.body.data.userId;
@@ -219,7 +220,7 @@ describe('User workflow', () => {
         return request(URL + Routes.ENDPOINT_SECURITY)
           .get('/get-captcha-url')
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeDefined();
             expect(response.body.data.captchaURL).toBeDefined();
             expect(response.body.data.captchaURL.includes('security/captcha')).toBeTruthy();
@@ -242,7 +243,7 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeDefined();
             expect(response.body.data.id).toBe(user1Id);
             expect(response.body.data.email).toBe(user1Email);
@@ -263,7 +264,7 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.CREATED)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeDefined();
             expect(response.body.data.userId).toBe(user1Id);
             user1Id = response.body.data.userId;
@@ -291,7 +292,7 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.length).toBe(2);
             expect(response.body[0].includes('page')).toBeTruthy();
             expect(response.body[1].includes('count')).toBeTruthy();
@@ -303,7 +304,7 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.length).toBe(2);
             expect(response.body[0].includes('page')).toBeTruthy();
             expect(response.body[1].includes('count')).toBeTruthy();
@@ -315,7 +316,7 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.length).toBe(2);
             expect(response.body[0].includes('page')).toBeTruthy();
             expect(response.body[1].includes('count')).toBeTruthy();
@@ -327,7 +328,7 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.length).toBe(1);
             expect(response.body[0].includes('count')).toBeTruthy();
           });
@@ -339,7 +340,7 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.items).toBeDefined();
             expect(response.body.items.length).toBeLessThanOrEqual(count);
             expect(response.body.totalCount).toBeDefined();
@@ -352,7 +353,7 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.items).toBeDefined();
             expect(response.body.items.length).toBeLessThanOrEqual(count);
             expect(response.body.totalCount).toBeDefined();
@@ -367,9 +368,11 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.length).toBe(1);
-            expect(response.body[0]).toBe(`status - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_GREATER_THAN_N.format(30)}`);
+            expect(response.body[0]).toBe(
+              `status - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_GREATER_THAN_N.format(30)}`,
+            );
           });
       });
       it('Set user status', () => {
@@ -380,7 +383,7 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.result).toBe(true);
             user1Status = response.body ? status : '';
           });
@@ -418,7 +421,7 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.status).toBeDefined();
             expect(response.body.status).toBe(user1Status);
           });
@@ -433,12 +436,12 @@ describe('User workflow', () => {
         const content = 'Content';
         return request(URL + Routes.ENDPOINT_POSTS)
           .post('')
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .field({ title, content })
           .attach('image', path.resolve(__dirname, './../../assets/sowa.jpg'))
           .expect(HttpStatus.CREATED)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.title).toBe(title);
             expect(response.body.content).toBe(content);
             expect(response.body.userId).toBe(user1Id);
@@ -455,11 +458,11 @@ describe('User workflow', () => {
         const requestDto = new SetProfileRequest.Dto(1, 2, 3, 4, contacts);
         return request(URL + Routes.ENDPOINT_PROFILES)
           .put('')
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .send(requestDto)
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.length).toBe(Object.keys(requestDto).length);
             expect(response.body[response.body.length - 1].length).toBe(Object.keys(contacts).length);
           });
@@ -467,11 +470,11 @@ describe('User workflow', () => {
       it('Change user profiles (with empty contact data', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .put('')
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .send(user1ProfileWithoutContacts)
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.fullName).toBe(user1Profile.fullName);
             expect(response.body.aboutMe).toBe(user1Profile.aboutMe);
             expect(response.body.lookingForAJob).toBe(user1Profile.lookingForAJob);
@@ -486,11 +489,11 @@ describe('User workflow', () => {
       it('Change user profiles', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .put('')
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .send(user1Profile)
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.fullName).toBe(user1Profile.fullName);
             expect(response.body.aboutMe).toBe(user1Profile.aboutMe);
             expect(response.body.lookingForAJob).toBe(user1Profile.lookingForAJob);
@@ -507,21 +510,21 @@ describe('User workflow', () => {
       it('Get user profiles (bad request - user id is a string)', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .get(`/${user1Id}a`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.BAD_REQUEST);
       });
       it('Get user profiles (bad request - user is not found)', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .get(`/555`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.BAD_REQUEST);
       });
       it('Get user profiles', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .get(`/${user1Id}`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.OK)
           .expect(response => {
@@ -541,11 +544,11 @@ describe('User workflow', () => {
       it('Change user profiles photo (bad request = file is not selected)', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .put('/photo')
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .send({ image: {} })
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeNull();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(1);
@@ -559,11 +562,11 @@ describe('User workflow', () => {
       it('Change user profiles photo', () => {
         return request(URL + Routes.ENDPOINT_PROFILES)
           .put('/photo')
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .attach('image', path.resolve(__dirname, './../../assets/sowa.jpg'))
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.data).toBeDefined();
             expect(response.body.data.photos).toBeDefined();
             expect(response.body.data.photos.small).toBeDefined();
@@ -585,7 +588,7 @@ describe('User workflow', () => {
         const userId = user2Id;
         return request(URL + Routes.ENDPOINT_FOLLOWERS)
           .post(`/${userId}a`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.BAD_REQUEST);
       });
@@ -593,7 +596,7 @@ describe('User workflow', () => {
         const userId = -1;
         return request(URL + Routes.ENDPOINT_FOLLOWERS)
           .post(`/${userId}`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.BAD_REQUEST);
       });
@@ -601,7 +604,7 @@ describe('User workflow', () => {
         const userId = 555;
         return request(URL + Routes.ENDPOINT_FOLLOWERS)
           .post(`/${userId}`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.NOT_FOUND);
       });
@@ -609,10 +612,10 @@ describe('User workflow', () => {
         const userId = user2Id;
         return request(URL + Routes.ENDPOINT_FOLLOWERS)
           .post(`/${userId}`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.CREATED)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.result).toBe(true);
           });
       });
@@ -620,13 +623,15 @@ describe('User workflow', () => {
         const userId = user2Id;
         return request(URL + Routes.ENDPOINT_FOLLOWERS)
           .post(`/${userId}`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
-            expect(response.body.message).toBe(ErrorMessages.ru.USER_M_IS_ALREADY_A_FOLLOWER_OF_USER_N.format(user1Id, userId));
+          .expect(response => {
+            expect(response.body.message).toBe(
+              ErrorMessages.ru.USER_M_IS_ALREADY_A_FOLLOWER_OF_USER_N.format(user1Id, userId),
+            );
           });
-      })
+      });
     });
   });
 
@@ -639,12 +644,12 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.items).toBeDefined();
             expect(response.body.items.length).toBeLessThanOrEqual(count);
             expect(response.body.totalCount).toBeDefined();
             const users = response.body.items;
-            const user = users.find( user => user.id === user2Id);
+            const user = users.find(user => user.id === user2Id);
             expect(user).toBeDefined();
             expect(user.followed).toBe(true);
           });
@@ -658,7 +663,7 @@ describe('User workflow', () => {
         const userId = user2Id;
         return request(URL + Routes.ENDPOINT_FOLLOWERS)
           .delete(`/${userId}a`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.BAD_REQUEST);
       });
@@ -666,7 +671,7 @@ describe('User workflow', () => {
         const userId = -1;
         return request(URL + Routes.ENDPOINT_FOLLOWERS)
           .delete(`/${userId}`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.BAD_REQUEST);
       });
@@ -674,7 +679,7 @@ describe('User workflow', () => {
         const userId = 555;
         return request(URL + Routes.ENDPOINT_FOLLOWERS)
           .delete(`/${userId}`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.NOT_FOUND);
       });
@@ -682,24 +687,26 @@ describe('User workflow', () => {
         const userId = user2Id;
         return request(URL + Routes.ENDPOINT_FOLLOWERS)
           .delete(`/${userId}`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.result).toBe(true);
           });
-      })
+      });
       it('Unfollow user (bad request - user was followed before)', () => {
         const userId = user2Id;
         return request(URL + Routes.ENDPOINT_FOLLOWERS)
           .delete(`/${userId}`)
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.BAD_REQUEST)
-          .expect((response) => {
-            expect(response.body.message).toBe(ErrorMessages.ru.USER_M_IS_NOT_A_FOLLOWER_OF_USER_N.format(user1Id, userId));
+          .expect(response => {
+            expect(response.body.message).toBe(
+              ErrorMessages.ru.USER_M_IS_NOT_A_FOLLOWER_OF_USER_N.format(user1Id, userId),
+            );
           });
-      })
+      });
     });
   });
 
@@ -712,12 +719,12 @@ describe('User workflow', () => {
           .set('Cookie', cookies)
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.items).toBeDefined();
             expect(response.body.items.length).toBeLessThanOrEqual(count);
             expect(response.body.totalCount).toBeDefined();
             const users = response.body.items;
-            const user = users.find( user => user.id === user2Id);
+            const user = users.find(user => user.id === user2Id);
             expect(user).toBeDefined();
             expect(user.followed).toBe(false);
           });
@@ -730,10 +737,10 @@ describe('User workflow', () => {
       it('Logout', () => {
         return request(URL + Routes.ENDPOINT_AUTH)
           .delete('/logout')
-          .auth(accessToken, { type: 'bearer'})
+          .auth(accessToken, { type: 'bearer' })
           .set('Cookie', cookies)
           .expect(HttpStatus.OK)
-          .expect((response) => {
+          .expect(response => {
             expect(response.body.result).toBe(true);
             cookies = response.get('Set-Cookie');
             expect(cookies[0]).toBeDefined();

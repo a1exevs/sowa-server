@@ -1,8 +1,8 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { getModelToken } from "@nestjs/sequelize";
+import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/sequelize';
 
-import { UserAvatarsService } from "@profiles/user-avatars.service";
-import { UserAvatar } from "@profiles/user-avatars.model";
+import { UserAvatarsService } from '@profiles/user-avatars.service';
+import { UserAvatar } from '@profiles/user-avatars.model';
 
 describe('UserAvatarsService', () => {
   let userAvatarsService: UserAvatarsService;
@@ -18,9 +18,9 @@ describe('UserAvatarsService', () => {
           provide: getModelToken(UserAvatar),
           useValue: {
             findOne: jest.fn(x => x),
-            upsert: jest.fn(x => x)
-          }
-        }
+            upsert: jest.fn(x => x),
+          },
+        },
       ],
     }).compile();
     userAvatarsService = module.get<UserAvatarsService>(UserAvatarsService);
@@ -43,13 +43,13 @@ describe('UserAvatarsService', () => {
       const large = 'large';
       jest.spyOn(model, 'findOne').mockImplementation(() => {
         return Promise.resolve({ userId, small, large } as UserAvatar);
-      })
+      });
       const avatar = await userAvatarsService.getAvatarByUserId(userId);
       expect(avatar.userId).toBe(userId);
       expect(avatar.small).toBe(small);
       expect(avatar.large).toBe(large);
       expect(model.findOne).toBeCalledTimes(1);
-      expect(model.findOne).toBeCalledWith({ where: { userId }});
+      expect(model.findOne).toBeCalledWith({ where: { userId } });
     });
   });
 
@@ -61,10 +61,10 @@ describe('UserAvatarsService', () => {
       const avatarData = { small, large };
       jest.spyOn(model, 'findOne').mockImplementation(() => {
         return Promise.resolve({ userId, ...avatarData } as UserAvatar);
-      })
+      });
       jest.spyOn(model, 'upsert').mockImplementation(() => {
-        return Promise.resolve([avatarData as UserAvatar, true])
-      })
+        return Promise.resolve([avatarData as UserAvatar, true]);
+      });
       const result = await userAvatarsService.setAvatarData(avatarData, userId);
       expect(result.userId).toBe(userId);
       expect(result.small).toBe(small);
@@ -72,7 +72,7 @@ describe('UserAvatarsService', () => {
       expect(model.upsert).toBeCalledTimes(1);
       expect(model.upsert).toBeCalledWith({ small, large, userId });
       expect(model.findOne).toBeCalledTimes(1);
-      expect(model.findOne).toBeCalledWith({ where: { userId }});
+      expect(model.findOne).toBeCalledWith({ where: { userId } });
     });
   });
 });

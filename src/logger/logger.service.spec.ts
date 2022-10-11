@@ -1,20 +1,20 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { existsSync, readFileSync } from "fs";
+import { Test, TestingModule } from '@nestjs/testing';
+import { existsSync, readFileSync } from 'fs';
 
-import { LoggerService } from "@logger/logger.service";
-import { removeTestLogsDir } from "@test/unit/helpers";
+import { LoggerService } from '@logger/logger.service';
+import { removeTestLogsDir } from '@test/unit/helpers';
 
-import * as path from "path"
-import * as fs from "fs"
+import * as path from 'path';
+import * as fs from 'fs';
 
 const getLogFilePath = () => {
   const date = new Date();
-  const year = date.getFullYear()
+  const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
 
   return path.resolve(__dirname, './../../', process.env.SERVER_LOGS) + `/${year}/${month}/${day}.ts`;
-}
+};
 
 describe('Logger', () => {
   let logger: LoggerService;
@@ -23,7 +23,7 @@ describe('Logger', () => {
     jest.clearAllTimers();
     jest.restoreAllMocks();
     const module: TestingModule = await Test.createTestingModule({
-      providers: [LoggerService]
+      providers: [LoggerService],
     }).compile();
 
     logger = module.get<LoggerService>(LoggerService);
@@ -48,7 +48,7 @@ describe('Logger', () => {
       logger.error(error, stack, context);
       expect(LoggerService.logToFile).toBeCalledTimes(1);
       expect(LoggerService.logToFile).toBeCalledWith(error, stack, context);
-    })
+    });
   });
 
   describe('LoggerService - logToFile', () => {
@@ -74,14 +74,14 @@ describe('Logger', () => {
     });
     it('should call async method for append of file (by default)', () => {
       jest.mock('fs');
-      jest.spyOn(fs, 'appendFile').mockImplementation((x) => x)
-      jest.spyOn(fs, 'appendFileSync').mockImplementation((x) => x)
-      jest.spyOn(fs, 'existsSync').mockImplementation(() => false)
-      jest.spyOn(fs, 'mkdirSync').mockImplementation(() => '')
+      jest.spyOn(fs, 'appendFile').mockImplementation(x => x);
+      jest.spyOn(fs, 'appendFileSync').mockImplementation(x => x);
+      jest.spyOn(fs, 'existsSync').mockImplementation(() => false);
+      jest.spyOn(fs, 'mkdirSync').mockImplementation(() => '');
       const logFilePath = getLogFilePath();
-      const logFileDir =logFilePath
+      const logFileDir = logFilePath
         .split('/')
-        .map((dir, index, array) => index === array.length - 1 ? '' : dir)
+        .map((dir, index, array) => (index === array.length - 1 ? '' : dir))
         .join('/');
       LoggerService.logToFile('message', 'stack', 'context');
       expect(fs.existsSync).toBeCalledTimes(1);
@@ -93,14 +93,14 @@ describe('Logger', () => {
     });
     it('should call sync method for append of file', () => {
       jest.mock('fs');
-      jest.spyOn(fs, 'appendFile').mockImplementation((x) => x)
-      jest.spyOn(fs, 'appendFileSync').mockImplementation((x) => x)
-      jest.spyOn(fs, 'existsSync').mockImplementation(() => true)
-      jest.spyOn(fs, 'mkdirSync').mockImplementation(() => '')
+      jest.spyOn(fs, 'appendFile').mockImplementation(x => x);
+      jest.spyOn(fs, 'appendFileSync').mockImplementation(x => x);
+      jest.spyOn(fs, 'existsSync').mockImplementation(() => true);
+      jest.spyOn(fs, 'mkdirSync').mockImplementation(() => '');
       const logFilePath = getLogFilePath();
-      const logFileDir =logFilePath
+      const logFileDir = logFilePath
         .split('/')
-        .map((dir, index, array) => index === array.length - 1 ? '' : dir)
+        .map((dir, index, array) => (index === array.length - 1 ? '' : dir))
         .join('/');
       LoggerService.logToFile('message', 'stack', 'context', false);
       expect(fs.existsSync).toBeCalledTimes(1);
@@ -110,4 +110,4 @@ describe('Logger', () => {
       expect(fs.appendFileSync).toBeCalledTimes(1);
     });
   });
-})
+});

@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export namespace OperationResultResponse {
   export class Dto {
@@ -6,7 +6,7 @@ export namespace OperationResultResponse {
     readonly result: any;
 
     constructor(dto: Dto) {
-      this.result = dto.result
+      this.result = dto.result;
     }
   }
 

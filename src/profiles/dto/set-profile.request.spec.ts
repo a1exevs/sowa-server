@@ -1,6 +1,6 @@
-import { validateDto } from "@test/unit/helpers";
-import { SetProfileRequest, SetUserContactRequest } from "@profiles/dto";
-import { ErrorMessages } from "@common/constants";
+import { validateDto } from '@test/unit/helpers';
+import { SetProfileRequest, SetUserContactRequest } from '@profiles/dto';
+import { ErrorMessages } from '@common/constants';
 
 describe('SetProfileRequest', () => {
   beforeEach(async () => {
@@ -22,7 +22,7 @@ describe('SetProfileRequest', () => {
         'youtube',
         'github',
         'vk',
-        'mainLink'
+        'mainLink',
       );
       const dto = new SetProfileRequest.Dto('fullName', 'aboutMe', true, 'description', contacts);
       const errors = await validateDto(SetProfileRequest.Dto, dto);
@@ -42,20 +42,11 @@ describe('SetProfileRequest', () => {
       expect(errors[3].property).toBe('lookingForAJobDescription');
     });
     it('should has errors (nested object fields have not requirement types)', async () => {
-      const contacts = new SetUserContactRequest.Dto(
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8
-      );
+      const contacts = new SetUserContactRequest.Dto(1, 2, 3, 4, 5, 6, 7, 8);
       const dto = new SetProfileRequest.Dto('fullName', 'aboutMe', true, 'description', contacts);
       const errors = await validateDto(SetProfileRequest.Dto, dto);
       const contactsFieldsCount = Object.keys(contacts).length;
-      expect.assertions(3 + contactsFieldsCount * 2)
+      expect.assertions(3 + contactsFieldsCount * 2);
       expect(errors.length).toBe(1);
       expect(errors[0].property).toBe('contacts');
       expect(errors[0].children.length).toBe(contactsFieldsCount);

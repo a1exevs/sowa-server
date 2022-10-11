@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 
-import { UserAvatar } from "@profiles/user-avatars.model";
-import { SetUserAvatarRequest } from "@profiles/dto";
+import { UserAvatar } from '@profiles/user-avatars.model';
+import { SetUserAvatarRequest } from '@profiles/dto';
 
 @Injectable()
 export class UserAvatarsService {

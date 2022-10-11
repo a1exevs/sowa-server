@@ -1,6 +1,6 @@
-import { validateDto } from "@test/unit/helpers";
-import { LoginRequest } from "@auth/dto";
-import { ErrorMessages } from "@common/constants";
+import { validateDto } from '@test/unit/helpers';
+import { LoginRequest } from '@auth/dto';
+import { ErrorMessages } from '@common/constants';
 
 describe('LoginRequest', () => {
   beforeEach(async () => {
@@ -42,5 +42,5 @@ describe('LoginRequest', () => {
       expect(errors[2].property).toBe('captcha');
       expect(errors[2].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
     });
-  })
+  });
 });

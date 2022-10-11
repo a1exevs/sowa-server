@@ -1,6 +1,6 @@
-import { validateDto } from "@test/unit/helpers";
-import { BanUserRequest } from "@users/dto/ban-user.request";
-import { ErrorMessages } from "@common/constants";
+import { validateDto } from '@test/unit/helpers';
+import { BanUserRequest } from '@users/dto/ban-user.request';
+import { ErrorMessages } from '@common/constants';
 
 describe('BanUserRequest', () => {
   beforeEach(async () => {

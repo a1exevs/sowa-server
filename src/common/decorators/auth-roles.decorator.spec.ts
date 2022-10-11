@@ -1,4 +1,4 @@
-import { AuthRoles, ROLES_KEY } from "@common/decorators";
+import { AuthRoles, ROLES_KEY } from '@common/decorators';
 
 const TEST_ROLE_1 = 'test-role1';
 const TEST_ROLE_2 = 'test-role2';

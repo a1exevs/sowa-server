@@ -1,6 +1,6 @@
-import { CreatePostRequest } from "@posts/dto";
-import { validateDto } from "@test/unit/helpers";
-import { ErrorMessages } from "@common/constants";
+import { CreatePostRequest } from '@posts/dto';
+import { validateDto } from '@test/unit/helpers';
+import { ErrorMessages } from '@common/constants';
 
 describe('CreatePostRequest', () => {
   beforeEach(async () => {
@@ -22,5 +22,5 @@ describe('CreatePostRequest', () => {
       expect(errors[1].property).toBe('content');
       expect(errors[1].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
     });
-  })
+  });
 });

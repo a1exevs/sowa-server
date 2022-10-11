@@ -44,6 +44,6 @@ export const ErrorMessages = {
     FAILED_TO_CREATE_ROLE: 'Не удалось создать роль',
     FAILED_TO_FIND_USER: 'Не удалось найти пользователя',
     FAILED_TO_FIND_ROLE: 'Не удалось найти роль',
-    FAILED_TO_CREATE_USER: 'Не удалось создать пользователя'
-  }
+    FAILED_TO_CREATE_USER: 'Не удалось создать пользователя',
+  },
 };

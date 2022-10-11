@@ -1,1 +1,1 @@
-export { formatString } from "@common/utils/formatters.util";
+export { formatString } from '@common/utils/formatters.util';

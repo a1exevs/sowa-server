@@ -1,1 +1,1 @@
-export { sendResponse } from "@common/functions/exception-filters.functions";
+export { sendResponse } from '@common/functions/exception-filters.functions';

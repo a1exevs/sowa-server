@@ -1,12 +1,12 @@
-import { JwtService } from "@nestjs/jwt";
-import { Test, TestingModule } from "@nestjs/testing";
-import { BadRequestException, HttpStatus, NotFoundException } from "@nestjs/common";
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException, HttpStatus, NotFoundException } from '@nestjs/common';
 
-import { FollowersController } from "@followers/followers.controller";
-import { FollowersService } from "@followers/followers.service";
-import { JwtAuthGuard } from "@common/guards";
-import { RefreshTokenGuard } from "@common/guards";
-import { sendPseudoError } from "@test/unit/helpers";
+import { FollowersController } from '@followers/followers.controller';
+import { FollowersService } from '@followers/followers.service';
+import { JwtAuthGuard } from '@common/guards';
+import { RefreshTokenGuard } from '@common/guards';
+import { sendPseudoError } from '@test/unit/helpers';
 
 describe('FollowersController', () => {
   let followersController: FollowersController;
@@ -28,10 +28,10 @@ describe('FollowersController', () => {
           useValue: {
             follow: jest.fn(x => x),
             unfollow: jest.fn(x => x),
-          }
+          },
         },
-        jwtService
-      ]
+        jwtService,
+      ],
     }).compile();
     followersController = moduleRef.get<FollowersController>(FollowersController);
     followersService = moduleRef.get<FollowersService>(FollowersService);
@@ -59,7 +59,7 @@ describe('FollowersController', () => {
       jest.spyOn(followersService, 'follow').mockImplementation(() => {
         return Promise.resolve(true);
       });
-      const followerId = 1
+      const followerId = 1;
       const req = { user: { id: followerId } };
       const userId = 2;
       const result = await followersController.follow(userId, req);
@@ -67,9 +67,9 @@ describe('FollowersController', () => {
     });
     it('should throw exception (follower Id and user Id are equal)', async () => {
       jest.spyOn(followersService, 'follow').mockImplementation(() => {
-        throw new BadRequestException;
+        throw new BadRequestException();
       });
-      const followerId = 1
+      const followerId = 1;
       const req = { user: { id: followerId } };
       const userId = 1;
       try {
@@ -81,9 +81,9 @@ describe('FollowersController', () => {
     });
     it('should throw exception (follower or user is not found)', async () => {
       jest.spyOn(followersService, 'follow').mockImplementation(() => {
-        throw new NotFoundException;
+        throw new NotFoundException();
       });
-      const followerId = 11
+      const followerId = 11;
       const req = { user: { id: followerId } };
       const userId = 22;
       try {
@@ -100,7 +100,7 @@ describe('FollowersController', () => {
       jest.spyOn(followersService, 'unfollow').mockImplementation(() => {
         return Promise.resolve(true);
       });
-      const followerId = 1
+      const followerId = 1;
       const req = { user: { id: followerId } };
       const userId = 2;
       const result = await followersController.unfollow(userId, req);
@@ -108,9 +108,9 @@ describe('FollowersController', () => {
     });
     it('should throw exception (follower Id and user Id are equal)', async () => {
       jest.spyOn(followersService, 'unfollow').mockImplementation(() => {
-        throw new BadRequestException;
+        throw new BadRequestException();
       });
-      const followerId = 1
+      const followerId = 1;
       const req = { user: { id: followerId } };
       const userId = 1;
       try {
@@ -122,9 +122,9 @@ describe('FollowersController', () => {
     });
     it('should throw exception (follower or user is not found)', async () => {
       jest.spyOn(followersService, 'unfollow').mockImplementation(() => {
-        throw new NotFoundException;
+        throw new NotFoundException();
       });
-      const followerId = 11
+      const followerId = 11;
       const req = { user: { id: followerId } };
       const userId = 22;
       try {

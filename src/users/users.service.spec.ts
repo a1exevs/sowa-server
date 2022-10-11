@@ -1,20 +1,20 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { getModelToken } from "@nestjs/sequelize";
-import { HttpException, HttpStatus } from "@nestjs/common";
-import { UpdateOptions } from "sequelize";
-import { FindOptions } from "sequelize/dist/lib/model";
+import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/sequelize';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { UpdateOptions } from 'sequelize';
+import { FindOptions } from 'sequelize/dist/lib/model';
 
-import { ProfilesService} from "@profiles/profiles.service";
-import { UsersService } from "@users/users.service";
-import { User } from "@users/users.model";
-import { RolesService } from "@roles/roles.service";
-import { FollowersService } from "@followers/followers.service";
-import { Role } from "@roles/roles.model";
-import { CreateUserRequest, AddRoleRequest, BanUserRequest, SetUserStatusRequest } from "@users/dto";
-import { mockUsers } from "@test/unit/helpers";
-import { Follower } from "@followers/followers.model";
-import { sendPseudoError } from "@test/unit/helpers";
-import { ErrorMessages } from "@common/constants";
+import { ProfilesService } from '@profiles/profiles.service';
+import { UsersService } from '@users/users.service';
+import { User } from '@users/users.model';
+import { RolesService } from '@roles/roles.service';
+import { FollowersService } from '@followers/followers.service';
+import { Role } from '@roles/roles.model';
+import { CreateUserRequest, AddRoleRequest, BanUserRequest, SetUserStatusRequest } from '@users/dto';
+import { mockUsers } from '@test/unit/helpers';
+import { Follower } from '@followers/followers.model';
+import { sendPseudoError } from '@test/unit/helpers';
+import { ErrorMessages } from '@common/constants';
 import { GetProfileResponse } from '@profiles/dto';
 
 jest.mock('../profiles/profiles.service.ts');
@@ -43,27 +43,27 @@ describe('UsersService', () => {
             findByPk: jest.fn(x => x),
             count: jest.fn(x => x),
             update: jest.fn(x => x),
-          }
+          },
         },
         {
           provide: RolesService,
           useValue: {
-            getRoleByValue: jest.fn(x => x)
-          }
+            getRoleByValue: jest.fn(x => x),
+          },
         },
         {
           provide: FollowersService,
           useValue: {
-            findFollowRows: jest.fn(x => x)
-          }
+            findFollowRows: jest.fn(x => x),
+          },
         },
         {
           provide: ProfilesService,
           useValue: {
-            getUserProfile: jest.fn(x => x)
-          }
+            getUserProfile: jest.fn(x => x),
+          },
         },
-      ]
+      ],
     }).compile();
     usersService = moduleRef.get<UsersService>(UsersService);
     model = moduleRef.get<typeof User>(getModelToken(User));
@@ -118,7 +118,11 @@ describe('UsersService', () => {
         await usersService.createUser(dto);
       } catch (error) {
         expect(error.status).toBe(HttpStatus.FORBIDDEN);
-        expect(error.message).toBe(`${ErrorMessages.ru.SERVICE_IS_UNAVAILABLE}: ${ErrorMessages.ru.USER_ROLE_CONFIGURATION_IS_MISSING.toLowerCase()}`);
+        expect(error.message).toBe(
+          `${
+            ErrorMessages.ru.SERVICE_IS_UNAVAILABLE
+          }: ${ErrorMessages.ru.USER_ROLE_CONFIGURATION_IS_MISSING.toLowerCase()}`,
+        );
         expect(rolesService.getRoleByValue).toBeCalledTimes(1);
         expect(rolesService.getRoleByValue).toBeCalledWith('user');
         expect(model.create).toBeCalledTimes(0);
@@ -166,20 +170,25 @@ describe('UsersService', () => {
         return Promise.resolve(mockFollowRows as Follower[]);
       });
       jest.spyOn(profilesService, 'getUserProfile').mockImplementation((userId: number) => {
-        return Promise.resolve({ photos: { small: `small${userId}`, large: `large${userId}` } } as GetProfileResponse.Dto)
+        return Promise.resolve({
+          photos: { small: `small${userId}`, large: `large${userId}` },
+        } as GetProfileResponse.Dto);
       });
       const result = await usersService.getUsers(page, count, userId);
 
       expect(result.totalCount).toBe(users.length);
       expect(model.findAll).toBeCalledTimes(1);
-      expect(model.findAll).toBeCalledWith({ offset:(page - 1) * count, limit: count });
+      expect(model.findAll).toBeCalledWith({ offset: (page - 1) * count, limit: count });
       expect(model.count).toBeCalledTimes(1);
       expect(followersService.findFollowRows).toBeCalledTimes(1);
-      expect(followersService.findFollowRows).toBeCalledWith(userId, users.map( user => user.id ));
+      expect(followersService.findFollowRows).toBeCalledWith(
+        userId,
+        users.map(user => user.id),
+      );
       expect(profilesService.getUserProfile).toBeCalledTimes(users.length);
       expect(profilesService.getUserProfile).toBeCalledWith(users[0].id);
       expect(profilesService.getUserProfile).toBeCalledWith(users[users.length - 1].id);
-    })
+    });
   });
 
   describe('UsersService - getUserByEmail', () => {
@@ -187,8 +196,8 @@ describe('UsersService', () => {
       const user = mockUsers(1)[0];
       const email = user.email;
       jest.spyOn(model, 'findOne').mockImplementation((options: FindOptions) => {
-        return Promise.resolve(options.where['email'] === user.email ? user as User : null);
-      })
+        return Promise.resolve(options.where['email'] === user.email ? (user as User) : null);
+      });
       const result = await usersService.getUserByEmail(email);
       expect(model.findOne).toBeCalledTimes(1);
       expect(model.findOne).toBeCalledWith({ where: { email } });
@@ -198,11 +207,11 @@ describe('UsersService', () => {
       const user = mockUsers(1)[0];
       const email = user.email;
       jest.spyOn(model, 'findOne').mockImplementation((options: FindOptions) => {
-        return Promise.resolve(options.where['email'] === user.email ? user as User : null);
-      })
+        return Promise.resolve(options.where['email'] === user.email ? (user as User) : null);
+      });
       const result = await usersService.getUserByEmail(email, true);
       expect(model.findOne).toBeCalledTimes(1);
-      expect(model.findOne).toBeCalledWith({ where: { email }, include: { all: true }});
+      expect(model.findOne).toBeCalledWith({ where: { email }, include: { all: true } });
       expect(result).toEqual(user);
     });
   });
@@ -212,11 +221,11 @@ describe('UsersService', () => {
       const user = mockUsers(1)[0];
       const userId = user.id;
       jest.spyOn(model, 'findOne').mockImplementation((options: FindOptions) => {
-        return Promise.resolve(options.where['id'] === user.id ? user as User : null);
-      })
+        return Promise.resolve(options.where['id'] === user.id ? (user as User) : null);
+      });
       const result = await usersService.getUserById(userId);
       expect(model.findOne).toBeCalledTimes(1);
-      expect(model.findOne).toBeCalledWith({ where: { id: userId }, include: { all: true }});
+      expect(model.findOne).toBeCalledWith({ where: { id: userId }, include: { all: true } });
       expect(result).toEqual(user);
     });
   });
@@ -224,24 +233,27 @@ describe('UsersService', () => {
   describe('UsersService - addRole', () => {
     it('should be successful result (search with all user data)', async () => {
       const roleValue = 'admin';
-      const user = { ...mockUsers(1)[0], $add: jest.fn((field, roleId) => {
-        if(field === 'roles') {
-          user.roles = [{ id: roleId, value: roleValue } as Role];
-        }
-      }) };
+      const user = {
+        ...mockUsers(1)[0],
+        $add: jest.fn((field, roleId) => {
+          if (field === 'roles') {
+            user.roles = [{ id: roleId, value: roleValue } as Role];
+          }
+        }),
+      };
       const userId = user.id;
       const roleId = 1;
-      const dto: AddRoleRequest.Dto = { userId, value: roleValue }
+      const dto: AddRoleRequest.Dto = { userId, value: roleValue };
       jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
-        return Promise.resolve(id === user.id ? user as unknown as User: null);
-      })
+        return Promise.resolve(id === user.id ? (user as unknown as User) : null);
+      });
       jest.spyOn(rolesService, 'getRoleByValue').mockImplementation((value: string) => {
-        return Promise.resolve(value === dto.value ? { id: roleId, value } as Role : null);
-      })
+        return Promise.resolve(value === dto.value ? ({ id: roleId, value } as Role) : null);
+      });
       const result = await usersService.addRole(dto);
 
       expect(model.findByPk).toBeCalledTimes(1);
-      expect(model.findByPk).toBeCalledWith(userId, { include: { all: true }});
+      expect(model.findByPk).toBeCalledWith(userId, { include: { all: true } });
       expect(rolesService.getRoleByValue).toBeCalledTimes(1);
       expect(rolesService.getRoleByValue).toBeCalledWith(dto.value);
       expect(result.roles.some(r => r.id === roleId)).toBeTruthy();
@@ -252,9 +264,9 @@ describe('UsersService', () => {
       const roleValue = 'admin';
       const user = { ...mockUsers(1)[0], roles: [{ id: 1, value: roleValue }], $add: jest.fn() };
       const userId = user.id;
-      const dto: AddRoleRequest.Dto = { userId, value: roleValue }
+      const dto: AddRoleRequest.Dto = { userId, value: roleValue };
       jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
-        return Promise.resolve(id === user.id ? user as unknown as User : null);
+        return Promise.resolve(id === user.id ? (user as unknown as User) : null);
       });
 
       try {
@@ -264,7 +276,7 @@ describe('UsersService', () => {
         expect(error.status).toBe(HttpStatus.NOT_ACCEPTABLE);
         expect(error.message).toBe(`Пользователь уже имеет роль ${dto.value}`);
         expect(model.findByPk).toBeCalledTimes(1);
-        expect(model.findByPk).toBeCalledWith(userId, { include: { all: true }});
+        expect(model.findByPk).toBeCalledWith(userId, { include: { all: true } });
         expect(rolesService.getRoleByValue).toBeCalledTimes(0);
         expect(user.$add).toBeCalledTimes(0);
       }
@@ -273,10 +285,10 @@ describe('UsersService', () => {
       const roleValue = 'admin';
       const user = { ...mockUsers(1)[0], roles: [{ id: 1, value: roleValue }], $add: jest.fn() };
       const userId = user.id + 1;
-      const dto: AddRoleRequest.Dto = { userId, value: roleValue }
+      const dto: AddRoleRequest.Dto = { userId, value: roleValue };
       jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
-        return Promise.resolve(id === user.id ? user as unknown as User : null);
-      })
+        return Promise.resolve(id === user.id ? (user as unknown as User) : null);
+      });
 
       try {
         await usersService.addRole(dto);
@@ -285,7 +297,7 @@ describe('UsersService', () => {
         expect(error.status).toBe(HttpStatus.NOT_FOUND);
         expect(error.message).toBe(ErrorMessages.ru.FAILED_TO_FIND_USER);
         expect(model.findByPk).toBeCalledTimes(1);
-        expect(model.findByPk).toBeCalledWith(userId, { include: { all: true }});
+        expect(model.findByPk).toBeCalledWith(userId, { include: { all: true } });
         expect(rolesService.getRoleByValue).toBeCalledTimes(0);
         expect(user.$add).toBeCalledTimes(0);
       }
@@ -294,13 +306,13 @@ describe('UsersService', () => {
       const roleValue = 'admin';
       const user = { ...mockUsers(1)[0], $add: jest.fn() };
       const userId = user.id;
-      const dto: AddRoleRequest.Dto = { userId, value: roleValue }
+      const dto: AddRoleRequest.Dto = { userId, value: roleValue };
       jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
-        return Promise.resolve(id === user.id ? user as User : null);
-      })
+        return Promise.resolve(id === user.id ? (user as User) : null);
+      });
       jest.spyOn(rolesService, 'getRoleByValue').mockImplementation(() => {
         return Promise.resolve(null);
-      })
+      });
 
       try {
         await usersService.addRole(dto);
@@ -309,7 +321,7 @@ describe('UsersService', () => {
         expect(error.status).toBe(HttpStatus.NOT_FOUND);
         expect(error.message).toBe(ErrorMessages.ru.FAILED_TO_FIND_ROLE);
         expect(model.findByPk).toBeCalledTimes(1);
-        expect(model.findByPk).toBeCalledWith(userId, { include: { all: true }});
+        expect(model.findByPk).toBeCalledWith(userId, { include: { all: true } });
         expect(rolesService.getRoleByValue).toBeCalledTimes(1);
         expect(rolesService.getRoleByValue).toBeCalledWith(dto.value);
         expect(user.$add).toBeCalledTimes(0);
@@ -323,7 +335,7 @@ describe('UsersService', () => {
       const userId = user.id;
       const dto: BanUserRequest.Dto = { userId, banReason: 'banReason' };
       jest.spyOn(model, 'findByPk').mockImplementation((id: number) => {
-        return Promise.resolve(id === user.id ? user as User : null);
+        return Promise.resolve(id === user.id ? (user as User) : null);
       });
       const result = await usersService.ban(dto);
 
@@ -339,7 +351,7 @@ describe('UsersService', () => {
       const userId = user.id + 1;
       const dto: BanUserRequest.Dto = { userId, banReason: 'banReason' };
       jest.spyOn(model, 'findByPk').mockImplementation((id: number) => {
-        return Promise.resolve(id === user.id ? user as User: null);
+        return Promise.resolve(id === user.id ? (user as User) : null);
       });
       try {
         await usersService.ban(dto);
@@ -359,17 +371,17 @@ describe('UsersService', () => {
       const userId = 1;
       const status = 'status';
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve({ status } as User)
+        return Promise.resolve({ status } as User);
       });
       const result = await usersService.getStatus(userId);
       expect(result.status).toBe(status);
       expect(model.findOne).toBeCalledTimes(1);
-      expect(model.findOne).toBeCalledWith({ attributes: ["status"], where: { id: userId } });
+      expect(model.findOne).toBeCalledWith({ attributes: ['status'], where: { id: userId } });
     });
     it('should throw exception (user was not found)', async () => {
       const userId = 1;
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve(null)
+        return Promise.resolve(null);
       });
       try {
         await usersService.getStatus(userId);
@@ -377,7 +389,7 @@ describe('UsersService', () => {
       } catch (error) {
         expect(error.status).toBe(HttpStatus.NOT_FOUND);
         expect(model.findOne).toBeCalledTimes(1);
-        expect(model.findOne).toBeCalledWith({ attributes: ["status"], where: { id: userId } });
+        expect(model.findOne).toBeCalledWith({ attributes: ['status'], where: { id: userId } });
       }
     });
   });

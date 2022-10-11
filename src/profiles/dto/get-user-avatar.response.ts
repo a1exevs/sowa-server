@@ -1,12 +1,12 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export namespace GetUserAvatarResponse {
   export class Dto {
     @ApiProperty()
-    readonly small: string = "";
+    readonly small: string = '';
 
     @ApiProperty()
-    readonly large: string = "";
+    readonly large: string = '';
 
     constructor(dto: Partial<Dto>) {
       if (dto) {

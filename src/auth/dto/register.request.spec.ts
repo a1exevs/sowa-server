@@ -1,8 +1,8 @@
-import '@root/string.extensions'
+import '@root/string.extensions';
 
-import { RegisterRequest } from "@auth/dto";
-import { validateDto } from "@test/unit/helpers";
-import { ErrorMessages } from "@common/constants";
+import { RegisterRequest } from '@auth/dto';
+import { validateDto } from '@test/unit/helpers';
+import { ErrorMessages } from '@common/constants';
 
 describe('RegisterRequest', () => {
   beforeEach(async () => {
@@ -29,7 +29,9 @@ describe('RegisterRequest', () => {
       expect(errors[0].constraints.isEmail).toBe(ErrorMessages.ru.MUST_HAS_EMAIL_FORMAT);
       expect(errors[1].property).toBe('password');
       expect(errors[1].constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
-      expect(errors[1].constraints.isLength).toBe(ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50));
+      expect(errors[1].constraints.isLength).toBe(
+        ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50),
+      );
     });
     it('should has error (incorrect email)', async () => {
       const dto = new RegisterRequest.Dto('emailmailcom', '12345678');
@@ -45,7 +47,9 @@ describe('RegisterRequest', () => {
       expect(errors.length).toBe(1);
       expect(errors[0].property).toBe('password');
       expect(errors[0].constraints.isString).toBeUndefined();
-      expect(errors[0].constraints.isLength).toBe(ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50));
+      expect(errors[0].constraints.isLength).toBe(
+        ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50),
+      );
     });
     it('should has error (password has greater symbols than 50)', async () => {
       const dto = new RegisterRequest.Dto('email@mail.com', '123456789012345678901234567890123456789012345678901');
@@ -53,7 +57,9 @@ describe('RegisterRequest', () => {
       expect(errors.length).toBe(1);
       expect(errors[0].property).toBe('password');
       expect(errors[0].constraints.isString).toBeUndefined();
-      expect(errors[0].constraints.isLength).toBe(ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50));
+      expect(errors[0].constraints.isLength).toBe(
+        ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50),
+      );
     });
-  })
+  });
 });

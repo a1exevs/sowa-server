@@ -1,34 +1,33 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { RolesService } from "@roles/roles.service";
-import { Role } from "@roles/roles.model";
-import { CreateRoleRequest } from "@roles/dto";
-import { AuthRoles } from "@common/decorators";
-import { RolesGuard, RefreshTokenGuard } from "@common/guards";
-import { Routes } from "@common/constants";
+import { RolesService } from '@roles/roles.service';
+import { Role } from '@roles/roles.model';
+import { CreateRoleRequest } from '@roles/dto';
+import { AuthRoles } from '@common/decorators';
+import { RolesGuard, RefreshTokenGuard } from '@common/guards';
+import { Routes } from '@common/constants';
 
-@ApiTags("Роли")
+@ApiTags('Роли')
 @Controller(Routes.ENDPOINT_ROLES)
 export class RolesController {
-  constructor(private roleService: RolesService) {
-  }
+  constructor(private roleService: RolesService) {}
 
-  @ApiOperation({ summary: "Создание роли" })
+  @ApiOperation({ summary: 'Создание роли' })
   @ApiResponse({ status: 201, type: Role })
-  @AuthRoles("admin")
+  @AuthRoles('admin')
   @UseGuards(RolesGuard, RefreshTokenGuard)
   @Post()
   create(@Body() dto: CreateRoleRequest.Dto): Promise<Role> {
     return this.roleService.createRole(dto);
   }
 
-  @ApiOperation({ summary: "Получение роли по значению" })
+  @ApiOperation({ summary: 'Получение роли по значению' })
   @ApiResponse({ status: 200, type: Role })
-  @AuthRoles("admin")
+  @AuthRoles('admin')
   @UseGuards(RolesGuard, RefreshTokenGuard)
-  @Get("/:value")
-  getByValue(@Param("value") value: string): Promise<Role> {
+  @Get('/:value')
+  getByValue(@Param('value') value: string): Promise<Role> {
     return this.roleService.getRoleByValue(value);
   }
 }

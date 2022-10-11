@@ -1,41 +1,41 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
-import { ErrorMessages } from "@common/constants";
+import { ErrorMessages } from '@common/constants';
 
 export namespace SetUserContactRequest {
   export class Dto {
     @ApiProperty()
     @IsString({ message: ErrorMessages.ru.MUST_BE_A_STRING })
-    readonly facebook: string = "";
+    readonly facebook: string = '';
 
     @ApiProperty()
     @IsString({ message: ErrorMessages.ru.MUST_BE_A_STRING })
-    readonly website: string = "";
+    readonly website: string = '';
 
     @ApiProperty()
     @IsString({ message: ErrorMessages.ru.MUST_BE_A_STRING })
-    readonly twitter: string = "";
+    readonly twitter: string = '';
 
     @ApiProperty()
     @IsString({ message: ErrorMessages.ru.MUST_BE_A_STRING })
-    readonly instagram: string = "";
+    readonly instagram: string = '';
 
     @ApiProperty()
     @IsString({ message: ErrorMessages.ru.MUST_BE_A_STRING })
-    readonly youtube: string = "";
+    readonly youtube: string = '';
 
     @ApiProperty()
     @IsString({ message: ErrorMessages.ru.MUST_BE_A_STRING })
-    readonly github: string = "";
+    readonly github: string = '';
 
     @ApiProperty()
     @IsString({ message: ErrorMessages.ru.MUST_BE_A_STRING })
-    readonly vk: string = "";
+    readonly vk: string = '';
 
     @ApiProperty()
     @IsString({ message: ErrorMessages.ru.MUST_BE_A_STRING })
-    readonly mainLink: string = "";
+    readonly mainLink: string = '';
 
     constructor(facebook, website, twitter, instagram, youtube, github, vk, mainLink) {
       this.facebook = facebook;

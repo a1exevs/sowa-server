@@ -1,1 +1,1 @@
-export { GetUsersQuery } from "@users/queries/get-users.query";
+export { GetUsersQuery } from '@users/queries/get-users.query';

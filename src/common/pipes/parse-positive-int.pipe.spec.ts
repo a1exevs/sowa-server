@@ -1,10 +1,10 @@
-import '@root/string.extensions'
+import '@root/string.extensions';
 
-import { ArgumentMetadata, HttpStatus } from "@nestjs/common";
+import { ArgumentMetadata, HttpStatus } from '@nestjs/common';
 
-import { ParsePositiveIntPipe } from "@common/pipes";
-import { sendPseudoError } from "@test/unit/helpers";
-import { ErrorMessages } from "@common/constants";
+import { ParsePositiveIntPipe } from '@common/pipes';
+import { sendPseudoError } from '@test/unit/helpers';
+import { ErrorMessages } from '@common/constants';
 
 describe('ParsePositiveIntPipe', () => {
   beforeEach(() => {
@@ -17,7 +17,7 @@ describe('ParsePositiveIntPipe', () => {
       let target: ParsePositiveIntPipe = new ParsePositiveIntPipe();
       const metadata: ArgumentMetadata = { type: 'param', metatype: Number };
       const value = 0;
-      const result = await target.transform(value, metadata)
+      const result = await target.transform(value, metadata);
       expect(result).toBe(value);
     });
     it('should be successful result (value is more then 0)', async () => {
@@ -25,14 +25,14 @@ describe('ParsePositiveIntPipe', () => {
       let target: ParsePositiveIntPipe = new ParsePositiveIntPipe();
       const metadata: ArgumentMetadata = { type: 'param', metatype: Number };
       const value = 5;
-      const result = await target.transform(value, metadata)
+      const result = await target.transform(value, metadata);
       expect(result).toBe(value);
     });
     it('should throw exception (value is a negative number)', async () => {
       let target: ParsePositiveIntPipe = new ParsePositiveIntPipe();
       const metadata: ArgumentMetadata = { type: 'param', metatype: Number };
       try {
-        await target.transform(-1, metadata)
+        await target.transform(-1, metadata);
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
@@ -43,7 +43,7 @@ describe('ParsePositiveIntPipe', () => {
       let target: ParsePositiveIntPipe = new ParsePositiveIntPipe();
       const metadata: ArgumentMetadata = { type: 'param', metatype: String };
       try {
-        await target.transform('a', metadata)
+        await target.transform('a', metadata);
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);

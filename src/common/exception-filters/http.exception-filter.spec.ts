@@ -1,21 +1,21 @@
-import { HttpException, HttpStatus } from "@nestjs/common";
+import { HttpException, HttpStatus } from '@nestjs/common';
 
-import { getMockArgumentsHostData } from "@test/unit/helpers";
-import { HttpExceptionFilter } from "@common/exception-filters";
+import { getMockArgumentsHostData } from '@test/unit/helpers';
+import { HttpExceptionFilter } from '@common/exception-filters';
 
 describe('HttpExceptionFilter', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.clearAllTimers();
-  })
+  });
 
   describe('catch', () => {
     it('should catch exception', async () => {
-      const { mockArgumentsHost, mockGetResponse, response } = getMockArgumentsHostData({})
+      const { mockArgumentsHost, mockGetResponse, response } = getMockArgumentsHostData({});
       const errorCode = HttpStatus.BAD_REQUEST;
       const errorMessage = 'Error message';
       const httpExceptionFilter = new HttpExceptionFilter();
-      httpExceptionFilter.catch(new HttpException(errorMessage, errorCode), mockArgumentsHost)
+      httpExceptionFilter.catch(new HttpException(errorMessage, errorCode), mockArgumentsHost);
       const body = JSON.parse(response._getData());
 
       expect(response._getStatusCode()).toBe(errorCode);
@@ -24,4 +24,4 @@ describe('HttpExceptionFilter', () => {
       expect(body.data).toBeNull();
     });
   });
-})
+});

@@ -1,5 +1,5 @@
-import { checkForApiProperties } from "@test/unit/helpers";
-import { OperationResultResponse } from "@common/dto";
+import { checkForApiProperties } from '@test/unit/helpers';
+import { OperationResultResponse } from '@common/dto';
 
 describe('OperationResultResponse', () => {
   beforeEach(async () => {

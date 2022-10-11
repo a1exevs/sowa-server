@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 
-import { UserCommonInfo } from "@profiles/user-common-info.model";
-import { SetProfileRequest } from "@profiles/dto";
+import { UserCommonInfo } from '@profiles/user-common-info.model';
+import { SetProfileRequest } from '@profiles/dto';
 
 @Injectable()
 export class UserCommonInfoService {

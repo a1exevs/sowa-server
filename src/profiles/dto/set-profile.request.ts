@@ -1,14 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
-import {
-  IsBoolean,
-  IsObject, IsOptional,
-  IsString,
-  ValidateNested
-} from "class-validator";
-import { Type } from "class-transformer";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
-import { SetUserContactRequest } from "@profiles/dto/set-user-contact.request";
-import { ErrorMessages } from "@common/constants";
+import { SetUserContactRequest } from '@profiles/dto/set-user-contact.request';
+import { ErrorMessages } from '@common/constants';
 
 export namespace SetProfileRequest {
   export class Dto {

@@ -1,5 +1,5 @@
-import { validateDto } from "@test/unit/helpers";
-import { GetUsersQuery } from "@users/queries/get-users.query";
+import { validateDto } from '@test/unit/helpers';
+import { GetUsersQuery } from '@users/queries/get-users.query';
 
 describe('GetUsersQuery', () => {
   beforeEach(async () => {
