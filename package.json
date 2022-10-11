@@ -38,6 +38,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-unicorn": "^44.0.1",
     "express-session": "^1.17.2",
+    "module-alias": "^2.2.2",
     "mysql2": "^2.3.3",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
@@ -84,6 +85,22 @@
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.10.1",
     "typescript": "^4.3.5"
+  },
+  "_moduleAliases": {
+    "@root": "dist",
+    "@src": "dist/src",
+    "@auth": "dist/src/auth",
+    "@common": "dist/src/common",
+    "@files": "dist/src/files",
+    "@followers": "dist/src/followers",
+    "@logger": "dist/src/logger",
+    "@posts": "dist/src/posts",
+    "@profiles": "dist/src/profiles",
+    "@roles": "dist/src/roles",
+    "@security": "dist/src/security",
+    "@users": "dist/src/users",
+    "@test": "dist/test",
+    "@assets": "dist/assets"
   },
   "jest": {
     "moduleFileExtensions": [
