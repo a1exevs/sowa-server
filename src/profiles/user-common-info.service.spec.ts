@@ -50,9 +50,8 @@ describe('UserCommonInfoService', () => {
         lookingForAJob,
         lookingForAJobDescription
       };
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve(profile);
+        return Promise.resolve(profile as UserCommonInfo);
       })
       const profileData = await userCommonInfoService.getCommonInfoByUserId(userId);
 
@@ -83,13 +82,11 @@ describe('UserCommonInfoService', () => {
         userId,
         ...profileData
       };
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve(profile);
+        return Promise.resolve(profile as UserCommonInfo);
       })
-      // @ts-ignore
       jest.spyOn(model, 'upsert').mockImplementation(() => {
-        return Promise.resolve([true])
+        return Promise.resolve([{} as UserCommonInfo, true])
       })
       const result = await userCommonInfoService.setCommonInfo(userId, profileData);
       expect(result.userId).toBe(userId);

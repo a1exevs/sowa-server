@@ -7,6 +7,7 @@ import { PostsService } from "@posts/posts.service";
 import { PostsController } from "@posts/posts.controller";
 import { CreatePostRequest } from "@posts/dto";
 import { loadTestFile, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from "@test/unit/helpers";
+import { Post } from '@posts/posts.model';
 
 describe('PostsController', () => {
   let postsController: PostsController;
@@ -64,7 +65,6 @@ describe('PostsController', () => {
       const content = 'It is content of test post';
       const dto: CreatePostRequest.Dto = { title, content };
       const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
-      // @ts-ignore
       jest.spyOn(postsService, 'createPost').mockImplementation(() => {
         return Promise.resolve({
           id: postId,
@@ -72,7 +72,7 @@ describe('PostsController', () => {
           content,
           image: TEST_FILE_ORIGINAL_NAME,
           userId
-        })
+        } as Post)
       })
 
       const post = await postsController.create(dto, file);

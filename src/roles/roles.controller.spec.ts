@@ -59,9 +59,8 @@ describe('RolesController', () => {
     it('should be successful result', async () => {
       const reqDto: CreateRoleRequest.Dto = { value: 'super star', description: 'Super user' };
       const createdRole: Partial<Role> = { id: 1, ...reqDto }
-      // @ts-ignore
       jest.spyOn(rolesService, 'createRole').mockImplementation(() => {
-        return Promise.resolve(createdRole)
+        return Promise.resolve(createdRole as Role)
       })
       const result = await rolesController.create(reqDto);
 
@@ -73,7 +72,6 @@ describe('RolesController', () => {
       const reqDto: CreateRoleRequest.Dto = { value: 'super star', description: 'Super user' };
       const errorMessage = ErrorMessages.ru.FAILED_TO_CREATE_ROLE;
       const errorStatus = HttpStatus.BAD_REQUEST;
-      // @ts-ignore
       jest.spyOn(rolesService, 'createRole').mockImplementation(() => {
         throw new HttpException(errorMessage, errorStatus);
       })
@@ -94,9 +92,8 @@ describe('RolesController', () => {
     it('should be successful result', async () => {
       const request = 'admin';
       const mockServiceResponse: Partial<Role> = { id: 1, value: request, description: 'Admin role' }
-      // @ts-ignore
       jest.spyOn(rolesService, 'getRoleByValue').mockImplementation(() => {
-        return Promise.resolve(mockServiceResponse)
+        return Promise.resolve(mockServiceResponse as Role)
       })
       const result = await rolesController.getByValue(request);
 

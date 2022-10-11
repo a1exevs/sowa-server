@@ -8,6 +8,7 @@ import { UsersService } from "@users/users.service"
 import { LoginRequest, RegisterRequest } from "@auth/dto";
 import { sendPseudoError } from "@test/unit/helpers";
 import { ErrorMessages } from "@common/constants";
+import { User } from '@users/users.model';
 
 import * as bcrypt from "bcryptjs";
 
@@ -82,9 +83,8 @@ describe("AuthService", () => {
         password: hashedPassword
       };
 
-      // @ts-ignore
       jest.spyOn(userService, "createUser").mockImplementation(async () => {
-        return Promise.resolve(mockCreatedUser);
+        return Promise.resolve(mockCreatedUser as User);
       });
       jest.spyOn(userService, "getUserByEmail").mockImplementation(async () => {
         return Promise.resolve(undefined);
@@ -133,9 +133,8 @@ describe("AuthService", () => {
         password: hashedPassword
       };
 
-      // @ts-ignore
       jest.spyOn(userService, "getUserByEmail").mockImplementation(async () => {
-        return Promise.resolve(mockCreatedUser);
+        return Promise.resolve(mockCreatedUser as User);
       });
       const spyHashF = jest.spyOn(bcrypt, "hash").mockImplementation(() => {
         return hashedPassword;
@@ -171,9 +170,8 @@ describe("AuthService", () => {
         password: hashedPassword
       };
 
-      // @ts-ignore
       jest.spyOn(userService, "getUserByEmail").mockImplementation(async () => {
-        return Promise.resolve(mockUser);
+        return Promise.resolve(mockUser as User);
       });
       jest.spyOn(tokenService, "generateAccessToken").mockImplementation(async () => {
         return Promise.resolve(accessToken);
@@ -206,7 +204,6 @@ describe("AuthService", () => {
 
       const loginDto: LoginRequest.Dto = { email, password };
 
-      // @ts-ignore
       jest.spyOn(userService, "getUserByEmail").mockImplementation(async () => {
         return Promise.resolve(undefined);
       });
@@ -235,9 +232,8 @@ describe("AuthService", () => {
         password: hashedPassword
       };
 
-      // @ts-ignore
       jest.spyOn(userService, "getUserByEmail").mockImplementation(async () => {
-        return Promise.resolve(mockUser);
+        return Promise.resolve(mockUser as User);
       });
 
       try {
@@ -265,9 +261,8 @@ describe("AuthService", () => {
         email: "user@yandex.ru",
         password: "asdfsafas"
       };
-      // @ts-ignore
       jest.spyOn(tokenService, "updateAccessRefreshTokensFromRefreshToken").mockImplementation(async () => {
-        return Promise.resolve({ refresh_token: newRefreshToken, access_token: newAccessToken, user: mockUser });
+        return Promise.resolve({ refresh_token: newRefreshToken, access_token: newAccessToken, user: mockUser as User });
       });
 
       const result = await authService.refresh(currentRefreshToken);
@@ -307,9 +302,8 @@ describe("AuthService", () => {
         email: userEmail,
         password: "asdfsafas"
       };
-      // @ts-ignore
       jest.spyOn(userService, "getUserById").mockImplementation(async () => {
-        return Promise.resolve(mockUser);
+        return Promise.resolve(mockUser as User);
       });
       const result = await authService.me(userId);
       expect(result.id).toBe(userId);
@@ -319,7 +313,6 @@ describe("AuthService", () => {
     });
     it("Me method: should be unauthorized (user not found", async () => {
       const userId = 1;
-      // @ts-ignore
       jest.spyOn(userService, "getUserById").mockImplementation(async () => {
         return Promise.resolve(undefined);
       });

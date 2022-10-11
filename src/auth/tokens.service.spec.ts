@@ -8,6 +8,8 @@ import { RefreshTokensService } from "@auth/refresh-tokens.service";
 import { UsersService } from "@users/users.service";
 import { sendPseudoError } from "@test/unit/helpers";
 import { ErrorMessages } from "@common/constants";
+import { User } from '@users/users.model';
+import { RefreshToken } from '@auth/refresh-tokens.model';
 
 interface IMockUser {
   id: number,
@@ -68,7 +70,7 @@ interface IGetRefreshTokenGeneratedData{
 }
 
 const getRefreshTokenGeneratedData = (params: IGetRefreshTokenGeneratedData) => {
-  const mockUser = getMockUser();
+  const mockUser = getMockUser() as unknown as User;
   const tokenUUID = 'sdfsdf';
   const opts: SignOptions = {
     expiresIn: params.expiresIn
@@ -145,8 +147,7 @@ describe('TokensService', () => {
 
   describe('TokensService - generateAccessToken', () => {
     it('GenerateAccessToken method - should be successful result', async () => {
-      const mockUser = getMockUser();
-      // @ts-ignore
+      const mockUser = getMockUser() as unknown as User;
       const token = await tokensService.generateAccessToken(mockUser)
       const payload: IAccessTokenVerifyResult = jwtService.verify(token);
 
@@ -163,13 +164,11 @@ describe('TokensService', () => {
     it('GenerateRefreshToken method - should be successful result', async () => {
       const tokenUUID = 'sdfsdfsfsf';
       const expiresIn = TokensService.getRefreshTokenExpiresIn();
-      const mockUser = getMockUser();
-      // @ts-ignore
+      const mockUser = getMockUser() as unknown as User;
       jest.spyOn(refreshTokensService, 'createRefreshToken').mockImplementation(async () => {
-        return Promise.resolve({ uuid: tokenUUID })
+        return Promise.resolve({ uuid: tokenUUID } as RefreshToken)
       });
 
-      // @ts-ignore
       const token = await tokensService.generateRefreshToken(mockUser, expiresIn);
       const payload: IRefreshTokenVerifyResult = jwtService.verify(token);
 
@@ -188,20 +187,17 @@ describe('TokensService', () => {
         expiresIn: TokensService.getRefreshTokenExpiresIn()
       });
 
-      // @ts-ignore
       jest.spyOn(refreshTokensService, 'findTokenByUUId').mockImplementation(async () => {
-        return Promise.resolve(getMockRefreshToken())
+        return Promise.resolve(getMockRefreshToken() as RefreshToken)
       })
       jest.spyOn(refreshTokensService, 'removeTokenByUUId').mockImplementation(async () => {
         return Promise.resolve(1)
       })
-      // @ts-ignore
       jest.spyOn(userService, 'getUserById').mockImplementation(async () => {
         return Promise.resolve(mockUser)
       })
-      // @ts-ignore
       jest.spyOn(refreshTokensService, 'createRefreshToken').mockImplementation(async () => {
-        return Promise.resolve({ uuid: tokenUUID })
+        return Promise.resolve({ uuid: tokenUUID } as RefreshToken)
       });
       jest.spyOn(tokensService, 'removeRefreshToken');
       jest.spyOn(tokensService, 'generateRefreshToken');
@@ -304,7 +300,6 @@ describe('TokensService', () => {
         expiresIn: TokensService.getRefreshTokenExpiresIn()
       });
 
-      // @ts-ignore
       jest.spyOn(refreshTokensService, 'findTokenByUUId').mockImplementation(async () => {
         return Promise.resolve(undefined)
       })
@@ -341,9 +336,8 @@ describe('TokensService', () => {
 
       const mockRefreshToken = getMockRefreshToken();
       mockRefreshToken.isRevoked = true;
-      // @ts-ignore
       jest.spyOn(refreshTokensService, 'findTokenByUUId').mockImplementation(async () => {
-        return Promise.resolve(mockRefreshToken)
+        return Promise.resolve(mockRefreshToken as RefreshToken)
       })
       jest.spyOn(refreshTokensService, 'removeTokenByUUId').mockImplementation(async () => {
         return Promise.resolve(1)
@@ -378,9 +372,8 @@ describe('TokensService', () => {
       });
 
       const mockRefreshToken = getMockRefreshToken();
-      // @ts-ignore
-      jest.spyOn(refreshTokensService, 'findTokenByUUId').mockImplementation(async () => {
-        return Promise.resolve(mockRefreshToken)
+      jest.spyOn(refreshTokensService, 'findTokenByUUId').mockImplementation(() => {
+        return Promise.resolve(mockRefreshToken as RefreshToken)
       })
       jest.spyOn(refreshTokensService, 'removeTokenByUUId').mockImplementation(async () => {
         return Promise.resolve(1)
@@ -414,14 +407,12 @@ describe('TokensService', () => {
       });
 
       const mockRefreshToken = getMockRefreshToken();
-      // @ts-ignore
       jest.spyOn(refreshTokensService, 'findTokenByUUId').mockImplementation(async () => {
-        return Promise.resolve(mockRefreshToken)
+        return Promise.resolve(mockRefreshToken as RefreshToken)
       })
       jest.spyOn(refreshTokensService, 'removeTokenByUUId').mockImplementation(async () => {
         return Promise.resolve(1)
       })
-      // @ts-ignore
       jest.spyOn(userService, 'getUserById').mockImplementation(async () => {
         return Promise.resolve(undefined)
       })

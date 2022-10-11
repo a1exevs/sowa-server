@@ -3,6 +3,7 @@ import { getModelToken } from "@nestjs/sequelize";
 
 import { RefreshToken } from "@auth/refresh-tokens.model";
 import { RefreshTokensService } from "@auth/refresh-tokens.service";
+import { User } from '@users/users.model';
 
 jest.mock("./refresh-tokens.model")
 
@@ -82,16 +83,14 @@ describe('RefreshTokensService', () => {
 
   describe('RefreshTokensService - createRefreshToken', () => {
     it('should be successful result', async () => {
-      const mockUser = getMockUser();
+      const mockUser = getMockUser() as unknown as User;
       const ttl = 24 * 60 * 60 * 1000;
       jest.spyOn(RefreshToken, 'count').mockImplementation(() => {
         return Promise.resolve(2);
       })
-      // @ts-ignore
       const saveFn = jest.spyOn(RefreshToken.prototype, 'save').mockImplementation(async () => {
         return saveFn.mock.instances[0];
       })
-      // @ts-ignore
       const token = await refreshTokensService.createRefreshToken(mockUser, ttl);
       expect(token.userId).toBe(mockUser.id);
       expect(token.isRevoked).toBe(false);
@@ -102,9 +101,8 @@ describe('RefreshTokensService', () => {
   describe('RefreshTokensService - findTokenByUUId', () => {
     it('should be successful result', async () => {
       const mockToken = getMockRefreshToken();
-      // @ts-ignore
       jest.spyOn(RefreshToken, 'findOne').mockImplementation(() => {
-        return mockToken;
+        return Promise.resolve(mockToken as RefreshToken);
       })
 
       const token = await refreshTokensService.findTokenByUUId(11);
@@ -117,7 +115,6 @@ describe('RefreshTokensService', () => {
       const removedNumber = 1;
       const uuid = 1111;
       const params = { where: { uuid} }
-      // @ts-ignore
       const destroyFn = jest.spyOn(RefreshToken, 'destroy').mockImplementation(async () => {
         return Promise.resolve(removedNumber);
       })

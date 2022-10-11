@@ -15,6 +15,7 @@ import { mockUsers } from "@test/unit/helpers";
 import { Follower } from "@followers/followers.model";
 import { sendPseudoError } from "@test/unit/helpers";
 import { ErrorMessages } from "@common/constants";
+import { GetProfileResponse } from '@profiles/dto';
 
 jest.mock('../profiles/profiles.service.ts');
 jest.mock('./users.model');
@@ -94,9 +95,8 @@ describe('UsersService', () => {
       const dto: CreateUserRequest.Dto = { email: 'email', password: 'password' };
       const mockRole: Partial<Role> = { id: 1, value: 'user' };
       const mockUser: Partial<User> = { $set: jest.fn(() => Promise.resolve(null)), id: 1, roles: [] };
-      // @ts-ignore
       jest.spyOn(rolesService, 'getRoleByValue').mockImplementation(() => {
-        return Promise.resolve(mockRole);
+        return Promise.resolve(mockRole as Role);
       });
       jest.spyOn(model, 'create').mockImplementation(() => {
         return Promise.resolve(mockUser);
@@ -129,9 +129,8 @@ describe('UsersService', () => {
       const mockRole: Partial<Role> = { id: 1, value: 'user' };
       const mockUser: Partial<User> = { $set: jest.fn(() => Promise.resolve(null)), id: 1, roles: [] };
       const errorMessage = 'errorMessage';
-      // @ts-ignore
       jest.spyOn(rolesService, 'getRoleByValue').mockImplementation(() => {
-        return Promise.resolve(mockRole);
+        return Promise.resolve(mockRole as Role);
       });
       jest.spyOn(model, 'create').mockImplementation(() => {
         throw new HttpException(errorMessage, HttpStatus.BAD_REQUEST);
@@ -156,21 +155,18 @@ describe('UsersService', () => {
       const page = 1;
       const count = 10;
       const userId = users[0].id;
-      // @ts-ignore
       jest.spyOn(model, 'findAll').mockImplementation(() => {
-        return Promise.resolve(users);
+        return Promise.resolve(users as User[]);
       });
       jest.spyOn(model, 'count').mockImplementation(() => {
         return Promise.resolve(users.length);
       });
       const mockFollowRows: Partial<Follower>[] = [{ followerId: userId, userId: users[1].id }];
-      // @ts-ignore
       jest.spyOn(followersService, 'findFollowRows').mockImplementation(() => {
-        return Promise.resolve(mockFollowRows);
+        return Promise.resolve(mockFollowRows as Follower[]);
       });
-      // @ts-ignore
       jest.spyOn(profilesService, 'getUserProfile').mockImplementation((userId: number) => {
-        return Promise.resolve({ photos: { small: `small${userId}`, large: `large${userId}` } })
+        return Promise.resolve({ photos: { small: `small${userId}`, large: `large${userId}` } } as GetProfileResponse.Dto)
       });
       const result = await usersService.getUsers(page, count, userId);
 
@@ -190,9 +186,8 @@ describe('UsersService', () => {
     it('should be successful result', async () => {
       const user = mockUsers(1)[0];
       const email = user.email;
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation((options: FindOptions) => {
-        return Promise.resolve(options.where['email'] === user.email ? user : null);
+        return Promise.resolve(options.where['email'] === user.email ? user as User : null);
       })
       const result = await usersService.getUserByEmail(email);
       expect(model.findOne).toBeCalledTimes(1);
@@ -202,9 +197,8 @@ describe('UsersService', () => {
     it('should be successful result (search with all user data)', async () => {
       const user = mockUsers(1)[0];
       const email = user.email;
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation((options: FindOptions) => {
-        return Promise.resolve(options.where['email'] === user.email ? user : null);
+        return Promise.resolve(options.where['email'] === user.email ? user as User : null);
       })
       const result = await usersService.getUserByEmail(email, true);
       expect(model.findOne).toBeCalledTimes(1);
@@ -217,9 +211,8 @@ describe('UsersService', () => {
     it('should be successful result (search with all user data)', async () => {
       const user = mockUsers(1)[0];
       const userId = user.id;
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation((options: FindOptions) => {
-        return Promise.resolve(options.where['id'] === user.id ? user : null);
+        return Promise.resolve(options.where['id'] === user.id ? user as User : null);
       })
       const result = await usersService.getUserById(userId);
       expect(model.findOne).toBeCalledTimes(1);
@@ -232,20 +225,18 @@ describe('UsersService', () => {
     it('should be successful result (search with all user data)', async () => {
       const roleValue = 'admin';
       const user = { ...mockUsers(1)[0], $add: jest.fn((field, roleId) => {
-        if(field === 'roles') { // @ts-ignore
-          user.roles = [{ id: roleId, value: roleValue }];
+        if(field === 'roles') {
+          user.roles = [{ id: roleId, value: roleValue } as Role];
         }
       }) };
       const userId = user.id;
       const roleId = 1;
       const dto: AddRoleRequest.Dto = { userId, value: roleValue }
-      // @ts-ignore
       jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
-        return Promise.resolve(id === user.id ? user : null);
+        return Promise.resolve(id === user.id ? user as unknown as User: null);
       })
-      // @ts-ignore
       jest.spyOn(rolesService, 'getRoleByValue').mockImplementation((value: string) => {
-        return Promise.resolve(value === dto.value ? { id: roleId, value } : null);
+        return Promise.resolve(value === dto.value ? { id: roleId, value } as Role : null);
       })
       const result = await usersService.addRole(dto);
 
@@ -262,10 +253,9 @@ describe('UsersService', () => {
       const user = { ...mockUsers(1)[0], roles: [{ id: 1, value: roleValue }], $add: jest.fn() };
       const userId = user.id;
       const dto: AddRoleRequest.Dto = { userId, value: roleValue }
-      // @ts-ignore
       jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
-        return Promise.resolve(id === user.id ? user : null);
-      })
+        return Promise.resolve(id === user.id ? user as unknown as User : null);
+      });
 
       try {
         await usersService.addRole(dto);
@@ -284,9 +274,8 @@ describe('UsersService', () => {
       const user = { ...mockUsers(1)[0], roles: [{ id: 1, value: roleValue }], $add: jest.fn() };
       const userId = user.id + 1;
       const dto: AddRoleRequest.Dto = { userId, value: roleValue }
-      // @ts-ignore
       jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
-        return Promise.resolve(id === user.id ? user : null);
+        return Promise.resolve(id === user.id ? user as unknown as User : null);
       })
 
       try {
@@ -306,11 +295,9 @@ describe('UsersService', () => {
       const user = { ...mockUsers(1)[0], $add: jest.fn() };
       const userId = user.id;
       const dto: AddRoleRequest.Dto = { userId, value: roleValue }
-      // @ts-ignore
       jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
-        return Promise.resolve(id === user.id ? user : null);
+        return Promise.resolve(id === user.id ? user as User : null);
       })
-      // @ts-ignore
       jest.spyOn(rolesService, 'getRoleByValue').mockImplementation(() => {
         return Promise.resolve(null);
       })
@@ -335,9 +322,8 @@ describe('UsersService', () => {
       const user = { ...mockUsers(1)[0], save: jest.fn(), banned: false, banReason: '' };
       const userId = user.id;
       const dto: BanUserRequest.Dto = { userId, banReason: 'banReason' };
-      // @ts-ignore
       jest.spyOn(model, 'findByPk').mockImplementation((id: number) => {
-        return Promise.resolve(id === user.id ? user : null);
+        return Promise.resolve(id === user.id ? user as User : null);
       });
       const result = await usersService.ban(dto);
 
@@ -352,9 +338,8 @@ describe('UsersService', () => {
       const user = { ...mockUsers(1)[0], save: jest.fn(), banned: false, banReason: '' };
       const userId = user.id + 1;
       const dto: BanUserRequest.Dto = { userId, banReason: 'banReason' };
-      // @ts-ignore
       jest.spyOn(model, 'findByPk').mockImplementation((id: number) => {
-        return Promise.resolve(id === user.id ? user : null);
+        return Promise.resolve(id === user.id ? user as User: null);
       });
       try {
         await usersService.ban(dto);
@@ -373,9 +358,8 @@ describe('UsersService', () => {
     it('should be successful result', async () => {
       const userId = 1;
       const status = 'status';
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve({ status })
+        return Promise.resolve({ status } as User)
       });
       const result = await usersService.getStatus(userId);
       expect(result.status).toBe(status);
@@ -384,7 +368,6 @@ describe('UsersService', () => {
     });
     it('should throw exception (user was not found)', async () => {
       const userId = 1;
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation(() => {
         return Promise.resolve(null)
       });
@@ -406,12 +389,11 @@ describe('UsersService', () => {
       const status = 'new status';
       const updatedRowsCount = 1;
       const dto: SetUserStatusRequest.Dto = { status };
-      // @ts-ignore
       jest.spyOn(model, 'update').mockImplementation((values: { status }, options: UpdateOptions) => {
         if (options.where['id'] === userId) {
           user.status = values.status;
-          return [updatedRowsCount, [user]];
-        } else return null;
+          return Promise.resolve([updatedRowsCount, [user]]);
+        } else return Promise.resolve(null);
       });
       const result = await usersService.setStatus(dto, userId);
       expect(result[0]).toBe(updatedRowsCount);

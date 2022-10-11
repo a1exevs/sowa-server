@@ -57,9 +57,8 @@ describe('UserContactsService', () => {
         website,
         youtube
       }
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve({ userId, ...contact });
+        return Promise.resolve({ userId, ...contact } as UserContact);
       })
       const contactsData = await userContactsService.getContactsByUserId(userId);
 
@@ -99,13 +98,11 @@ describe('UserContactsService', () => {
         youtube
       }
       const contact: Partial<UserContact> = { userId, ...contactData }
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve(contact);
+        return Promise.resolve(contact as UserContact);
       })
-      // @ts-ignore
       jest.spyOn(model, 'upsert').mockImplementation(() => {
-        return Promise.resolve([true])
+        return Promise.resolve([{} as UserContact, true])
       })
       const result = await userContactsService.setContacts(userId, contactData);
       expect(result.userId).toBe(userId);

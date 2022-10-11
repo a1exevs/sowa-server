@@ -134,21 +134,17 @@ describe('ProfilesController', () => {
         youtube
       }
       const user: Partial<User> = { id: userId }
-      // @ts-ignore
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
-        return Promise.resolve(user);
+        return Promise.resolve(user as User);
       })
-      // @ts-ignore
       jest.spyOn(userCommonInfoService, 'getCommonInfoByUserId').mockImplementation(() => {
-        return Promise.resolve(commonInfo);
+        return Promise.resolve(commonInfo as UserCommonInfo);
       })
-      // @ts-ignore
       jest.spyOn(userAvatarsService, 'getAvatarByUserId').mockImplementation(() => {
-        return Promise.resolve(avatar);
+        return Promise.resolve(avatar as UserAvatar);
       })
-      // @ts-ignore
       jest.spyOn(userContactsService, 'getContactsByUserId').mockImplementation(() => {
-        return Promise.resolve(contact);
+        return Promise.resolve(contact as UserContact);
       })
 
       const profileData = await profilesService.getUserProfile(userId);
@@ -171,19 +167,15 @@ describe('ProfilesController', () => {
     it('should be successful result (with empty fields if data does not exist yet)', async () => {
       const userId = 1;
       const user: Partial<User> = { id: userId }
-      // @ts-ignore
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
-        return Promise.resolve(user);
+        return Promise.resolve(user as User);
       })
-      // @ts-ignore
       jest.spyOn(userCommonInfoService, 'getCommonInfoByUserId').mockImplementation(() => {
         return Promise.resolve(null);
       })
-      // @ts-ignore
       jest.spyOn(userAvatarsService, 'getAvatarByUserId').mockImplementation(() => {
         return Promise.resolve(null);
       })
-      // @ts-ignore
       jest.spyOn(userContactsService, 'getContactsByUserId').mockImplementation(() => {
         return Promise.resolve(null);
       })
@@ -215,7 +207,6 @@ describe('ProfilesController', () => {
     })
     it('should throw exception (user with ID was not found', async () => {
       const userId = 2;
-      // @ts-ignore
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(null);
       })
@@ -284,17 +275,14 @@ describe('ProfilesController', () => {
         }
       }
 
-      // @ts-ignore
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
-        return Promise.resolve(user);
+        return Promise.resolve(user as User);
       })
-      // @ts-ignore
       jest.spyOn(userCommonInfoService, 'setCommonInfo').mockImplementation(() => {
-        return Promise.resolve(commonInfo);
+        return Promise.resolve(commonInfo as UserCommonInfo);
       })
-      // @ts-ignore
       jest.spyOn(userContactsService, 'setContacts').mockImplementation(() => {
-        return Promise.resolve(contact);
+        return Promise.resolve(contact as UserContact);
       })
 
       const profileData = await profilesService.setUserProfile(userId, dto);
@@ -332,15 +320,12 @@ describe('ProfilesController', () => {
         lookingForAJobDescription,
       }
 
-      // @ts-ignore
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
-        return Promise.resolve(user);
+        return Promise.resolve(user as User);
       })
-      // @ts-ignore
       jest.spyOn(userCommonInfoService, 'setCommonInfo').mockImplementation(() => {
-        return Promise.resolve(commonInfo);
+        return Promise.resolve(commonInfo as UserCommonInfo);
       })
-      // @ts-ignore
       jest.spyOn(userContactsService, 'getContactsByUserId').mockImplementation(() => {
         return Promise.resolve(null);
       })
@@ -369,7 +354,6 @@ describe('ProfilesController', () => {
     });
     it('should throw exception (user with ID was not found)', async () => {
       const userId = 2;
-      // @ts-ignore
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(null);
       })
@@ -396,9 +380,8 @@ describe('ProfilesController', () => {
       const photo = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
       const originalImageURL = 'originalImageURL';
       const smallImageURL = 'smallImageURL';
-      // @ts-ignore
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
-        return Promise.resolve(user);
+        return Promise.resolve(user as User);
       })
       jest.spyOn(filesService, 'addJPEGFile').mockImplementation(() => {
         return Promise.resolve({
@@ -408,13 +391,12 @@ describe('ProfilesController', () => {
           smallImagePath: 'smallImagePath'
         });
       })
-      // @ts-ignore
       jest.spyOn(userAvatarsService, 'setAvatarData').mockImplementation(() => {
         return Promise.resolve({
           userId,
           large: originalImageURL,
           small: smallImageURL
-        });
+        } as UserAvatar);
       })
 
       const profilePhotoData = await profilesService.setUserProfilePhoto(photo, userId);
@@ -431,7 +413,6 @@ describe('ProfilesController', () => {
     it('should throw exception (user with ID was not found)', async () => {
       const userId = 1;
       const photo = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
-      // @ts-ignore
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
         return Promise.resolve(null);
       })
@@ -453,9 +434,8 @@ describe('ProfilesController', () => {
       const user: Partial<User> = { id: userId }
       const file = null;
       const errorMessage = ErrorMessages.ru.FILE_NOT_SELECTED;
-      // @ts-ignore
       jest.spyOn(usersService, 'getUserById').mockImplementation(() => {
-        return Promise.resolve(user);
+        return Promise.resolve(user as User);
       })
       jest.spyOn(filesService, 'addJPEGFile').mockImplementation(() => {
         throw new HttpException(errorMessage, HttpStatus.BAD_REQUEST);

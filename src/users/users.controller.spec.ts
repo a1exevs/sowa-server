@@ -13,6 +13,7 @@ import { sendPseudoError } from "@test/unit/helpers";
 import { BanUserRequest, SetUserStatusRequest } from "@users/dto";
 import { mockGetUsersResponse } from "@test/unit/helpers";
 import { ErrorMessages } from "@common/constants";
+import { Role } from '@roles/roles.model';
 
 describe('UsersController', () => {
   let usersController: UsersController;
@@ -89,11 +90,9 @@ describe('UsersController', () => {
       const userId = 1;
       const roleValue = 'admin';
       const reqDto: AddRoleRequest.Dto = { userId, value: roleValue };
-      // @ts-ignore
-      const mockUser: Partial<User> = { id: userId, roles: [{value: roleValue, id: 1 }] };
-      // @ts-ignore
+      const mockUser: Partial<User> = { id: userId, roles: [{value: roleValue, id: 1 } as Role] };
       jest.spyOn(usersService, 'addRole').mockImplementation(() => {
-        return Promise.resolve(mockUser);
+        return Promise.resolve(mockUser as User);
       });
       const result = await usersController.addRole(reqDto);
       expect(usersService.addRole).toBeCalledTimes(1);
@@ -104,10 +103,8 @@ describe('UsersController', () => {
       const userId = 1;
       const roleValue = 'admin';
       const reqDto: AddRoleRequest.Dto = { userId, value: roleValue };
-      // @ts-ignore
       const errorMessage = ErrorMessages.ru.USER_ALREADY_HAS_THE_ROLE_N.format(reqDto.value);
       const errorStatus = HttpStatus.BAD_REQUEST;
-      // @ts-ignore
       jest.spyOn(usersService, 'addRole').mockImplementation(() => {
         throw new HttpException(errorMessage, errorStatus);
       });
@@ -129,9 +126,8 @@ describe('UsersController', () => {
       const banReason = 'banReason';
       const reqDto: BanUserRequest.Dto = { userId, banReason: 'reason' };
       const mockUser: Partial<User> = { id: userId, banned: true, banReason };
-      // @ts-ignore
       jest.spyOn(usersService, 'ban').mockImplementation(() => {
-        return Promise.resolve(mockUser);
+        return Promise.resolve(mockUser as User);
       });
       const result = await usersController.ban(reqDto);
       expect(usersService.ban).toBeCalledTimes(1);
@@ -143,7 +139,6 @@ describe('UsersController', () => {
       const reqDto: BanUserRequest.Dto = { userId, banReason: 'reason' };
       const errorStatus = HttpStatus.NOT_FOUND;
       const errorMessage = ErrorMessages.ru.FAILED_TO_FIND_USER;
-      // @ts-ignore
       jest.spyOn(usersService, 'ban').mockImplementation(() => {
         throw new HttpException(errorMessage, errorStatus);
       });
@@ -193,9 +188,8 @@ describe('UsersController', () => {
       const dto: SetUserStatusRequest.Dto = { status: 'new status' };
       const userId = 1;
       const req = { user: { id: userId } };
-      // @ts-ignore
       jest.spyOn(usersService, 'setStatus').mockImplementation(() => {
-        return Promise.resolve([1, [{ id: userId }]])
+        return Promise.resolve([1, [{ id: userId } as User]])
       });
       const result = await usersController.setStatus(req, dto);
       expect(usersService.setStatus).toBeCalledTimes(1);

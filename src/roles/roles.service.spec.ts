@@ -74,9 +74,8 @@ describe('RolesService', () => {
     it('should be successful result', async () => {
       const request = 'admin';
       const mockServiceResponse: Partial<Role> = { id: 1, value: request, description: 'Admin role' }
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve(mockServiceResponse)
+        return Promise.resolve(mockServiceResponse as Role)
       })
       const result = await rolesService.getRoleByValue(request);
 

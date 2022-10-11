@@ -41,9 +41,8 @@ describe('UserAvatarsService', () => {
       const userId = 1;
       const small = 'small';
       const large = 'large';
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve({ userId, small, large });
+        return Promise.resolve({ userId, small, large } as UserAvatar);
       })
       const avatar = await userAvatarsService.getAvatarByUserId(userId);
       expect(avatar.userId).toBe(userId);
@@ -60,13 +59,11 @@ describe('UserAvatarsService', () => {
       const small = 'small';
       const large = 'large';
       const avatarData = { small, large };
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve({ userId, ...avatarData });
+        return Promise.resolve({ userId, ...avatarData } as UserAvatar);
       })
-      // @ts-ignore
       jest.spyOn(model, 'upsert').mockImplementation(() => {
-        return Promise.resolve([true])
+        return Promise.resolve([avatarData as UserAvatar, true])
       })
       const result = await userAvatarsService.setAvatarData(avatarData, userId);
       expect(result.userId).toBe(userId);

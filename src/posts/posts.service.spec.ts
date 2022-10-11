@@ -69,7 +69,6 @@ describe('PostsService', () => {
       jest.spyOn(filesService, 'createFile').mockImplementation(async () => {
         return Promise.resolve({ filePath: 'test', fileURL: imageURL });
       })
-      // @ts-ignore
       jest.spyOn(model, 'create').mockImplementation(async () => {
         return Promise.resolve({
           id: postId,
@@ -77,7 +76,7 @@ describe('PostsService', () => {
           title,
           content,
           image: imageURL
-        })
+        } as Post)
       });
 
       const post = await postsService.createPost(dto, file, userId);
@@ -107,7 +106,6 @@ describe('PostsService', () => {
       jest.spyOn(filesService, 'createFile').mockImplementation(async () => {
         return Promise.resolve({ filePath: 'test', fileURL: imageURL });
       })
-      // @ts-ignore
       jest.spyOn(model, 'create').mockImplementation(async () => {
         throw new HttpException(errorMessage, HttpStatus.BAD_REQUEST);
       });

@@ -26,8 +26,7 @@ describe('SetUserStatusRequest', () => {
       expect(errors.length).toBe(0);
     });
     it('should has errors (status is not strings)', async () => {
-      const dto = { status: 1 }
-      // @ts-ignore
+      const dto = { status: 1 } as unknown as SetUserStatusRequest.Dto;
       const errors = await validateDto(SetUserStatusRequest.Dto, dto);
       expect(errors.length).toBe(1);
       expect(errors[0].property).toBe('status');
