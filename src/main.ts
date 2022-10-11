@@ -1,4 +1,6 @@
-import "string.extensions";
+require('module-alias/register');
+
+import "@root/string.extensions";
 
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
