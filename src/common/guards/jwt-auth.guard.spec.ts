@@ -1,32 +1,32 @@
-import { HttpStatus } from "@nestjs/common";
+import { HttpStatus } from '@nestjs/common';
 
-import { JwtAuthGuard } from "@common/guards";
-import { sendPseudoError } from "@test/unit/helpers";
-import { getMockJWTServiceData, getMockExecutionContextData } from "@test/unit/helpers";
-import { ErrorMessages } from "@common/constants";
+import { JwtAuthGuard } from '@common/guards';
+import { sendPseudoError } from '@test/unit/helpers';
+import { getMockJWTServiceData, getMockExecutionContextData } from '@test/unit/helpers';
+import { ErrorMessages } from '@common/constants';
 
 describe('JwtAuthGuard', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.clearAllTimers();
-  })
+  });
 
   describe('canActivate', () => {
     it('should be successful result', async () => {
       const payloadPropertyName = 'id';
       const payloadPropertyValue = 1;
       const payload = { [payloadPropertyName]: payloadPropertyValue };
-      const {jwtService, token} = getMockJWTServiceData({
+      const { jwtService, token } = getMockJWTServiceData({
         expiresIn: '600s',
-        payload
-      })
+        payload,
+      });
       const req = {
         user: null,
         headers: {
-          authorization: `Bearer ${token}`
-        }
-      }
-      const {mockContext, mockGetRequest, request} = getMockExecutionContextData({ req });
+          authorization: `Bearer ${token}`,
+        },
+      };
+      const { mockContext, mockGetRequest, request } = getMockExecutionContextData({ req });
 
       const jwtAuthGuard = new JwtAuthGuard(jwtService);
       const result = jwtAuthGuard.canActivate(mockContext);
@@ -40,25 +40,25 @@ describe('JwtAuthGuard', () => {
       const payloadPropertyName = 'id';
       const payloadPropertyValue = 1;
       const payload = { [payloadPropertyName]: payloadPropertyValue };
-      const {jwtService, token} = getMockJWTServiceData({
+      const { jwtService, token } = getMockJWTServiceData({
         expiresIn: `${expiresIn}s`,
-        payload
-      })
+        payload,
+      });
 
       const req = {
         user: null,
         headers: {
-          authorization: `Bearer ${token}`
-        }
-      }
-      const {mockContext, mockGetRequest} = getMockExecutionContextData({ req });
+          authorization: `Bearer ${token}`,
+        },
+      };
+      const { mockContext, mockGetRequest } = getMockExecutionContextData({ req });
 
       const jwtAuthGuard = new JwtAuthGuard(jwtService);
       jest.useFakeTimers();
       expect.assertions(3);
       setTimeout(() => {
         try {
-          jwtAuthGuard.canActivate(mockContext)
+          jwtAuthGuard.canActivate(mockContext);
           sendPseudoError();
         } catch (err) {
           expect(err.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -73,22 +73,22 @@ describe('JwtAuthGuard', () => {
       const payloadPropertyName = 'id';
       const payloadPropertyValue = 1;
       const payload = { [payloadPropertyName]: payloadPropertyValue };
-      const {jwtService, token} = getMockJWTServiceData({
+      const { jwtService, token } = getMockJWTServiceData({
         expiresIn: `${expiresIn}s`,
-        payload
-      })
+        payload,
+      });
 
       const req = {
         user: null,
         headers: {
-          authorization: `${token}`
-        }
-      }
-      const {mockContext, mockGetRequest} = getMockExecutionContextData({ req });
+          authorization: `${token}`,
+        },
+      };
+      const { mockContext, mockGetRequest } = getMockExecutionContextData({ req });
 
       const jwtAuthGuard = new JwtAuthGuard(jwtService);
       try {
-        jwtAuthGuard.canActivate(mockContext)
+        jwtAuthGuard.canActivate(mockContext);
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -101,22 +101,22 @@ describe('JwtAuthGuard', () => {
       const payloadPropertyName = 'id';
       const payloadPropertyValue = 1;
       const payload = { [payloadPropertyName]: payloadPropertyValue };
-      const {jwtService, token} = getMockJWTServiceData({
+      const { jwtService, token } = getMockJWTServiceData({
         expiresIn: `${expiresIn}s`,
-        payload
-      })
+        payload,
+      });
 
       const req = {
         user: null,
         headers: {
-          authorization: `Bearer ${token}1234`
-        }
-      }
-      const {mockContext, mockGetRequest} = getMockExecutionContextData({ req });
+          authorization: `Bearer ${token}1234`,
+        },
+      };
+      const { mockContext, mockGetRequest } = getMockExecutionContextData({ req });
 
       const jwtAuthGuard = new JwtAuthGuard(jwtService);
       try {
-        jwtAuthGuard.canActivate(mockContext)
+        jwtAuthGuard.canActivate(mockContext);
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -124,5 +124,5 @@ describe('JwtAuthGuard', () => {
         expect(mockGetRequest).toBeCalledTimes(1);
       }
     });
-  })
-})
+  });
+});

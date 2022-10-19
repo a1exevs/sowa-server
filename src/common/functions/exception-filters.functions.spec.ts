@@ -1,8 +1,8 @@
-import { createResponse } from "node-mocks-http";
-import { HttpException, HttpStatus } from "@nestjs/common";
+import { createResponse } from 'node-mocks-http';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
-import { sendResponse } from "@common/functions";
-import { ResultCodes } from "@common/constants";
+import { sendResponse } from '@common/functions';
+import { ResultCodes } from '@common/constants';
 
 describe('ExceptionFiltersHelper', () => {
   beforeEach(() => {
@@ -41,4 +41,4 @@ describe('ExceptionFiltersHelper', () => {
       expect(body.messages).toEqual([errorMessage]);
     });
   });
-})
+});

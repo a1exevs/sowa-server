@@ -1,8 +1,8 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { getModelToken } from "@nestjs/sequelize";
+import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/sequelize';
 
-import { UserCommonInfoService } from "@profiles/user-common-Info.service";
-import { UserCommonInfo } from "@profiles/user-common-info.model";
+import { UserCommonInfoService } from '@profiles/user-common-Info.service';
+import { UserCommonInfo } from '@profiles/user-common-info.model';
 
 describe('UserCommonInfoService', () => {
   let userCommonInfoService: UserCommonInfoService;
@@ -18,9 +18,9 @@ describe('UserCommonInfoService', () => {
           provide: getModelToken(UserCommonInfo),
           useValue: {
             findOne: jest.fn(x => x),
-            upsert: jest.fn(x => x)
-          }
-        }
+            upsert: jest.fn(x => x),
+          },
+        },
       ],
     }).compile();
     userCommonInfoService = module.get<UserCommonInfoService>(UserCommonInfoService);
@@ -42,18 +42,17 @@ describe('UserCommonInfoService', () => {
       const fullName = 'lord Voldemort';
       const aboutMe = 'I am super wizard in the World';
       const lookingForAJob = false;
-      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians"
+      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians";
       const profile: Partial<UserCommonInfo> = {
         userId,
         fullName,
         aboutMe,
         lookingForAJob,
-        lookingForAJobDescription
+        lookingForAJobDescription,
       };
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve(profile);
-      })
+        return Promise.resolve(profile as UserCommonInfo);
+      });
       const profileData = await userCommonInfoService.getCommonInfoByUserId(userId);
 
       expect(profileData.userId).toBe(userId);
@@ -62,7 +61,7 @@ describe('UserCommonInfoService', () => {
       expect(profileData.lookingForAJob).toBe(lookingForAJob);
       expect(profileData.lookingForAJobDescription).toBe(lookingForAJobDescription);
       expect(model.findOne).toBeCalledTimes(1);
-      expect(model.findOne).toBeCalledWith({ where: { userId }});
+      expect(model.findOne).toBeCalledWith({ where: { userId } });
     });
   });
 
@@ -72,25 +71,23 @@ describe('UserCommonInfoService', () => {
       const fullName = 'lord Voldemort';
       const aboutMe = 'I am super wizard in the World';
       const lookingForAJob = false;
-      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians"
+      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians";
       const profileData = {
         fullName,
         aboutMe,
         lookingForAJob,
-        lookingForAJobDescription
-      }
+        lookingForAJobDescription,
+      };
       const profile: Partial<UserCommonInfo> = {
         userId,
-        ...profileData
+        ...profileData,
       };
-      // @ts-ignore
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve(profile);
-      })
-      // @ts-ignore
+        return Promise.resolve(profile as UserCommonInfo);
+      });
       jest.spyOn(model, 'upsert').mockImplementation(() => {
-        return Promise.resolve([true])
-      })
+        return Promise.resolve([{} as UserCommonInfo, true]);
+      });
       const result = await userCommonInfoService.setCommonInfo(userId, profileData);
       expect(result.userId).toBe(userId);
       expect(result.fullName).toBe(fullName);
@@ -100,7 +97,7 @@ describe('UserCommonInfoService', () => {
       expect(model.upsert).toBeCalledTimes(1);
       expect(model.upsert).toBeCalledWith({ ...profileData, userId }, { returning: true });
       expect(model.findOne).toBeCalledTimes(1);
-      expect(model.findOne).toBeCalledWith({ where: { userId }});
+      expect(model.findOne).toBeCalledWith({ where: { userId } });
     });
   });
 });

@@ -1,12 +1,12 @@
-import { ArgumentMetadata, Injectable, PipeTransform } from "@nestjs/common";
-import { plainToInstance } from "class-transformer";
-import { validate, ValidationError } from "class-validator";
+import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { validate, ValidationError } from 'class-validator';
 
-import { ValidationException } from "@common/exceptions"
+import { ValidationException } from '@common/exceptions';
 
 @Injectable()
 export class ValidationPipe implements PipeTransform<any> {
-  async transform(value: any, { metatype }: ArgumentMetadata) : Promise<any> {
+  async transform(value: any, { metatype }: ArgumentMetadata): Promise<any> {
     if (!metatype || !this.toValidate(metatype)) {
       return value;
     }
@@ -15,8 +15,8 @@ export class ValidationPipe implements PipeTransform<any> {
 
     const errors = await validate(obj);
 
-    if(errors.length) {
-      let messages = this.getErrorsMessages(errors);
+    if (errors.length) {
+      const messages = this.getErrorsMessages(errors);
 
       throw new ValidationException(messages);
     }
@@ -28,18 +28,14 @@ export class ValidationPipe implements PipeTransform<any> {
     return !types.includes(metatype);
   }
 
-  private getErrorsMessages(errors: ValidationError[])
-  {
+  private getErrorsMessages(errors: ValidationError[]) {
     return errors.map(error => {
       const message = error.constraints ? `${error.property} - ${Object.values(error.constraints).join(', ')}` : '';
       let childrenMessages;
-      if(error.children)
-        childrenMessages = this.getErrorsMessages(error.children)
-      if(message && childrenMessages && childrenMessages.length)
-        childrenMessages.push(message)
-      if(childrenMessages && childrenMessages.length)
-        return childrenMessages;
+      if (error.children) childrenMessages = this.getErrorsMessages(error.children);
+      if (message && childrenMessages && childrenMessages.length) childrenMessages.push(message);
+      if (childrenMessages && childrenMessages.length) return childrenMessages;
       return message;
-    })
+    });
   }
 }

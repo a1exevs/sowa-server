@@ -1,5 +1,5 @@
-import { checkForApiProperties } from "@test/unit/helpers";
-import { GetUserAvatarResponse } from "@profiles/dto";
+import { checkForApiProperties } from '@test/unit/helpers';
+import { GetUserAvatarResponse } from '@profiles/dto';
 
 describe('GetUserAvatarResponse', () => {
   beforeEach(async () => {

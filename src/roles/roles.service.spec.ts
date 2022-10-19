@@ -1,11 +1,11 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { getModelToken } from "@nestjs/sequelize";
-import { HttpException, HttpStatus } from "@nestjs/common";
+import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/sequelize';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
-import { RolesService } from "@roles/roles.service";
-import { Role } from "@roles/roles.model";
-import { CreateRoleRequest } from "@roles/dto";
-import { ErrorMessages } from "@common/constants";
+import { RolesService } from '@roles/roles.service';
+import { Role } from '@roles/roles.model';
+import { CreateRoleRequest } from '@roles/dto';
+import { ErrorMessages } from '@common/constants';
 
 describe('RolesService', () => {
   let rolesService: RolesService;
@@ -21,9 +21,9 @@ describe('RolesService', () => {
           provide: getModelToken(Role),
           useValue: {
             create: jest.fn(x => x),
-            findOne: jest.fn(x => x)
-          }
-        }
+            findOne: jest.fn(x => x),
+          },
+        },
       ],
     }).compile();
     rolesService = module.get<RolesService>(RolesService);
@@ -73,11 +73,10 @@ describe('RolesService', () => {
   describe('RolesService - getRoleByValue', () => {
     it('should be successful result', async () => {
       const request = 'admin';
-      const mockServiceResponse: Partial<Role> = { id: 1, value: request, description: 'Admin role' }
-      // @ts-ignore
+      const mockServiceResponse: Partial<Role> = { id: 1, value: request, description: 'Admin role' };
       jest.spyOn(model, 'findOne').mockImplementation(() => {
-        return Promise.resolve(mockServiceResponse)
-      })
+        return Promise.resolve(mockServiceResponse as Role);
+      });
       const result = await rolesService.getRoleByValue(request);
 
       expect(result).toEqual(mockServiceResponse);

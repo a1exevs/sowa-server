@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export namespace GetUsersResponse {
   export class Avatar {
@@ -35,13 +35,13 @@ export namespace GetUsersResponse {
   }
 
   export class Data {
-    @ApiProperty({ type: () => [Swagger.GetUsersResponseUser], description: "Массив пользователей" })
+    @ApiProperty({ type: () => [Swagger.GetUsersResponseUser], description: 'Массив пользователей' })
     readonly items?: User[] = null;
 
-    @ApiProperty({ type: Number, example: "1234", description: "Общее количество пользователей" })
+    @ApiProperty({ type: Number, example: '1234', description: 'Общее количество пользователей' })
     readonly totalCount?: number = 0;
 
-    @ApiProperty({ type: String, example: "1234", description: "Максимальный размер страницы - 100 пользователей" })
+    @ApiProperty({ type: String, example: '1234', description: 'Максимальный размер страницы - 100 пользователей' })
     readonly error?: string = null;
 
     constructor(props: Data) {
@@ -52,10 +52,8 @@ export namespace GetUsersResponse {
   }
 
   export namespace Swagger {
-    export class GetUsersResponseData extends Data {
-    }
+    export class GetUsersResponseData extends Data {}
 
-    export class GetUsersResponseUser extends User {
-    }
+    export class GetUsersResponseUser extends User {}
   }
 }

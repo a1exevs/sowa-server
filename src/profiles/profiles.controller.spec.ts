@@ -1,13 +1,13 @@
-import { JwtService } from "@nestjs/jwt";
-import { Test, TestingModule } from "@nestjs/testing";
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
 
-import { HttpExceptionFilter } from "@common/exception-filters";
-import { JwtAuthGuard, RefreshTokenGuard } from "@common/guards";
-import { ResponseInterceptor } from "@common/interceptors";
-import { ProfilesController } from "@profiles/profiles.controller";
-import { ProfilesService } from "@profiles/profiles.service";
-import { GetProfileResponse, SetProfileRequest } from "@profiles/dto";
-import { loadTestFile, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from "@test/unit/helpers";
+import { HttpExceptionFilter } from '@common/exception-filters';
+import { JwtAuthGuard, RefreshTokenGuard } from '@common/guards';
+import { ResponseInterceptor } from '@common/interceptors';
+import { ProfilesController } from '@profiles/profiles.controller';
+import { ProfilesService } from '@profiles/profiles.service';
+import { GetProfileResponse, SetProfileRequest } from '@profiles/dto';
+import { loadTestFile, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from '@test/unit/helpers';
 
 describe('ProfilesController', () => {
   let profilesController: ProfilesController;
@@ -32,10 +32,10 @@ describe('ProfilesController', () => {
             getUserProfile: jest.fn(x => x),
             setUserProfile: jest.fn(x => x),
             setUserProfilePhoto: jest.fn(x => x),
-          }
+          },
         },
-        jwtService
-      ]
+        jwtService,
+      ],
     }).compile();
     profilesController = moduleRef.get<ProfilesController>(ProfilesController);
     profilesService = moduleRef.get<ProfilesService>(ProfilesService);
@@ -72,19 +72,19 @@ describe('ProfilesController', () => {
       const fullName = 'lord Voldemort';
       const aboutMe = 'I am super wizard in the World';
       const lookingForAJob = false;
-      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians"
+      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians";
       const contacts = null;
       const photos = null;
-      jest.spyOn(profilesService, 'getUserProfile').mockImplementation( (): Promise<GetProfileResponse.Dto> => {
+      jest.spyOn(profilesService, 'getUserProfile').mockImplementation((): Promise<GetProfileResponse.Dto> => {
         return Promise.resolve({
           fullName,
           aboutMe,
           lookingForAJob,
           lookingForAJobDescription,
           contacts,
-          photos
-        })
-      })
+          photos,
+        });
+      });
 
       const profileData = await profilesController.getProfile(userId);
 
@@ -96,7 +96,7 @@ describe('ProfilesController', () => {
       expect(profileData.photos).toBe(photos);
       expect(profilesService.getUserProfile).toBeCalledTimes(1);
       expect(profilesService.getUserProfile).toBeCalledWith(userId);
-    })
+    });
   });
 
   describe('ProfilesController - setProfile', () => {
@@ -105,7 +105,7 @@ describe('ProfilesController', () => {
       const fullName = 'lord Voldemort';
       const aboutMe = 'I am super wizard in the World';
       const lookingForAJob = false;
-      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians"
+      const lookingForAJobDescription = "I don't need to work. I need to seize power in the world of magicians";
       const contacts = null;
       const photos = null;
       const requestDto: SetProfileRequest.Dto = {
@@ -113,15 +113,15 @@ describe('ProfilesController', () => {
         aboutMe,
         lookingForAJob,
         lookingForAJobDescription,
-        contacts
-      }
-      jest.spyOn(profilesService, 'setUserProfile').mockImplementation( (): Promise<GetProfileResponse.Dto> => {
+        contacts,
+      };
+      jest.spyOn(profilesService, 'setUserProfile').mockImplementation((): Promise<GetProfileResponse.Dto> => {
         return Promise.resolve({
           ...requestDto,
           contacts: requestDto.contacts,
-          photos
-        })
-      })
+          photos,
+        });
+      });
       const req = { user: { id: userId } };
 
       const userProfile = await profilesController.setProfile(requestDto, req);
@@ -134,7 +134,7 @@ describe('ProfilesController', () => {
       expect(userProfile.photos).toBe(photos);
       expect(profilesService.setUserProfile).toBeCalledTimes(1);
       expect(profilesService.setUserProfile).toBeCalledWith(userId, requestDto);
-    })
+    });
   });
 
   describe('ProfilesController - setProfilePhoto', () => {
@@ -149,10 +149,10 @@ describe('ProfilesController', () => {
         return Promise.resolve({
           photos: {
             large: largeUploadedPhotoURL,
-            small: smallUploadedPhotoURL
-          }
-        })
-      })
+            small: smallUploadedPhotoURL,
+          },
+        });
+      });
 
       const result = await profilesController.setProfilePhoto(photo, req);
 
@@ -160,6 +160,6 @@ describe('ProfilesController', () => {
       expect(result.photos.small).toBe(smallUploadedPhotoURL);
       expect(profilesService.setUserProfilePhoto).toBeCalledTimes(1);
       expect(profilesService.setUserProfilePhoto).toBeCalledWith(photo, userId);
-    })
+    });
   });
 });

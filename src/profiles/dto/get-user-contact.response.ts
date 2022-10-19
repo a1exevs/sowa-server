@@ -1,30 +1,30 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export namespace GetUserContactResponse {
   export class Dto {
     @ApiProperty()
-    readonly facebook: string = "";
+    readonly facebook: string = '';
 
     @ApiProperty()
-    readonly website: string = "";
+    readonly website: string = '';
 
     @ApiProperty()
-    readonly twitter: string = "";
+    readonly twitter: string = '';
 
     @ApiProperty()
-    readonly instagram: string = "";
+    readonly instagram: string = '';
 
     @ApiProperty()
-    readonly youtube: string = "";
+    readonly youtube: string = '';
 
     @ApiProperty()
-    readonly github: string = "";
+    readonly github: string = '';
 
     @ApiProperty()
-    vk: string = "";
+    vk = '';
 
     @ApiProperty()
-    mainLink: string = "";
+    mainLink = '';
 
     constructor(dto: Partial<Dto>) {
       if (dto) {
@@ -41,7 +41,6 @@ export namespace GetUserContactResponse {
   }
 
   export namespace Swagger {
-    export class GetUserContactResponseDto extends Dto {
-    }
+    export class GetUserContactResponseDto extends Dto {}
   }
 }

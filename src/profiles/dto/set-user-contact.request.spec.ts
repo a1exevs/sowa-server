@@ -1,6 +1,6 @@
-import { validateDto } from "@test/unit/helpers";
-import { SetUserContactRequest } from "@profiles/dto";
-import { ErrorMessages } from "@common/constants";
+import { validateDto } from '@test/unit/helpers';
+import { SetUserContactRequest } from '@profiles/dto';
+import { ErrorMessages } from '@common/constants';
 
 describe('SetUserContactRequest', () => {
   beforeEach(async () => {
@@ -17,7 +17,7 @@ describe('SetUserContactRequest', () => {
         'youtube',
         'github',
         'vk',
-        'mainLink'
+        'mainLink',
       );
 
       const errors = await validateDto(SetUserContactRequest.Dto, dto);
@@ -31,7 +31,7 @@ describe('SetUserContactRequest', () => {
       errors.forEach((error, index: number) => {
         expect(error.constraints.isString).toBe(ErrorMessages.ru.MUST_BE_A_STRING);
         expect(error.property).toBe(Object.keys(dto)[index]);
-      })
+      });
     });
-  })
+  });
 });

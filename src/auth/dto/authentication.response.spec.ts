@@ -1,5 +1,5 @@
-import { AuthenticationResponse } from "@auth/dto";
-import { checkForApiProperties } from "@test/unit/helpers";
+import { AuthenticationResponse } from '@auth/dto';
+import { checkForApiProperties } from '@test/unit/helpers';
 
 describe('AuthenticationResponse', () => {
   beforeEach(async () => {
@@ -8,7 +8,7 @@ describe('AuthenticationResponse', () => {
 
   it('should has ApiProperty decorator for all properties', () => {
     const userId = 1;
-    const accessToken = 'token'
+    const accessToken = 'token';
     const dto = new AuthenticationResponse.Dto({ userId, accessToken });
     checkForApiProperties(dto, AuthenticationResponse.Dto);
   });

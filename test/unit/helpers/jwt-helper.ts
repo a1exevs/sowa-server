@@ -1,24 +1,24 @@
-import { JwtService } from "@nestjs/jwt";
+import { JwtService } from '@nestjs/jwt';
 
 interface IGetMockJWTServiceData {
-  expiresIn: string,
-  payload: string | object
-  subject?: string
-  jwtId?: string
+  expiresIn: string;
+  payload: string | object;
+  subject?: string;
+  jwtId?: string;
 }
 
-export const getMockJWTServiceData = function(props: IGetMockJWTServiceData) {
+export const getMockJWTServiceData = function (props: IGetMockJWTServiceData) {
   const jwtService = new JwtService({
     secret: 'SECRET',
     signOptions: {
       expiresIn: props.expiresIn,
       subject: props.subject ?? '',
-      jwtid: props.jwtId ?? ''
-    }
+      jwtid: props.jwtId ?? '',
+    },
   });
   const token = jwtService.sign(props.payload);
   return {
     token,
-    jwtService
+    jwtService,
   };
-}
+};

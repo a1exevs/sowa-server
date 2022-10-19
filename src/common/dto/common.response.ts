@@ -1,5 +1,5 @@
-import {ApiProperty} from "@nestjs/swagger";
-import { ResultCodes } from "@common/constants";
+import { ApiProperty } from '@nestjs/swagger';
+import { ResultCodes } from '@common/constants';
 
 export namespace CommonResponse {
   export class Dto {

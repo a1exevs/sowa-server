@@ -1,18 +1,19 @@
-import '@root/string.extensions'
+import '@root/string.extensions';
 
-import { Test, TestingModule } from "@nestjs/testing";
-import { JwtService } from "@nestjs/jwt";
-import { HttpException, HttpStatus, NotFoundException } from "@nestjs/common";
+import { Test, TestingModule } from '@nestjs/testing';
+import { JwtService } from '@nestjs/jwt';
+import { HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 
-import { UsersController } from "@users/users.controller";
-import { UsersService } from "@users/users.service";
-import { GetUsersQuery } from "@users/queries";
-import { AddRoleRequest } from "@users/dto";
-import { User } from "@users/users.model";
-import { sendPseudoError } from "@test/unit/helpers";
-import { BanUserRequest, SetUserStatusRequest } from "@users/dto";
-import { mockGetUsersResponse } from "@test/unit/helpers";
-import { ErrorMessages } from "@common/constants";
+import { UsersController } from '@users/users.controller';
+import { UsersService } from '@users/users.service';
+import { GetUsersQuery } from '@users/queries';
+import { AddRoleRequest } from '@users/dto';
+import { User } from '@users/users.model';
+import { sendPseudoError } from '@test/unit/helpers';
+import { BanUserRequest, SetUserStatusRequest } from '@users/dto';
+import { mockGetUsersResponse } from '@test/unit/helpers';
+import { ErrorMessages } from '@common/constants';
+import { Role } from '@roles/roles.model';
 
 describe('UsersController', () => {
   let usersController: UsersController;
@@ -34,10 +35,10 @@ describe('UsersController', () => {
             ban: jest.fn(x => x),
             getStatus: jest.fn(x => x),
             setStatus: jest.fn(x => x),
-          }
+          },
         },
-        jwtService
-      ]
+        jwtService,
+      ],
     }).compile();
     usersController = moduleRef.get<UsersController>(UsersController);
     usersService = moduleRef.get<UsersService>(UsersService);
@@ -55,12 +56,12 @@ describe('UsersController', () => {
   describe('UsersController - getUsers', () => {
     it('should be successful result', async () => {
       const userId = 1;
-      const req = { user: { id: userId }};
+      const req = { user: { id: userId } };
       const queryParams: GetUsersQuery.Params = { page: 1, count: 3 };
       const mockResponse = mockGetUsersResponse();
       jest.spyOn(usersService, 'getUsers').mockImplementation(() => {
         return Promise.resolve(mockResponse);
-      })
+      });
 
       const result = await usersController.getUsers(queryParams, req);
 
@@ -70,13 +71,13 @@ describe('UsersController', () => {
     });
     it('should be successful result (with default query params)', async () => {
       const userId = 1;
-      const req = { user: { id: userId }};
+      const req = { user: { id: userId } };
       const mockResponse = mockGetUsersResponse();
       jest.spyOn(usersService, 'getUsers').mockImplementation(() => {
         return Promise.resolve(mockResponse);
-      })
+      });
 
-      const result = await usersController.getUsers({page: null, count: null}, req);
+      const result = await usersController.getUsers({ page: null, count: null }, req);
 
       expect(usersService.getUsers).toBeCalledTimes(1);
       expect(usersService.getUsers).toBeCalledWith(1, 10, userId);
@@ -89,11 +90,9 @@ describe('UsersController', () => {
       const userId = 1;
       const roleValue = 'admin';
       const reqDto: AddRoleRequest.Dto = { userId, value: roleValue };
-      // @ts-ignore
-      const mockUser: Partial<User> = { id: userId, roles: [{value: roleValue, id: 1 }] };
-      // @ts-ignore
+      const mockUser: Partial<User> = { id: userId, roles: [{ value: roleValue, id: 1 } as Role] };
       jest.spyOn(usersService, 'addRole').mockImplementation(() => {
-        return Promise.resolve(mockUser);
+        return Promise.resolve(mockUser as User);
       });
       const result = await usersController.addRole(reqDto);
       expect(usersService.addRole).toBeCalledTimes(1);
@@ -104,10 +103,8 @@ describe('UsersController', () => {
       const userId = 1;
       const roleValue = 'admin';
       const reqDto: AddRoleRequest.Dto = { userId, value: roleValue };
-      // @ts-ignore
       const errorMessage = ErrorMessages.ru.USER_ALREADY_HAS_THE_ROLE_N.format(reqDto.value);
       const errorStatus = HttpStatus.BAD_REQUEST;
-      // @ts-ignore
       jest.spyOn(usersService, 'addRole').mockImplementation(() => {
         throw new HttpException(errorMessage, errorStatus);
       });
@@ -129,9 +126,8 @@ describe('UsersController', () => {
       const banReason = 'banReason';
       const reqDto: BanUserRequest.Dto = { userId, banReason: 'reason' };
       const mockUser: Partial<User> = { id: userId, banned: true, banReason };
-      // @ts-ignore
       jest.spyOn(usersService, 'ban').mockImplementation(() => {
-        return Promise.resolve(mockUser);
+        return Promise.resolve(mockUser as User);
       });
       const result = await usersController.ban(reqDto);
       expect(usersService.ban).toBeCalledTimes(1);
@@ -143,7 +139,6 @@ describe('UsersController', () => {
       const reqDto: BanUserRequest.Dto = { userId, banReason: 'reason' };
       const errorStatus = HttpStatus.NOT_FOUND;
       const errorMessage = ErrorMessages.ru.FAILED_TO_FIND_USER;
-      // @ts-ignore
       jest.spyOn(usersService, 'ban').mockImplementation(() => {
         throw new HttpException(errorMessage, errorStatus);
       });
@@ -193,9 +188,8 @@ describe('UsersController', () => {
       const dto: SetUserStatusRequest.Dto = { status: 'new status' };
       const userId = 1;
       const req = { user: { id: userId } };
-      // @ts-ignore
       jest.spyOn(usersService, 'setStatus').mockImplementation(() => {
-        return Promise.resolve([1, [{ id: userId }]])
+        return Promise.resolve([1, [{ id: userId } as User]]);
       });
       const result = await usersController.setStatus(req, dto);
       expect(usersService.setStatus).toBeCalledTimes(1);

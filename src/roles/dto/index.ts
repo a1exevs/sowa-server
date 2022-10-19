@@ -1,1 +1,1 @@
-export { CreateRoleRequest } from "@roles/dto/create-role.request";
+export { CreateRoleRequest } from '@roles/dto/create-role.request';

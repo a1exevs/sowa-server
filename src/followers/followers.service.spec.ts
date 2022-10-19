@@ -1,17 +1,19 @@
-import '@root/string.extensions'
+import '@root/string.extensions';
 
-import { Test, TestingModule } from "@nestjs/testing";
-import { getModelToken } from "@nestjs/sequelize";
-import { HttpStatus } from "@nestjs/common";
-import { Op } from "sequelize";
+import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/sequelize';
+import { HttpStatus } from '@nestjs/common';
+import { Op } from 'sequelize';
 
-import { FollowersService } from "@followers/followers.service";
-import { Follower } from "@followers/followers.model";
-import { UsersService } from "@users/users.service";
-import { sendPseudoError } from "@test/unit/helpers";
-import { ErrorMessages } from "@common/constants";
+import { FollowersService } from '@followers/followers.service';
+import { Follower } from '@followers/followers.model';
+import { UsersService } from '@users/users.service';
+import { sendPseudoError } from '@test/unit/helpers';
+import { ErrorMessages } from '@common/constants';
+import { User } from '@users/users.model';
+import { FindOptions } from 'sequelize/dist/lib/model';
 
-jest.mock("./followers.model")
+jest.mock('./followers.model');
 
 describe('FollowersService', () => {
   let followersService: FollowersService;
@@ -30,15 +32,15 @@ describe('FollowersService', () => {
             findOne: jest.fn(x => x),
             create: jest.fn(x => x),
             destroy: jest.fn(x => x),
-            findAll: jest.fn(x => x)
-          }
+            findAll: jest.fn(x => x),
+          },
         },
         {
           provide: UsersService,
           useValue: {
-            getUserById: jest.fn(x => x)
-          }
-        }
+            getUserById: jest.fn(x => x),
+          },
+        },
       ],
     }).compile();
     followersService = module.get<FollowersService>(FollowersService);
@@ -63,25 +65,24 @@ describe('FollowersService', () => {
       const followerId = 1;
       const userId = 2;
       const follower = { id: followerId };
-      const user = { id: userId }
+      const user = { id: userId };
       const uuid = 'sdfsdfs';
       const followData = { followerId, userId };
-      // @ts-ignore
       const getUserByIdFn = jest.spyOn(usersService, 'getUserById').mockImplementation((id: number) => {
-        if(id === followerId) return follower;
-        else if(id === userId) return user;
-      })
+        if (id === followerId) return Promise.resolve(follower as User);
+        else if (id === userId) return Promise.resolve(user as User);
+      });
       const findOneFn = jest.spyOn(model, 'findOne').mockImplementation(async () => {
         return Promise.resolve(null);
-      })
+      });
       const createFn = jest.spyOn(model, 'create').mockImplementation(() => {
         return {
           followerId,
           userId,
-          uuid
-        }
-      })
-      const result = await followersService.follow(followData)
+          uuid,
+        };
+      });
+      const result = await followersService.follow(followData);
       expect(result).toBeTruthy();
       expect(getUserByIdFn).toBeCalledTimes(2);
       expect(getUserByIdFn).toBeCalledWith(followerId);
@@ -110,11 +111,10 @@ describe('FollowersService', () => {
       const userId = 2;
       const follower = { id: followerId };
       const followData = { followerId, userId };
-      // @ts-ignore
       const getUserByIdFn = jest.spyOn(usersService, 'getUserById').mockImplementation((id: number) => {
-        if(id === followerId) return follower;
-        else if(id === userId) return null;
-      })
+        if (id === followerId) return Promise.resolve(follower as User);
+        else if (id === userId) return Promise.resolve(null);
+      });
       try {
         await followersService.follow(followData);
         sendPseudoError();
@@ -131,28 +131,28 @@ describe('FollowersService', () => {
       const followerId = 1;
       const userId = 2;
       const follower = { id: followerId };
-      const user = { id: userId }
+      const user = { id: userId };
       const uuid = 'sdfsdfs';
       const followData = { followerId, userId };
-      // @ts-ignore
       const getUserByIdFn = jest.spyOn(usersService, 'getUserById').mockImplementation((id: number) => {
-        if(id === followerId) return follower;
-        else if(id === userId) return user;
-      })
-      // @ts-ignore
+        if (id === followerId) return Promise.resolve(follower as User);
+        else if (id === userId) return Promise.resolve(user as User);
+      });
       const findOneFn = jest.spyOn(model, 'findOne').mockImplementation(async () => {
         return Promise.resolve({
           followerId,
           userId,
-          uuid
-        });
-      })
+          uuid,
+        } as Follower);
+      });
       try {
         await followersService.follow(followData);
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe(ErrorMessages.ru.USER_M_IS_ALREADY_A_FOLLOWER_OF_USER_N.format(followData.followerId, followData.userId));
+        expect(error.message).toBe(
+          ErrorMessages.ru.USER_M_IS_ALREADY_A_FOLLOWER_OF_USER_N.format(followData.followerId, followData.userId),
+        );
         expect(getUserByIdFn).toBeCalledTimes(2);
         expect(getUserByIdFn).toBeCalledWith(followerId);
         expect(getUserByIdFn).toBeCalledWith(userId);
@@ -168,26 +168,24 @@ describe('FollowersService', () => {
       const followerId = 1;
       const userId = 2;
       const follower = { id: followerId };
-      const user = { id: userId }
+      const user = { id: userId };
       const uuid = 'sdfsdfs';
       const unfollowData = { followerId, userId };
-      // @ts-ignore
       const getUserByIdFn = jest.spyOn(usersService, 'getUserById').mockImplementation((id: number) => {
-        if(id === followerId) return follower;
-        else if(id === userId) return user;
-      })
-      // @ts-ignore
+        if (id === followerId) return Promise.resolve(follower as User);
+        else if (id === userId) return Promise.resolve(user as User);
+      });
       const findOneFn = jest.spyOn(model, 'findOne').mockImplementation(async () => {
         return Promise.resolve({
           followerId,
           userId,
-          uuid
-        });
-      })
+          uuid,
+        } as Follower);
+      });
       const destroyFn = jest.spyOn(model, 'destroy').mockImplementation(async () => {
         return Promise.resolve(1);
-      })
-      const result = await followersService.unfollow(unfollowData)
+      });
+      const result = await followersService.unfollow(unfollowData);
       expect(result).toBeTruthy();
       expect(getUserByIdFn).toBeCalledTimes(2);
       expect(getUserByIdFn).toBeCalledWith(followerId);
@@ -216,11 +214,10 @@ describe('FollowersService', () => {
       const userId = 2;
       const follower = { id: followerId };
       const unfollowData = { followerId, userId };
-      // @ts-ignore
       const getUserByIdFn = jest.spyOn(usersService, 'getUserById').mockImplementation((id: number) => {
-        if(id === followerId) return follower;
-        else if(id === userId) return null;
-      })
+        if (id === followerId) return Promise.resolve(follower as User);
+        else if (id === userId) return Promise.resolve(null);
+      });
       try {
         await followersService.unfollow(unfollowData);
         sendPseudoError();
@@ -237,23 +234,23 @@ describe('FollowersService', () => {
       const followerId = 1;
       const userId = 2;
       const follower = { id: followerId };
-      const user = { id: userId }
+      const user = { id: userId };
       const unfollowData = { followerId, userId };
-      // @ts-ignore
       const getUserByIdFn = jest.spyOn(usersService, 'getUserById').mockImplementation((id: number) => {
-        if(id === followerId) return follower;
-        else if(id === userId) return user;
-      })
-      // @ts-ignore
+        if (id === followerId) return Promise.resolve(follower as User);
+        else if (id === userId) return Promise.resolve(user as User);
+      });
       const findOneFn = jest.spyOn(model, 'findOne').mockImplementation(async () => {
         return Promise.resolve(null);
-      })
+      });
       try {
         await followersService.unfollow(unfollowData);
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe(ErrorMessages.ru.USER_M_IS_NOT_A_FOLLOWER_OF_USER_N.format(unfollowData.followerId, unfollowData.userId));
+        expect(error.message).toBe(
+          ErrorMessages.ru.USER_M_IS_NOT_A_FOLLOWER_OF_USER_N.format(unfollowData.followerId, unfollowData.userId),
+        );
         expect(getUserByIdFn).toBeCalledTimes(2);
         expect(getUserByIdFn).toBeCalledWith(followerId);
         expect(getUserByIdFn).toBeCalledWith(userId);
@@ -268,52 +265,59 @@ describe('FollowersService', () => {
     it('should return 4 rows', async () => {
       const followerId = 1;
       const userIds = [2, 3, 4, 5];
-      // @ts-ignore
-      jest.spyOn(model, 'findAll').mockImplementation(async ({ where: { followerId,  userId: {[Op.in]: userIds} } }) => {
+      jest.spyOn(model, 'findAll').mockImplementation((options: FindOptions) => {
         const result = [];
-        if(followerId) {
-          if(userIds.some(el => el === 2)) result.push({ followerId, userId: 2 });
-          if(userIds.some(el => el === 3)) result.push({ followerId, userId: 3 });
-          if(userIds.some(el => el === 4)) result.push({ followerId, userId: 4 });
-          if(userIds.some(el => el === 5)) result.push({ followerId, userId: 5 });
+
+        const userIdsObject = options.where['userId'];
+        const sym = Object.getOwnPropertySymbols(userIdsObject)[0];
+        const userIds = userIdsObject[sym] as [];
+        const followerId = options.where['followerId'];
+        if (followerId) {
+          if (userIds.some(el => el === 2)) result.push({ followerId, userId: 2 });
+          if (userIds.some(el => el === 3)) result.push({ followerId, userId: 3 });
+          if (userIds.some(el => el === 4)) result.push({ followerId, userId: 4 });
+          if (userIds.some(el => el === 5)) result.push({ followerId, userId: 5 });
         }
-        return result;
-      })
+        return Promise.resolve(result as Follower[]);
+      });
       const response = await followersService.findFollowRows(followerId, userIds);
       expect(response.length).toBe(4);
       expect(model.findAll).toBeCalledTimes(1);
-      expect(model.findAll).toBeCalledWith({ where: { followerId,  userId: {[Op.in]: userIds} } });
+      expect(model.findAll).toBeCalledWith({ where: { followerId, userId: { [Op.in]: userIds } } });
     });
     it('should return 1 row', async () => {
       const followerId = 1;
       const userIds = [2];
-      // @ts-ignore
-      jest.spyOn(model, 'findAll').mockImplementation(async ({ where: { followerId,  userId: {[Op.in]: userIds} } }) => {
+      jest.spyOn(model, 'findAll').mockImplementation(async (options: FindOptions) => {
         const result = [];
-        if(followerId) {
-          if(userIds.some(el => el === 2)) result.push({ followerId, userId: 2 });
-          if(userIds.some(el => el === 3)) result.push({ followerId, userId: 3 });
-          if(userIds.some(el => el === 4)) result.push({ followerId, userId: 4 });
-          if(userIds.some(el => el === 5)) result.push({ followerId, userId: 5 });
+
+        const userIdsObject = options.where['userId'];
+        const sym = Object.getOwnPropertySymbols(userIdsObject)[0];
+        const userIds = userIdsObject[sym] as [];
+        const followerId = options.where['followerId'];
+        if (followerId) {
+          if (userIds.some(el => el === 2)) result.push({ followerId, userId: 2 });
+          if (userIds.some(el => el === 3)) result.push({ followerId, userId: 3 });
+          if (userIds.some(el => el === 4)) result.push({ followerId, userId: 4 });
+          if (userIds.some(el => el === 5)) result.push({ followerId, userId: 5 });
         }
         return result;
-      })
+      });
       const response = await followersService.findFollowRows(followerId, userIds);
       expect(response.length).toBe(1);
       expect(model.findAll).toBeCalledTimes(1);
-      expect(model.findAll).toBeCalledWith({ where: { followerId,  userId: {[Op.in]: userIds} } });
+      expect(model.findAll).toBeCalledWith({ where: { followerId, userId: { [Op.in]: userIds } } });
     });
     it('should return 1 row', async () => {
       const followerId = 1;
       const userIds = [2, 3, 4];
-      // @ts-ignore
       jest.spyOn(model, 'findAll').mockImplementation(async () => {
         return [];
-      })
+      });
       const response = await followersService.findFollowRows(followerId, userIds);
       expect(response.length).toBe(0);
       expect(model.findAll).toBeCalledTimes(1);
-      expect(model.findAll).toBeCalledWith({ where: { followerId,  userId: {[Op.in]: userIds} } });
+      expect(model.findAll).toBeCalledWith({ where: { followerId, userId: { [Op.in]: userIds } } });
     });
   });
 });

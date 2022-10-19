@@ -1,29 +1,27 @@
-import { HttpStatus } from "@nestjs/common";
+import { HttpStatus } from '@nestjs/common';
 
-import { getMockJWTServiceData, getMockExecutionContextData, sendPseudoError } from "@test/unit/helpers";
-import { RefreshTokenGuard } from "@common/guards";
-import { ErrorMessages } from "@common/constants";
+import { getMockJWTServiceData, getMockExecutionContextData, sendPseudoError } from '@test/unit/helpers';
+import { RefreshTokenGuard } from '@common/guards';
+import { ErrorMessages } from '@common/constants';
 
 describe('RefreshTokenGuard', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.clearAllTimers();
-  })
+  });
 
   describe('canActivate', () => {
     it('should be successful result', async () => {
       const userId = 1;
       const tokenUUID = '1dsfsdf';
-      const {token} = getMockJWTServiceData({
+      const { token } = getMockJWTServiceData({
         expiresIn: `600s`,
         payload: {},
         subject: `${userId}`,
-        jwtId: `${tokenUUID}`
-      })
-      const {mockContext, mockGetRequest} = getMockExecutionContextData({
-        cookiesVariable: [
-          {key: 'refresh_token', value: token}
-        ]
+        jwtId: `${tokenUUID}`,
+      });
+      const { mockContext, mockGetRequest } = getMockExecutionContextData({
+        cookiesVariable: [{ key: 'refreshToken', value: token }],
       });
 
       const refreshTokenGuard = new RefreshTokenGuard();
@@ -33,11 +31,11 @@ describe('RefreshTokenGuard', () => {
       expect(mockGetRequest).toBeCalledTimes(1);
     });
     it('should throw exception (no token in cookies)', async () => {
-      const {mockContext, mockGetRequest} = getMockExecutionContextData({});
+      const { mockContext, mockGetRequest } = getMockExecutionContextData({});
       const refreshTokenGuard = new RefreshTokenGuard();
 
       try {
-        refreshTokenGuard.canActivate(mockContext)
+        refreshTokenGuard.canActivate(mockContext);
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(HttpStatus.FORBIDDEN);
@@ -45,5 +43,5 @@ describe('RefreshTokenGuard', () => {
         expect(mockGetRequest).toBeCalledTimes(1);
       }
     });
-  })
-})
+  });
+});

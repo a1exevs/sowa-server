@@ -5,5 +5,5 @@ export const Routes = {
   ENDPOINT_PROFILES: 'profiles',
   ENDPOINT_ROLES: 'roles',
   ENDPOINT_SECURITY: 'security',
-  ENDPOINT_USERS: 'users'
+  ENDPOINT_USERS: 'users',
 };

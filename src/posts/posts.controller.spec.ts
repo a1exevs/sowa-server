@@ -1,12 +1,13 @@
-import { JwtService } from "@nestjs/jwt";
-import { Test, TestingModule } from "@nestjs/testing";
-import { REQUEST } from "@nestjs/core";
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
+import { REQUEST } from '@nestjs/core';
 
-import { JwtAuthGuard, RefreshTokenGuard } from "@common/guards";
-import { PostsService } from "@posts/posts.service";
-import { PostsController } from "@posts/posts.controller";
-import { CreatePostRequest } from "@posts/dto";
-import { loadTestFile, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from "@test/unit/helpers";
+import { JwtAuthGuard, RefreshTokenGuard } from '@common/guards';
+import { PostsService } from '@posts/posts.service';
+import { PostsController } from '@posts/posts.controller';
+import { CreatePostRequest } from '@posts/dto';
+import { loadTestFile, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from '@test/unit/helpers';
+import { Post } from '@posts/posts.model';
 
 describe('PostsController', () => {
   let postsController: PostsController;
@@ -27,12 +28,13 @@ describe('PostsController', () => {
         {
           provide: PostsService,
           useValue: {
-            createPost: jest.fn(x => x)
-          }
+            createPost: jest.fn(x => x),
+          },
         },
-        jwtService
-      ]
-    }).overrideProvider(REQUEST)
+        jwtService,
+      ],
+    })
+      .overrideProvider(REQUEST)
       .useValue(req)
       .compile();
     postsController = moduleRef.get<PostsController>(PostsController);
@@ -64,16 +66,15 @@ describe('PostsController', () => {
       const content = 'It is content of test post';
       const dto: CreatePostRequest.Dto = { title, content };
       const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
-      // @ts-ignore
       jest.spyOn(postsService, 'createPost').mockImplementation(() => {
         return Promise.resolve({
           id: postId,
           title,
           content,
           image: TEST_FILE_ORIGINAL_NAME,
-          userId
-        })
-      })
+          userId,
+        } as Post);
+      });
 
       const post = await postsController.create(dto, file);
 
@@ -84,4 +85,4 @@ describe('PostsController', () => {
       expect(post.image).toBe(TEST_FILE_ORIGINAL_NAME);
     });
   });
-})
+});
