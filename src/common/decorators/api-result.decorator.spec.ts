@@ -9,7 +9,9 @@ class TestType {}
 
 class TestClass {
   @ApiResult({ status: STATUS, description: DESCRIPTION, type: TestType })
-  public testFunction() {}
+  public testFunction() {
+    return 'test';
+  }
 }
 
 describe('ApiResultDecorator', () => {

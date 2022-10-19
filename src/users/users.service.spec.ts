@@ -244,7 +244,7 @@ describe('UsersService', () => {
       const userId = user.id;
       const roleId = 1;
       const dto: AddRoleRequest.Dto = { userId, value: roleValue };
-      jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
+      jest.spyOn(model, 'findByPk').mockImplementation((id: number) => {
         return Promise.resolve(id === user.id ? (user as unknown as User) : null);
       });
       jest.spyOn(rolesService, 'getRoleByValue').mockImplementation((value: string) => {
@@ -265,7 +265,7 @@ describe('UsersService', () => {
       const user = { ...mockUsers(1)[0], roles: [{ id: 1, value: roleValue }], $add: jest.fn() };
       const userId = user.id;
       const dto: AddRoleRequest.Dto = { userId, value: roleValue };
-      jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
+      jest.spyOn(model, 'findByPk').mockImplementation((id: number) => {
         return Promise.resolve(id === user.id ? (user as unknown as User) : null);
       });
 
@@ -286,7 +286,7 @@ describe('UsersService', () => {
       const user = { ...mockUsers(1)[0], roles: [{ id: 1, value: roleValue }], $add: jest.fn() };
       const userId = user.id + 1;
       const dto: AddRoleRequest.Dto = { userId, value: roleValue };
-      jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
+      jest.spyOn(model, 'findByPk').mockImplementation((id: number) => {
         return Promise.resolve(id === user.id ? (user as unknown as User) : null);
       });
 
@@ -307,7 +307,7 @@ describe('UsersService', () => {
       const user = { ...mockUsers(1)[0], $add: jest.fn() };
       const userId = user.id;
       const dto: AddRoleRequest.Dto = { userId, value: roleValue };
-      jest.spyOn(model, 'findByPk').mockImplementation((id: number, _) => {
+      jest.spyOn(model, 'findByPk').mockImplementation((id: number) => {
         return Promise.resolve(id === user.id ? (user as User) : null);
       });
       jest.spyOn(rolesService, 'getRoleByValue').mockImplementation(() => {

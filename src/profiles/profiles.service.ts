@@ -1,8 +1,7 @@
 import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 
 import { UserCommonInfo } from '@profiles/user-common-info.model';
-import { GetProfileResponse } from '@profiles/dto';
-import { GetUserContactResponse, GetUserAvatarResponse, SetProfileRequest } from '@profiles/dto';
+import { GetProfileResponse, GetUserContactResponse, GetUserAvatarResponse, SetProfileRequest } from '@profiles/dto';
 import { UsersService } from '@users/users.service';
 import { UserAvatar } from '@profiles/user-avatars.model';
 import { UserCommonInfoService } from '@profiles/user-common-Info.service';
@@ -37,7 +36,7 @@ export class ProfilesService {
     await this.validateUserId(userId);
 
     const profile = await this.userCommonInfoService.setCommonInfo(userId, dto);
-    let contacts = dto.contacts
+    const contacts = dto.contacts
       ? await this.userContactsService.setContacts(userId, dto.contacts)
       : await this.userContactsService.getContactsByUserId(userId);
 

@@ -11,7 +11,7 @@ export const ErrorMessages = {
     NUMERIC_MUST_NOT_BE_LESS_THAN_N: 'Не должно быть меньше, чем {0}',
     NUMERIC_MUST_NOT_BE_GREATER_THAN_N: 'Не должно быть больше, чем {0}',
 
-    //Access
+    // Access
     UNAUTHORIZED: 'Пользователь не авторизован',
     NEED_AUTHORIZATION_WITH_CAPTCHA: 'Необходим ввод кода с каптчи',
     FORBIDDEN: 'Нет доступа',
@@ -20,26 +20,26 @@ export const ErrorMessages = {
     SERVICE_IS_UNAVAILABLE: 'Сервис недоступен',
     USER_ROLE_CONFIGURATION_IS_MISSING: 'Отсутствует конфигурация ролей для пользователей',
 
-    //Refresh tokens
+    // Refresh tokens
     REFRESH_TOKEN_IS_MALFORMED: 'Refresh token поврежден',
     REFRESH_TOKEN_EXPIRED: 'Refresh token устарел',
     REFRESH_TOKEN_NOT_FOUND: 'Refresh token не найден',
     REFRESH_TOKEN_REVOKED: 'Refresh token отозван',
 
-    //Files
+    // Files
     FILE_UPLOAD_ERROR: 'Произошла ошибка при записи файла',
     UPLOAD_FILE_SIZE_CANNOT_EXCEED_N_MBT: 'Размер закружаемого файла не может привышать {0} МБт',
     FILE_NOT_SELECTED: 'Файл не был выбран',
     IMAGE_FILE_COMPRESSING_ERROR: 'Ошибка при компрессии image-файла',
 
-    //Users
+    // Users
     USER_M_IS_ALREADY_A_FOLLOWER_OF_USER_N: 'Пользователь с id={0} уже является подписчиком пользователя с id={1}',
     USER_M_IS_NOT_A_FOLLOWER_OF_USER_N: 'Пользователь с id={0} не является подписчиком пользователя с id={1}',
     USER_ALREADY_HAS_THE_ROLE_N: 'Пользователь уже имеет роль {0}',
     USER_ALREADY_EXISTS: 'Пользователь уже существует',
     USER_N_NOT_FOUND: 'Пользователь с идентификатором {0} не найден',
 
-    //Failures
+    // Failures
     FAILED_TO_CREATE_POST: 'Не удалось создать пост',
     FAILED_TO_CREATE_ROLE: 'Не удалось создать роль',
     FAILED_TO_FIND_USER: 'Не удалось найти пользователя',

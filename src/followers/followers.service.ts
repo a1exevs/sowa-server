@@ -44,7 +44,7 @@ export class FollowersService {
   }
 
   public async findFollowRows(followerId: number, userIds: number[]): Promise<Follower[]> {
-    return await this.followerRepository.findAll({
+    return this.followerRepository.findAll({
       where: {
         followerId,
         userId: { [Op.in]: userIds },
@@ -59,7 +59,7 @@ export class FollowersService {
     const user = await this.usersService.getUserById(followData.userId);
     if (!follower || !user) throw new NotFoundException();
 
-    return await this.existRow(followData);
+    return this.existRow(followData);
   }
 
   private async existRow(followData: IFollower): Promise<string | null> {

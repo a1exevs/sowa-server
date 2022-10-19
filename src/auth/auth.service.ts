@@ -41,13 +41,13 @@ export class AuthService {
   }
 
   public async refresh(currentRefreshToken: string): Promise<IAuthenticationResult> {
-    const { user, access_token, refresh_token } = await this.tokensService.updateAccessRefreshTokensFromRefreshToken(
+    const { user, accessToken, refreshToken } = await this.tokensService.updateAccessRefreshTokensFromRefreshToken(
       currentRefreshToken,
     );
     return AuthService.buildResponsePayload(
       user,
-      access_token,
-      refresh_token,
+      accessToken,
+      refreshToken,
       this.tokensService.getRefreshTokenExpiration(),
     );
   }
@@ -63,7 +63,7 @@ export class AuthService {
   }
 
   public async logout(refreshToken: string): Promise<boolean> {
-    return await this.tokensService.removeRefreshToken(refreshToken);
+    return this.tokensService.removeRefreshToken(refreshToken);
   }
 
   private async validateUser(dto: CreateUserRequest.Dto) {
@@ -89,9 +89,9 @@ export class AuthService {
         },
         payload: {
           type: 'bearer',
-          access_token: accessToken,
-          refresh_token: refreshToken,
-          refresh_token_expiration: expiration,
+          accessToken,
+          refreshToken,
+          refreshToken_expiration: expiration,
         },
       },
     };

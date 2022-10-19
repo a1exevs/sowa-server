@@ -125,7 +125,7 @@ describe('User workflow', () => {
             user1Id = response.body.data.userId;
             expect(response.body.data.accessToken).toBeDefined();
             expect(response.get('Set-Cookie')[0]).toBeDefined();
-            expect(response.get('Set-Cookie')[0].includes('refresh_token')).toBeTruthy();
+            expect(response.get('Set-Cookie')[0].includes('refreshToken')).toBeTruthy();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(0);
             expect(response.body.fieldsErrors).toBeDefined();
@@ -161,7 +161,7 @@ describe('User workflow', () => {
             user2Id = response.body.data.userId;
             expect(response.body.data.accessToken).toBeDefined();
             expect(response.get('Set-Cookie')[0]).toBeDefined();
-            expect(response.get('Set-Cookie')[0].includes('refresh_token')).toBeTruthy();
+            expect(response.get('Set-Cookie')[0].includes('refreshToken')).toBeTruthy();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(0);
             expect(response.body.fieldsErrors).toBeDefined();
@@ -202,7 +202,7 @@ describe('User workflow', () => {
             accessToken = response.body.data.accessToken;
             cookies = response.get('Set-Cookie');
             expect(cookies[0]).toBeDefined();
-            expect(cookies[0].includes('refresh_token')).toBeTruthy();
+            expect(cookies[0].includes('refreshToken')).toBeTruthy();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(0);
             expect(response.body.fieldsErrors).toBeDefined();
@@ -272,7 +272,7 @@ describe('User workflow', () => {
             accessToken = response.body.data.accessToken;
             cookies = response.get('Set-Cookie');
             expect(cookies[0]).toBeDefined();
-            expect(cookies[0].includes('refresh_token')).toBeTruthy();
+            expect(cookies[0].includes('refreshToken')).toBeTruthy();
             expect(response.body.messages).toBeDefined();
             expect(response.body.messages.length).toBe(0);
             expect(response.body.fieldsErrors).toBeDefined();
@@ -744,7 +744,7 @@ describe('User workflow', () => {
             expect(response.body.result).toBe(true);
             cookies = response.get('Set-Cookie');
             expect(cookies[0]).toBeDefined();
-            expect(cookies[0].includes('refresh_token=;')).toBeTruthy();
+            expect(cookies[0].includes('refreshToken=;')).toBeTruthy();
           });
       });
     });

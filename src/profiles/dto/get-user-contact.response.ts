@@ -21,10 +21,10 @@ export namespace GetUserContactResponse {
     readonly github: string = '';
 
     @ApiProperty()
-    vk: string = '';
+    vk = '';
 
     @ApiProperty()
-    mainLink: string = '';
+    mainLink = '';
 
     constructor(dto: Partial<Dto>) {
       if (dto) {

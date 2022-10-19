@@ -6,9 +6,9 @@ export interface IAuthenticationResult {
     };
     readonly payload: {
       readonly type: string;
-      readonly access_token: string;
-      readonly refresh_token: string;
-      readonly refresh_token_expiration: Date;
+      readonly accessToken: string;
+      readonly refreshToken: string;
+      readonly refreshToken_expiration: Date;
     };
   };
 }

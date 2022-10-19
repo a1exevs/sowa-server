@@ -9,11 +9,11 @@ export class UserContactsService {
   constructor(@InjectModel(UserContact) private contactRepository: typeof UserContact) {}
 
   public async getContactsByUserId(userId: number): Promise<UserContact> {
-    return await this.contactRepository.findOne({ where: { userId } });
+    return this.contactRepository.findOne({ where: { userId } });
   }
 
   public async setContacts(userId: number, dto: SetUserContactRequest.Dto) {
     await this.contactRepository.upsert({ userId, ...dto }, { returning: true });
-    return await this.getContactsByUserId(userId);
+    return this.getContactsByUserId(userId);
   }
 }

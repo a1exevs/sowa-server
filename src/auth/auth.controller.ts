@@ -7,7 +7,7 @@ import { LoginRequest, RegisterRequest, AuthenticationResponse, GetCurrentUserRe
 import { JwtAuthGuard, RefreshTokenGuard } from '@common/guards';
 import { SvgCaptchaGuard } from '@auth/guards';
 import { UnauthorizedExceptionFilter } from '@auth/exception-filters';
-import { IAuthenticationResult, Isession } from '@auth/interfaces';
+import { IAuthenticationResult } from '@auth/interfaces';
 import { ResponseInterceptor } from '@common/interceptors';
 import { Routes } from '@common/constants';
 import { ApiResult } from '@common/decorators';
@@ -34,7 +34,7 @@ export class AuthController {
     AuthController.setupCookies(response, registerResult);
     return new AuthenticationResponse.Dto({
       userId: registerResult.data.user.id,
-      accessToken: registerResult.data.payload.access_token,
+      accessToken: registerResult.data.payload.accessToken,
     });
   }
 
@@ -54,7 +54,7 @@ export class AuthController {
     AuthController.resetAuthFailedCounter(request);
     return new AuthenticationResponse.Dto({
       userId: loginResult.data.user.id,
-      accessToken: loginResult.data.payload.access_token,
+      accessToken: loginResult.data.payload.accessToken,
     });
   }
 
@@ -68,11 +68,11 @@ export class AuthController {
   @UseInterceptors(ResponseInterceptor)
   @Post('/refresh')
   async refresh(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
-    const refreshResult: IAuthenticationResult = await this.authService.refresh(request.cookies.refresh_token);
+    const refreshResult: IAuthenticationResult = await this.authService.refresh(request.cookies.refreshToken);
     AuthController.setupCookies(response, refreshResult);
     return new AuthenticationResponse.Dto({
       userId: refreshResult.data.user.id,
-      accessToken: refreshResult.data.payload.access_token,
+      accessToken: refreshResult.data.payload.accessToken,
     });
   }
 
@@ -95,21 +95,22 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Delete('/logout')
   async logout(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
-    const result = await this.authService.logout(request.cookies.refresh_token);
-    response.clearCookie('refresh_token');
+    const result = await this.authService.logout(request.cookies.refreshToken);
+    response.clearCookie('refreshToken');
     return new OperationResultResponse.Dto({ result });
   }
 
   private static setupCookies(response: Response, data: IAuthenticationResult) {
-    if ('refresh_token' in data.data.payload)
-      response.cookie('refresh_token', data.data.payload.refresh_token, {
+    if ('refreshToken' in data.data.payload) {
+      response.cookie('refreshToken', data.data.payload.refreshToken, {
         httpOnly: true,
-        expires: data.data.payload.refresh_token_expiration,
-      }); //path: AUTH_PATH
+        expires: data.data.payload.refreshToken_expiration,
+      }); // path: AUTH_PATH
+    }
   }
 
   private static resetAuthFailedCounter(request) {
-    const session: Isession = request.session;
+    const { session } = request;
     session.authFailedCount = null;
   }
 }

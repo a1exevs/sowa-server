@@ -40,7 +40,7 @@ interface IMockRefreshToken {
 }
 
 interface IAccessTokenVerifyResult extends IMockUser, IAccessTokenOptions {}
-interface IRefreshTokenVerifyResult extends IRefreshTokenOptions {}
+type IRefreshTokenVerifyResult = IRefreshTokenOptions;
 
 const getMockUser = (): IMockUser => {
   return {
@@ -205,8 +205,8 @@ describe('TokensService', () => {
 
       const result = await tokensService.updateAccessRefreshTokensFromRefreshToken(refreshToken);
 
-      expect(result.access_token).toBeDefined();
-      expect(result.refresh_token).toBeDefined();
+      expect(result.accessToken).toBeDefined();
+      expect(result.refreshToken).toBeDefined();
       expect(result.user).toEqual(mockUser);
       expect(refreshTokensService.findTokenByUUId).toBeCalledTimes(1);
       expect(refreshTokensService.findTokenByUUId).toBeCalledWith(tokenUUID);

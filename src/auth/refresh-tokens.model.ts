@@ -4,7 +4,7 @@ import { UUIDV4 } from 'sequelize';
 
 import { User } from '@users/users.model';
 
-@Table({ tableName: 'refresh_tokens', createdAt: false, updatedAt: false, underscored: true })
+@Table({ tableName: 'refreshTokens', createdAt: false, updatedAt: false, underscored: true })
 export class RefreshToken extends Model<RefreshToken> {
   @ApiProperty({ example: 1, description: 'Уникальный идентификатор токенов' })
   @Column({ type: DataType.UUID, unique: true, primaryKey: true, defaultValue: UUIDV4 })

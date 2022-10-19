@@ -37,7 +37,7 @@ export class TokensService {
       subject: String(user.id),
     };
 
-    return await this.jwtService.signAsync(payload, opts);
+    return this.jwtService.signAsync(payload, opts);
   }
 
   public async generateRefreshToken(user: User, expiresIn: number): Promise<string> {
@@ -55,11 +55,11 @@ export class TokensService {
 
   public async updateAccessRefreshTokensFromRefreshToken(
     refresh: string,
-  ): Promise<{ refresh_token: string; access_token: string; user: User }> {
+  ): Promise<{ refreshToken: string; accessToken: string; user: User }> {
     const { user, newRefreshToken } = await this.updateRefreshToken(refresh);
-    const access_token = await this.generateAccessToken(user);
+    const accessToken = await this.generateAccessToken(user);
 
-    return { user, access_token, refresh_token: newRefreshToken };
+    return { user, accessToken, refreshToken: newRefreshToken };
   }
 
   public async removeRefreshToken(refreshToken: string): Promise<boolean> {

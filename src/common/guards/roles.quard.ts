@@ -28,13 +28,12 @@ export class RolesGuard implements CanActivate {
       if (requiredRoles) {
         let haveRoles = true;
         requiredRoles.forEach(requiredRole => {
-          haveRoles = haveRoles && user.roles.some(userRole => userRole.value == requiredRole);
+          haveRoles = haveRoles && user.roles.some(userRole => userRole.value === requiredRole);
         });
         if (!haveRoles) throw new ForbiddenException(ErrorMessages.ru.NOT_ENOUGH_PERMISSIONS);
       }
       return true;
     } catch (e) {
-      console.log(e);
       throw new ForbiddenException(ErrorMessages.ru.FORBIDDEN);
     }
   }

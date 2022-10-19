@@ -8,10 +8,12 @@ interface IGetMockRequest {
   cookiesVariable?: Record<'key' | 'value', string>[];
   body?: any;
 }
+
 interface IGetMockExecutionContextData extends IGetMockRequest {
   req?: any;
 }
-interface IGetMockArgumentsHost extends IGetMockExecutionContextData {}
+
+type IGetMockArgumentsHost = IGetMockExecutionContextData;
 
 export const getMockRequest = function (props: IGetMockRequest): Request {
   const request = createRequest();

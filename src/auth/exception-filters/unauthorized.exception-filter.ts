@@ -2,7 +2,6 @@ import { ExceptionFilter, Catch, ArgumentsHost, UnauthorizedException } from '@n
 
 import { sendResponse } from '@common/functions';
 import { ResultCodes, ErrorMessages } from '@common/constants';
-import { Isession } from '@auth/interfaces';
 import { MAX_AUTH_FAILED_COUNT } from '@auth/guards';
 
 @Catch(UnauthorizedException)
@@ -11,7 +10,7 @@ export class UnauthorizedExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const request = ctx.getRequest();
-    const session: Isession = request.session;
+    const { session } = request;
 
     session.authFailedCount = session.authFailedCount ? ++session.authFailedCount : 1;
 

@@ -11,17 +11,28 @@ import {
   TEST_FILE_PATH,
 } from '@test/unit/helpers';
 import { ErrorMessages } from '@common/constants';
+import { LoggerService } from '@logger/logger.service';
 
 describe('FilesService', () => {
   let filesService: FilesService;
+  let logger: LoggerService;
   beforeEach(async () => {
     jest.clearAllMocks();
     jest.clearAllTimers();
     const module: TestingModule = await Test.createTestingModule({
-      providers: [FilesService],
+      providers: [
+        FilesService,
+        {
+          provide: LoggerService,
+          useValue: {
+            error: jest.fn(x => x),
+          },
+        },
+      ],
     }).compile();
 
     filesService = module.get<FilesService>(FilesService);
+    logger = module.get<LoggerService>(LoggerService);
   });
 
   afterEach(async () => {
@@ -31,6 +42,9 @@ describe('FilesService', () => {
   describe('FilesService - definition', () => {
     it('FilesService - should be defined', () => {
       expect(filesService).toBeDefined();
+    });
+    it('LoggerService - should be defined', () => {
+      expect(logger).toBeDefined();
     });
   });
 

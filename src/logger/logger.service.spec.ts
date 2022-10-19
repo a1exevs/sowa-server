@@ -46,8 +46,8 @@ describe('Logger', () => {
       const context = 'test context';
       const spiedF = jest.spyOn(LoggerService, 'logToFile').mockImplementation(x => x);
       logger.error(error, stack, context);
-      expect(LoggerService.logToFile).toBeCalledTimes(1);
-      expect(LoggerService.logToFile).toBeCalledWith(error, stack, context);
+      expect(spiedF).toBeCalledTimes(1);
+      expect(spiedF).toBeCalledWith(error, stack, context);
     });
   });
 

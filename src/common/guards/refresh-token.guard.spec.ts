@@ -21,7 +21,7 @@ describe('RefreshTokenGuard', () => {
         jwtId: `${tokenUUID}`,
       });
       const { mockContext, mockGetRequest } = getMockExecutionContextData({
-        cookiesVariable: [{ key: 'refresh_token', value: token }],
+        cookiesVariable: [{ key: 'refreshToken', value: token }],
       });
 
       const refreshTokenGuard = new RefreshTokenGuard();

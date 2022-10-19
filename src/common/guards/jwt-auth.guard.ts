@@ -20,7 +20,6 @@ export class JwtAuthGuard implements CanActivate {
       request.user = user;
       return true;
     } catch (e) {
-      console.log(e);
       throw new UnauthorizedException({ message: ErrorMessages.ru.UNAUTHORIZED });
     }
   }

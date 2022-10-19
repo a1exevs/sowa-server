@@ -5,7 +5,9 @@ const TEST_ROLE_2 = 'test-role2';
 
 class TestClass {
   @AuthRoles(TEST_ROLE_1, TEST_ROLE_2)
-  public testFunction() {}
+  public testFunction() {
+    return true;
+  }
 }
 
 describe('AuthRolesDecorator', () => {

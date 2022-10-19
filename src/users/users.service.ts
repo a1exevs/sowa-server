@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { FindOptions } from 'sequelize/dist/lib/model';
+import { FindOptions } from 'sequelize';
 
 import { User } from '@users/users.model';
 import { CreateUserRequest, AddRoleRequest, BanUserRequest, SetUserStatusRequest, GetUsersResponse } from '@users/dto';
@@ -67,24 +67,24 @@ export class UsersService {
     });
   }
 
-  public async getUserByEmail(email: string, withAllData: boolean = false) {
-    //TODO Вынести формирование объекта FindOptions в хэлпер
-    let findOptions: FindOptions = {
+  public async getUserByEmail(email: string, withAllData = false) {
+    // TODO Вынести формирование объекта FindOptions в хэлпер
+    const findOptions: FindOptions = {
       where: { email },
     };
     if (withAllData) findOptions.include = { all: true };
 
-    return await this.userRepository.findOne(findOptions);
+    return this.userRepository.findOne(findOptions);
   }
 
   async getUserById(id: number) {
-    return await this.userRepository.findOne({ where: { id }, include: { all: true } });
+    return this.userRepository.findOne({ where: { id }, include: { all: true } });
   }
 
   async addRole(dto: AddRoleRequest.Dto) {
     const user = await this.userRepository.findByPk(dto.userId, { include: { all: true } });
     if (!user) throw new HttpException(ErrorMessages.ru.FAILED_TO_FIND_USER, HttpStatus.NOT_FOUND);
-    const hasRole = user.roles.some(role => role.value == dto.value);
+    const hasRole = user.roles.some(role => role.value === dto.value);
     if (hasRole)
       throw new HttpException(
         ErrorMessages.ru.USER_ALREADY_HAS_THE_ROLE_N.format(dto.value),
@@ -117,6 +117,6 @@ export class UsersService {
   }
 
   public async setStatus(dto: SetUserStatusRequest.Dto, userId: number) {
-    return await this.userRepository.update({ status: dto.status }, { where: { id: userId } });
+    return this.userRepository.update({ status: dto.status }, { where: { id: userId } });
   }
 }

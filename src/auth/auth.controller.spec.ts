@@ -21,7 +21,7 @@ import { sendPseudoError } from '@test/unit/helpers';
 import { ErrorMessages } from '@common/constants';
 
 const getValidationPipeDataForUserRegistration = function (email, password) {
-  let target: ValidationPipe = new ValidationPipe();
+  const target: ValidationPipe = new ValidationPipe();
   const registerDto: RegisterRequest.Dto = { email, password };
   const metadata: ArgumentMetadata = { type: 'body', metatype: RegisterRequest.Dto };
   return { target, metadata, registerDto };
@@ -36,9 +36,9 @@ const getMockAuthenticationResponse = function (userId, accessToken, refreshToke
       },
       payload: {
         type: 'bearer',
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        refresh_token_expiration: new Date(),
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        refreshToken_expiration: new Date(),
       },
     },
   };
@@ -178,8 +178,8 @@ describe('AuthController', () => {
       const controllerRegisterResponse = new AuthenticationResponse.Dto({ userId, accessToken });
       const response = await authController.registration(registerDto, res);
       expect(response).toEqual(controllerRegisterResponse);
-      expect(res.cookies.refresh_token.value).toBe(refreshToken);
-      expect(res.cookies.refresh_token.options.httpOnly).toBe(true);
+      expect(res.cookies.refreshToken.value).toBe(refreshToken);
+      expect(res.cookies.refreshToken.options.httpOnly).toBe(true);
       expect(mockRegistrationF).toBeCalledTimes(1);
       expect(mockRegistrationF).toBeCalledWith(registerDto);
     });
@@ -217,8 +217,8 @@ describe('AuthController', () => {
       const controllerLoginResponse = new AuthenticationResponse.Dto({ userId, accessToken });
       const response = await authController.login(loginDto, res, req);
       expect(response).toEqual(controllerLoginResponse);
-      expect(res.cookies.refresh_token.value).toBe(refreshToken);
-      expect(res.cookies.refresh_token.options.httpOnly).toBe(true);
+      expect(res.cookies.refreshToken.value).toBe(refreshToken);
+      expect(res.cookies.refreshToken.options.httpOnly).toBe(true);
       expect(req.session['authFailedCount']).toBeNull();
       expect(mockLoginF).toBeCalledTimes(1);
       expect(mockLoginF).toBeCalledWith(loginDto);
@@ -240,7 +240,7 @@ describe('AuthController', () => {
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(401);
-        expect(res.cookies.refresh_token).toBeUndefined();
+        expect(res.cookies.refreshToken).toBeUndefined();
         expect(req.session['authFailedCount']).toBe(authFailedCount);
         expect(err.getResponse()).toMatchObject(errorObject);
         expect(authService.login).toBeCalledTimes(1);
@@ -255,7 +255,7 @@ describe('AuthController', () => {
       const oldRefreshToken = '54321fsagasdsdfsdf';
       const newRefreshToken = '12345fsagasdsdfsdf';
       const req = createRequest();
-      req._setCookiesVariable('refresh_token', oldRefreshToken);
+      req._setCookiesVariable('refreshToken', oldRefreshToken);
       const res = createResponse();
       const mockAuthenticationResponse = getMockAuthenticationResponse(userId, accessToken, newRefreshToken);
       const mockRefreshF = jest
@@ -264,8 +264,8 @@ describe('AuthController', () => {
       const controllerLoginResponse = new AuthenticationResponse.Dto({ userId, accessToken });
       const response = await authController.refresh(req, res);
       expect(response).toEqual(controllerLoginResponse);
-      expect(res.cookies.refresh_token.value).toBe(newRefreshToken);
-      expect(res.cookies.refresh_token.options.httpOnly).toBe(true);
+      expect(res.cookies.refreshToken.value).toBe(newRefreshToken);
+      expect(res.cookies.refreshToken.options.httpOnly).toBe(true);
       expect(mockRefreshF).toBeCalledTimes(1);
       expect(mockRefreshF).toBeCalledWith(oldRefreshToken);
     });
@@ -300,7 +300,7 @@ describe('AuthController', () => {
       const refreshToken = '12345fsagasdsdfsdf';
       const req = createRequest();
       const res = createResponse();
-      req._setCookiesVariable('refresh_token', refreshToken);
+      req._setCookiesVariable('refreshToken', refreshToken);
       const mockServiceLogoutResponse = false;
       const mockLogoutF = jest
         .spyOn(authService, 'logout')
@@ -309,7 +309,7 @@ describe('AuthController', () => {
       const response = await authController.logout(req, res);
 
       expect(response.result).toEqual(mockServiceLogoutResponse);
-      expect(res.cookies.refresh_token.value).toBe('');
+      expect(res.cookies.refreshToken.value).toBe('');
       expect(mockLogoutF).toBeCalledTimes(1);
       expect(mockLogoutF).toBeCalledWith(refreshToken);
     });

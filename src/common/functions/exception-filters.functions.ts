@@ -12,11 +12,15 @@ export const sendResponse = (
 ) => {
   const status = exception.getStatus();
   let messagesList = [];
-  if (exception.message)
-    if (Array.isArray(exception.message)) messagesList = [...exception.message];
-    else messagesList = [exception.message];
+  if (exception.message) {
+    if (Array.isArray(exception.message)) {
+      messagesList = [...exception.message];
+    } else messagesList = [exception.message];
+  }
 
-  if (messages.length) messagesList = messagesList.concat(messages);
+  if (messages.length) {
+    messagesList = messagesList.concat(messages);
+  }
 
   response.status(status).json(
     new CommonResponse.Dto({

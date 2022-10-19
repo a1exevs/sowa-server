@@ -1,4 +1,4 @@
-require('module-alias/register');
+import 'module-alias/register';
 
 import '@root/string.extensions';
 
@@ -30,6 +30,7 @@ async function start() {
 
   setupSession(app);
 
+  // eslint-disable-next-line no-console
   await app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 }
 
@@ -46,12 +47,10 @@ function setupDocsModule(app: INestApplication) {
 
 function setupCORS(app: INestApplication, whiteList: string[]) {
   app.enableCors({
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
       if (!origin || whiteList.indexOf(origin) !== -1) {
-        console.log('allowed cors for:', origin);
         callback(null, true);
       } else {
-        console.log('blocked cors for:', origin);
         callback(new Error('Not allowed by CORS'), false);
       }
     },

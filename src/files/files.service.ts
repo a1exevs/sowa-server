@@ -5,15 +5,19 @@ import { ErrorMessages } from '@common/constants';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as uuid from 'uuid';
+import * as sharp from 'sharp';
+import { LoggerService } from '@logger/logger.service';
 
 export const COMPRESS_IMAGE_NAME_PREFIX = 'small_';
 
 @Injectable()
 export class FilesService {
+  constructor(private loggerService: LoggerService) {}
+
   public async addJPEGFile(
     file: any,
-    fileName: string = '',
-    relativeDir: string = '',
+    fileName = '',
+    relativeDir = '',
   ): Promise<{ originalImageURL: string; originalImagePath: string; smallImageURL: string; smallImagePath: string }> {
     FilesService.checkForFileSelection(file);
     FilesService.checkForMimeType(file, 'image/jpeg');
@@ -23,8 +27,8 @@ export class FilesService {
       const date = new Date();
       fileName = String(date.getTime()) + file.originalname;
     }
-    //TODO move this hard code dir in specific mehtod (example, addAvatar)
-    const relativeStaticDir = '/activecontent/images/avatars' + relativeDir;
+    // TODO move this hard code dir in specific mehtod (example, addAvatar)
+    const relativeStaticDir = `/activecontent/images/avatars${relativeDir}`;
     const { filePath, fileURL } = await this.createFile(file, fileName, 'jpg', relativeStaticDir);
     const result = await this.compressImage(filePath);
     return {
@@ -37,42 +41,43 @@ export class FilesService {
 
   public async createFile(
     file: any,
-    fileName: string = '',
-    fileExtension: string = 'sowa',
-    relativeStaticDir: string = '',
+    fileName = '',
+    fileExtension = 'sowa',
+    relativeStaticDir = '',
   ): Promise<{ filePath: string; fileURL: string }> {
     try {
       relativeStaticDir = FilesService.correctRelativePath(relativeStaticDir);
 
-      if (!fileName) fileName = uuid.v4() + '.' + fileExtension;
-      else if (!fileName.endsWith('.' + fileExtension)) fileName = fileName + '.' + fileExtension;
+      if (!fileName) fileName = `${uuid.v4()}.${fileExtension}`;
+      else if (!fileName.endsWith(`.${fileExtension}`)) fileName = `${fileName}.${fileExtension}`;
 
       const dirForSaving = path.resolve(__dirname, '../../', process.env.SERVER_STATIC + relativeStaticDir);
       if (!fs.existsSync(dirForSaving)) fs.mkdirSync(dirForSaving, { recursive: true });
       fs.writeFileSync(path.join(dirForSaving, fileName), file.buffer);
 
-      const filePath = dirForSaving + '/' + fileName;
+      const filePath = `${dirForSaving}/${fileName}`;
       const fileURL = this.getStaticFileURLFromStaticFileFullPath(filePath);
 
       return { filePath, fileURL };
     } catch (e) {
-      throw e;
+      throw new HttpException(e.message, e.status);
     }
   }
 
   public deleteFileWithTimer(filePath: string, seconds: number) {
     setTimeout(() => {
-      fs.unlink(filePath, function (err) {
-        if (err) return console.log(err);
-        console.log(`file ${filePath} deleted successfully`);
+      fs.unlink(filePath, err => {
+        if (err) {
+          this.loggerService.error(err.message, 'FilesServices', 'deleteFileWithTimer-method');
+        }
       });
     }, seconds * 1000);
   }
 
-  private static correctRelativePath(path: string) {
-    if (path.charAt(0) != '/') path = '/' + path;
-    if (path.charAt(path.length - 1) != '/') path += '/';
-    return path;
+  private static correctRelativePath(pathStr: string) {
+    if (pathStr[0] !== '/') pathStr = `/${pathStr}`;
+    if (pathStr[pathStr.length - 1] !== '/') pathStr += '/';
+    return pathStr;
   }
 
   private static checkForMimeType(file: any, haystack: string) {
@@ -98,7 +103,6 @@ export class FilesService {
     const compressFileName = COMPRESS_IMAGE_NAME_PREFIX + fileName;
     const compressFilePath = fileDir + compressFileName;
 
-    const sharp = require('sharp');
     try {
       await sharp(filePath)
         .resize({
@@ -118,7 +122,7 @@ export class FilesService {
     const SERVER_URL = process.env.SERVER_URL || undefined;
     if (!serverStaticDir || !PORT || !SERVER_URL) return '';
     const list = fullFilePath.split(serverStaticDir);
-    if (list.length != 2) return '';
-    return SERVER_URL + ':' + PORT + list[1];
+    if (list.length !== 2) return '';
+    return `${SERVER_URL}:${PORT}${list[1]}`;
   }
 }

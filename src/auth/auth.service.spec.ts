@@ -107,8 +107,8 @@ describe('AuthService', () => {
       const result = await authService.registration(registerDto);
 
       expect(result.status).toBe('success');
-      expect(result.data.payload.access_token).toBe(accessToken);
-      expect(result.data.payload.refresh_token).toBe(refreshToken);
+      expect(result.data.payload.accessToken).toBe(accessToken);
+      expect(result.data.payload.refreshToken).toBe(refreshToken);
       expect(result.data.payload.type).toBe('bearer');
       expect(userService.getUserByEmail).toBeCalledTimes(1);
       expect(userService.getUserByEmail).toBeCalledWith(email);
@@ -191,8 +191,8 @@ describe('AuthService', () => {
       const result = await authService.login(loginDto);
 
       expect(result.status).toBe('success');
-      expect(result.data.payload.access_token).toBe(accessToken);
-      expect(result.data.payload.refresh_token).toBe(refreshToken);
+      expect(result.data.payload.accessToken).toBe(accessToken);
+      expect(result.data.payload.refreshToken).toBe(refreshToken);
       expect(result.data.payload.type).toBe('bearer');
       expect(userService.getUserByEmail).toBeCalledTimes(1);
       expect(userService.getUserByEmail).toBeCalledWith(email, true);
@@ -266,8 +266,8 @@ describe('AuthService', () => {
       };
       jest.spyOn(tokenService, 'updateAccessRefreshTokensFromRefreshToken').mockImplementation(async () => {
         return Promise.resolve({
-          refresh_token: newRefreshToken,
-          access_token: newAccessToken,
+          refreshToken: newRefreshToken,
+          accessToken: newAccessToken,
           user: mockUser as User,
         });
       });
@@ -277,8 +277,8 @@ describe('AuthService', () => {
       expect(result.status).toBe('success');
       expect(result.data.user.id).toBe(userId);
       expect(result.data.payload.type).toBe('bearer');
-      expect(result.data.payload.refresh_token).toBe(newRefreshToken);
-      expect(result.data.payload.access_token).toBe(newAccessToken);
+      expect(result.data.payload.refreshToken).toBe(newRefreshToken);
+      expect(result.data.payload.accessToken).toBe(newAccessToken);
       expect(tokenService.updateAccessRefreshTokensFromRefreshToken).toBeCalledTimes(1);
       expect(tokenService.updateAccessRefreshTokensFromRefreshToken).toBeCalledWith(currentRefreshToken);
     });

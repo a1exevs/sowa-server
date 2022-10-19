@@ -1,5 +1,5 @@
-export function formatString() {
-  const args = arguments;
+export function formatString(...rest) {
+  const args = rest;
 
   if (Array.isArray(args[0])) {
     const parameters = args[0];

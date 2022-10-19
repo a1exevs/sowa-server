@@ -44,7 +44,7 @@ describe('ValidationPipe', () => {
   describe('transform', () => {
     it('should be successful result', async () => {
       expect.assertions(1);
-      let target = new ValidationPipe();
+      const target = new ValidationPipe();
       const metadata: ArgumentMetadata = { type: 'param', metatype: TestClass };
       const testObject = new TestClass('string', 1, true);
       const result = await target.transform(testObject, metadata);
@@ -52,7 +52,7 @@ describe('ValidationPipe', () => {
     });
     it('should be successful result (with nested object)', async () => {
       expect.assertions(1);
-      let target = new ValidationPipe();
+      const target = new ValidationPipe();
       const metadata: ArgumentMetadata = { type: 'param', metatype: TestClass };
       const testNestedObject = new TestNestedClass('stringProp');
       const testObject = new TestClass('string', 1, true, testNestedObject);
@@ -62,7 +62,7 @@ describe('ValidationPipe', () => {
     it('should not validate primitive or default types (number, string, boolean, array, object)', async () => {
       expect.assertions(5);
 
-      let target = new ValidationPipe();
+      const target = new ValidationPipe();
       const numberMetadata: ArgumentMetadata = { type: 'param', metatype: Number };
       const num = 1;
       let result = await target.transform(num, numberMetadata);
@@ -90,7 +90,7 @@ describe('ValidationPipe', () => {
     });
     it('should not validate if metatype was missing', async () => {
       expect.assertions(1);
-      let target = new ValidationPipe();
+      const target = new ValidationPipe();
       const metadata: ArgumentMetadata = { type: 'param', metatype: null };
       const testObject = new TestClass('string', 'stringToo', 'andStringToo');
       const result = await target.transform(testObject, metadata);
@@ -98,7 +98,7 @@ describe('ValidationPipe', () => {
     });
     it('should throw error with array of messages', async () => {
       expect.assertions(5);
-      let target = new ValidationPipe();
+      const target = new ValidationPipe();
       const metadata: ArgumentMetadata = { type: 'param', metatype: TestClass };
       const testObject = new TestClass(1, 'stringToo', 'andStringToo');
       try {
@@ -114,7 +114,7 @@ describe('ValidationPipe', () => {
     });
     it('should throw error with array of errors. For nested object array should has separate array', async () => {
       expect.assertions(7);
-      let target = new ValidationPipe();
+      const target = new ValidationPipe();
       const metadata: ArgumentMetadata = { type: 'param', metatype: TestClass };
       const testNestedObject = new TestNestedClass(1);
       const testObject = new TestClass(1, 'stringToo', 'andStringToo', testNestedObject);
