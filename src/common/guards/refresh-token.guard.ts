@@ -1,11 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
 import { ErrorMessages } from '@common/constants';
@@ -16,11 +9,13 @@ export class RefreshTokenGuard implements CanActivate {
     try {
       const request = context.switchToHttp().getRequest();
       const cookies = request.cookies;
-      if (!('refreshToken' in cookies)) throw new UnauthorizedException({ message: ErrorMessages.ru.UNAUTHORIZED });
+      if (!('refreshToken' in cookies)) {
+        throw new UnauthorizedException({ message: ErrorMessages.ru.UNAUTHORIZED });
+      }
 
       return true;
     } catch (e) {
-      throw new HttpException(ErrorMessages.ru.FORBIDDEN, HttpStatus.FORBIDDEN);
+      throw new ForbiddenException(ErrorMessages.ru.FORBIDDEN);
     }
   }
 }

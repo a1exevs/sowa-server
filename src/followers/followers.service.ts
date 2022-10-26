@@ -1,12 +1,4 @@
-import {
-  BadRequestException,
-  forwardRef,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 
@@ -23,22 +15,22 @@ export class FollowersService {
 
   public async follow(followData: IFollower): Promise<boolean> {
     const uuid = await this.validateFollowRequest(followData);
-    if (uuid)
-      throw new HttpException(
+    if (uuid) {
+      throw new BadRequestException(
         ErrorMessages.ru.USER_M_IS_ALREADY_A_FOLLOWER_OF_USER_N.format(followData.followerId, followData.userId),
-        HttpStatus.BAD_REQUEST,
       );
+    }
 
     return !!(await this.followerRepository.create(followData));
   }
 
   public async unfollow(unfollowData: IFollower): Promise<boolean> {
     const uuid = await this.validateFollowRequest(unfollowData);
-    if (!uuid)
-      throw new HttpException(
+    if (!uuid) {
+      throw new BadRequestException(
         ErrorMessages.ru.USER_M_IS_NOT_A_FOLLOWER_OF_USER_N.format(unfollowData.followerId, unfollowData.userId),
-        HttpStatus.BAD_REQUEST,
       );
+    }
 
     return !!(await this.followerRepository.destroy({ where: unfollowData }));
   }
@@ -57,7 +49,9 @@ export class FollowersService {
 
     const follower = await this.usersService.getUserById(followData.followerId);
     const user = await this.usersService.getUserById(followData.userId);
-    if (!follower || !user) throw new NotFoundException();
+    if (!follower || !user) {
+      throw new NotFoundException();
+    }
 
     return this.existRow(followData);
   }

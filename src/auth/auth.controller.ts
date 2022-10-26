@@ -1,5 +1,14 @@
 import { Body, Controller, Delete, Get, Post, Req, Res, UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import { Request, Response } from 'express';
 
 import { AuthService } from '@auth/auth.service';
@@ -9,28 +18,29 @@ import { SvgCaptchaGuard } from '@auth/guards';
 import { UnauthorizedExceptionFilter } from '@auth/exception-filters';
 import { IAuthenticationResult } from '@auth/interfaces';
 import { ResponseInterceptor } from '@common/interceptors';
-import { Routes } from '@common/constants';
+import { Routes, Docs } from '@common/constants';
 import { ApiResult } from '@common/decorators';
 import { HttpExceptionFilter } from '@common/exception-filters';
 import { OperationResultResponse } from '@common/dto';
 
-@ApiTags('Авторизация')
+@ApiTags(Docs.ru.AUTHORIZATION_CONTROLLER)
 @Controller(Routes.ENDPOINT_AUTH)
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @ApiOperation({ summary: 'Регистрация пользователя' })
+  @ApiOperation({ summary: Docs.ru.REGISTRATION_ENDPOINT })
+  @ApiBody({ type: RegisterRequest.Swagger.RegisterRequestDto })
   @ApiResult({
     status: 201,
     type: AuthenticationResponse.Swagger.AuthenticationResponseDto,
-    description: 'User was registered successful',
+    description: Docs.ru.REGISTRATION_SUCCESSFUL_RESULT,
   })
-  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiBadRequestResponse({ description: Docs.ru.REGISTRATION_BAD_REQUEST })
   @UseInterceptors(ResponseInterceptor)
   @UseFilters(HttpExceptionFilter)
   @Post('/registration')
   async registration(@Body() dto: RegisterRequest.Dto, @Res({ passthrough: true }) response: Response) {
-    const registerResult: IAuthenticationResult = await this.authService.registration(dto);
+    const registerResult = await this.authService.registration(dto);
     AuthController.setupCookies(response, registerResult);
     return new AuthenticationResponse.Dto({
       userId: registerResult.data.user.id,
@@ -38,12 +48,14 @@ export class AuthController {
     });
   }
 
-  @ApiOperation({ summary: 'Авторизация пользователя' })
+  @ApiOperation({ summary: Docs.ru.AUTHORIZATION_ENDPOINT })
+  @ApiBody({ type: LoginRequest.Swagger.LoginRequestDto })
   @ApiResult({
     status: 201,
     type: AuthenticationResponse.Swagger.AuthenticationResponseDto,
-    description: 'User was authorized successful',
+    description: Docs.ru.AUTHORIZATION_SUCCESSFUL_RESULT,
   })
+  @ApiUnauthorizedResponse({ description: Docs.ru.AUTHORIZATION_UNAUTHORIZED })
   @UseGuards(SvgCaptchaGuard)
   @UseFilters(HttpExceptionFilter, UnauthorizedExceptionFilter)
   @UseInterceptors(ResponseInterceptor)
@@ -58,17 +70,19 @@ export class AuthController {
     });
   }
 
-  @ApiOperation({ summary: 'Обновление данных пользователя' })
+  @ApiOperation({ summary: Docs.ru.REFRESH_TOKENS_ENDPOINT })
   @ApiResult({
     status: 201,
     type: AuthenticationResponse.Swagger.AuthenticationResponseDto,
-    description: 'Tokens were refreshed successful',
+    description: Docs.ru.REFRESH_TOKENS_SUCCESSFUL_RESULT,
   })
+  @ApiUnprocessableEntityResponse({ description: Docs.ru.REFRESH_TOKENS_UNPROCESSABLE_ENTITY })
+  @ApiForbiddenResponse({ description: Docs.ru.REFRESH_TOKENS_FORBIDDEN })
   @UseGuards(RefreshTokenGuard)
   @UseInterceptors(ResponseInterceptor)
   @Post('/refresh')
   async refresh(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
-    const refreshResult: IAuthenticationResult = await this.authService.refresh(request.cookies.refreshToken);
+    const refreshResult = await this.authService.refresh(request.cookies.refreshToken);
     AuthController.setupCookies(response, refreshResult);
     return new AuthenticationResponse.Dto({
       userId: refreshResult.data.user.id,
@@ -76,12 +90,14 @@ export class AuthController {
     });
   }
 
-  @ApiOperation({ summary: 'Получение данные текущего пользователя' })
+  @ApiOperation({ summary: Docs.ru.GET_CURRENT_USER_ENDPOINT })
   @ApiResult({
     status: 200,
     type: GetCurrentUserResponse.Swagger.GetCurrentUserResponseDto,
-    description: 'Current user data was received successful',
+    description: Docs.ru.GET_CURRENT_USER_SUCCESSFUL_RESULT,
   })
+  @ApiUnauthorizedResponse({ description: Docs.ru.GET_CURRENT_USER_UNAUTHORIZED })
+  @ApiForbiddenResponse({ description: Docs.ru.GET_CURRENT_USER_FORBIDDEN })
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @UseInterceptors(ResponseInterceptor)
   @Get('/me')
@@ -90,8 +106,14 @@ export class AuthController {
     return this.authService.me(userId);
   }
 
-  @ApiOperation({ summary: 'Закрытие сессии' })
-  @ApiResponse({ status: 200, type: OperationResultResponse.Swagger.OperationResultResponseDto })
+  @ApiOperation({ summary: Docs.ru.LOGOUT_ENDPOINT })
+  @ApiOkResponse({
+    type: OperationResultResponse.Swagger.OperationResultResponseDto,
+    description: Docs.ru.LOGOUT_SUCCESSFUL_RESULT,
+  })
+  @ApiUnprocessableEntityResponse({ description: Docs.ru.LOGOUT_UNPROCESSABLE_ENTITY })
+  @ApiUnauthorizedResponse({ description: Docs.ru.LOGOUT_UNAUTHORIZED })
+  @ApiForbiddenResponse({ description: Docs.ru.LOGOUT_FORBIDDEN })
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Delete('/logout')
   async logout(@Req() request: Request, @Res({ passthrough: true }) response: Response) {

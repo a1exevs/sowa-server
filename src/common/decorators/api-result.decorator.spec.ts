@@ -24,7 +24,7 @@ describe('ApiResultDecorator', () => {
     testClass.testFunction();
     const models = Reflect.getMetadata('swagger/apiExtraModels', TestClass.prototype.testFunction);
     const responseData = Reflect.getMetadata('swagger/apiResponse', TestClass.prototype.testFunction);
-    expect(models).toEqual([CommonResponse.Dto, TestType]);
+    expect(models).toEqual([CommonResponse.Swagger.CommonResponseDto, TestType]);
     expect(responseData[STATUS]).toBeDefined();
     expect(responseData[STATUS].description).toBe(DESCRIPTION);
   });

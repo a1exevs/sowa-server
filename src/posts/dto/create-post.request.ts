@@ -18,4 +18,8 @@ export namespace CreatePostRequest {
       this.content = content;
     }
   }
+
+  export namespace Swagger {
+    export class CreatePostRequestDto extends Dto {}
+  }
 }

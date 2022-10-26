@@ -273,7 +273,7 @@ describe('UsersService', () => {
         await usersService.addRole(dto);
         sendPseudoError();
       } catch (error) {
-        expect(error.status).toBe(HttpStatus.NOT_ACCEPTABLE);
+        expect(error.status).toBe(HttpStatus.BAD_REQUEST);
         expect(error.message).toBe(`Пользователь уже имеет роль ${dto.value}`);
         expect(model.findByPk).toBeCalledTimes(1);
         expect(model.findByPk).toBeCalledWith(userId, { include: { all: true } });

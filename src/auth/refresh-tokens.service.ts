@@ -12,7 +12,9 @@ export class RefreshTokensService {
 
     const loginsCount: number = await RefreshToken.count({ where: { userId: user.id } });
 
-    if (loginsCount >= maxLoginsCount) await this.removeAllTokensByUserId(user.id);
+    if (loginsCount >= maxLoginsCount) {
+      await this.removeAllTokensByUserId(user.id);
+    }
 
     token.userId = user.id;
     token.isRevoked = false;

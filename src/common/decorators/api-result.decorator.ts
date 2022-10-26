@@ -11,13 +11,13 @@ interface ApiResultOptions {
 
 export const ApiResult = (options: ApiResultOptions) => {
   return applyDecorators(
-    ApiExtraModels(CommonResponse.Dto, options.type),
+    ApiExtraModels(CommonResponse.Swagger.CommonResponseDto, options.type),
     ApiResponse({
       description: options?.description,
       status: options?.status,
       schema: {
         allOf: [
-          { $ref: getSchemaPath(CommonResponse.Dto) },
+          { $ref: getSchemaPath(CommonResponse.Swagger.CommonResponseDto) },
           {
             properties: {
               data: {

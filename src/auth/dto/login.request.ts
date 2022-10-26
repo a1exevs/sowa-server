@@ -13,7 +13,7 @@ export namespace LoginRequest {
     @IsString({ message: ErrorMessages.ru.MUST_BE_A_STRING })
     readonly password: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsString({ message: ErrorMessages.ru.MUST_BE_A_STRING })
     @IsOptional()
     readonly captcha?: string;
@@ -23,5 +23,9 @@ export namespace LoginRequest {
       this.password = password;
       if (captcha) this.captcha = captcha;
     }
+  }
+
+  export namespace Swagger {
+    export class LoginRequestDto extends Dto {}
   }
 }

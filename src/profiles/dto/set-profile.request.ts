@@ -28,7 +28,7 @@ export namespace SetProfileRequest {
     @IsOptional()
     @ValidateNested()
     @Type(() => SetUserContactRequest.Dto)
-    readonly contacts?: SetUserContactRequest.Dto;
+    readonly contacts?: SetUserContactRequest.Swagger.SetUserContactRequestDto;
 
     constructor(fullName, aboutMe, lookingForAJob, lookingForAJobDescription, contacts = null) {
       this.fullName = fullName;
@@ -37,5 +37,9 @@ export namespace SetProfileRequest {
       this.lookingForAJobDescription = lookingForAJobDescription;
       this.contacts = contacts;
     }
+  }
+
+  export namespace Swagger {
+    export class SetProfileRequestDto extends Dto {}
   }
 }
