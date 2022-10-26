@@ -48,4 +48,8 @@ export namespace SetUserContactRequest {
       this.mainLink = mainLink;
     }
   }
+
+  export namespace Swagger {
+    export class SetUserContactRequestDto extends Dto {}
+  }
 }

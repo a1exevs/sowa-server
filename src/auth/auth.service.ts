@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { CreateUserRequest } from '@users/dto';
@@ -21,7 +21,10 @@ export class AuthService {
 
   public async registration(dto: RegisterRequest.Dto): Promise<IAuthenticationResult> {
     const candidate = await this.userService.getUserByEmail(dto.email);
-    if (candidate) throw new HttpException(ErrorMessages.ru.USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+    if (candidate) {
+      throw new BadRequestException(ErrorMessages.ru.USER_ALREADY_EXISTS);
+    }
+
     const hashPassword = await bcrypt.hash(dto.password, 5);
     const user = await this.userService.createUser({ ...dto, password: hashPassword });
 
@@ -54,7 +57,9 @@ export class AuthService {
 
   public async me(userId: number): Promise<GetCurrentUserResponse.Dto> {
     const user = await this.userService.getUserById(userId);
-    if (!user) throw new UnauthorizedException({ message: ErrorMessages.ru.UNAUTHORIZED });
+    if (!user) {
+      throw new UnauthorizedException({ message: ErrorMessages.ru.UNAUTHORIZED });
+    }
 
     return new GetCurrentUserResponse.Dto({
       id: user.id,
@@ -70,7 +75,9 @@ export class AuthService {
     const user = await this.userService.getUserByEmail(dto.email, true);
     if (user) {
       const passwordsEqual = await bcrypt.compare(dto.password, user.password);
-      if (passwordsEqual) return user;
+      if (passwordsEqual) {
+        return user;
+      }
     }
     throw new UnauthorizedException({ message: ErrorMessages.ru.INVALID_EMAIL_OR_PASSWORD });
   }

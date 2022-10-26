@@ -18,4 +18,8 @@ export namespace SetUserStatusRequest {
       this.status = status;
     }
   }
+
+  export namespace Swagger {
+    export class SetUserStatusRequestDto extends Dto {}
+  }
 }

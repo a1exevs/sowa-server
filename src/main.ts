@@ -39,7 +39,7 @@ function setupDocsModule(app: INestApplication) {
     .setTitle('SOWA-Server')
     .setDescription('This is an API for messengers SOWA')
     .setVersion('1.0.0')
-    .addTag('SOWA JS')
+    .addTag('SOWA')
     .build();
   const document = SwaggerModule.createDocument(app, docConfig);
   SwaggerModule.setup('/api/docs', app, document);

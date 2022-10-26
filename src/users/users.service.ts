@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { FindOptions } from 'sequelize';
 
@@ -45,7 +45,7 @@ export class UsersService {
     });
     const totalCount = await this.userRepository.count();
 
-    const userIds: number[] = users.map(user => user.id);
+    const userIds = users.map(user => user.id);
     const followRows = await this.followersService.findFollowRows(userId, userIds);
 
     const userItems = await Promise.all(
@@ -83,15 +83,19 @@ export class UsersService {
 
   async addRole(dto: AddRoleRequest.Dto) {
     const user = await this.userRepository.findByPk(dto.userId, { include: { all: true } });
-    if (!user) throw new HttpException(ErrorMessages.ru.FAILED_TO_FIND_USER, HttpStatus.NOT_FOUND);
+    if (!user) {
+      throw new NotFoundException(ErrorMessages.ru.FAILED_TO_FIND_USER);
+    }
+
     const hasRole = user.roles.some(role => role.value === dto.value);
-    if (hasRole)
-      throw new HttpException(
-        ErrorMessages.ru.USER_ALREADY_HAS_THE_ROLE_N.format(dto.value),
-        HttpStatus.NOT_ACCEPTABLE,
-      );
+    if (hasRole) {
+      throw new BadRequestException(ErrorMessages.ru.USER_ALREADY_HAS_THE_ROLE_N.format(dto.value));
+    }
+
     const role = await this.roleService.getRoleByValue(dto.value);
-    if (!role) throw new HttpException(ErrorMessages.ru.FAILED_TO_FIND_ROLE, HttpStatus.NOT_FOUND);
+    if (!role) {
+      throw new NotFoundException(ErrorMessages.ru.FAILED_TO_FIND_ROLE);
+    }
 
     await user.$add('roles', role.id);
     return user;
@@ -99,7 +103,9 @@ export class UsersService {
 
   async ban(dto: BanUserRequest.Dto) {
     const user = await this.userRepository.findByPk(dto.userId);
-    if (!user) throw new HttpException(ErrorMessages.ru.FAILED_TO_FIND_USER, HttpStatus.NOT_FOUND);
+    if (!user) {
+      throw new NotFoundException(ErrorMessages.ru.FAILED_TO_FIND_USER);
+    }
 
     user.banned = true;
     user.banReason = dto.banReason;
@@ -112,7 +118,9 @@ export class UsersService {
       attributes: ['status'],
       where: { id: userId },
     });
-    if (!status) throw new NotFoundException();
+    if (!status) {
+      throw new NotFoundException();
+    }
     return status;
   }
 

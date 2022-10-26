@@ -11,7 +11,15 @@ import {
   UploadedFile,
   UseFilters,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { JwtAuthGuard, RefreshTokenGuard } from '@common/guards';
@@ -20,23 +28,31 @@ import { GetProfileResponse, SetProfileRequest } from '@profiles/dto';
 import { CommonResponse } from '@common/dto';
 import { HttpExceptionFilter } from '@common/exception-filters';
 import { ResponseInterceptor } from '@common/interceptors';
-import { Routes } from '@common/constants';
+import { Routes, Docs } from '@common/constants';
+import { ApiBodyWithFile } from '@common/decorators';
 
-@ApiTags('Профили')
+@ApiTags(Docs.ru.PROFILES_CONTROLLER)
 @Controller(Routes.ENDPOINT_PROFILES)
 export class ProfilesController {
   constructor(private profilesService: ProfilesService) {}
 
-  @ApiOperation({ summary: 'Получение профиля пользователя' })
-  @ApiResponse({ status: 200, type: GetProfileResponse.Swagger.GetProfileResponseDto })
+  @ApiOperation({ summary: Docs.ru.GET_PROFILE_ENDPOINT })
+  @ApiOkResponse({ type: GetProfileResponse.Swagger.GetProfileResponseDto })
+  @ApiBadRequestResponse({ description: Docs.ru.GET_PROFILE_BAD_REQUcEST })
+  @ApiUnauthorizedResponse({ description: Docs.ru.GET_PROFILE_UNAUTHORIZED })
+  @ApiForbiddenResponse({ description: Docs.ru.GET_PROFILE_FORBIDDEN })
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Get('/:userId')
   getProfile(@Param('userId', ParseIntPipe) userId: number) {
     return this.profilesService.getUserProfile(userId);
   }
 
-  @ApiOperation({ summary: 'Изменение данных профиля пользователя' })
-  @ApiResponse({ status: 200, type: GetProfileResponse.Swagger.GetProfileResponseDto })
+  @ApiOperation({ summary: Docs.ru.SET_PROFILE_ENDPOINT })
+  @ApiBody({ type: SetProfileRequest.Swagger.SetProfileRequestDto })
+  @ApiOkResponse({ type: GetProfileResponse.Swagger.GetProfileResponseDto })
+  @ApiBadRequestResponse({ description: Docs.ru.SET_PROFILE_BAD_REQUcEST })
+  @ApiUnauthorizedResponse({ description: Docs.ru.SET_PROFILE_UNAUTHORIZED })
+  @ApiForbiddenResponse({ description: Docs.ru.SET_PROFILE_FORBIDDEN })
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @Put()
   setProfile(@Body() dto: SetProfileRequest.Dto, @Req() request) {
@@ -44,8 +60,12 @@ export class ProfilesController {
     return this.profilesService.setUserProfile(userId, dto);
   }
 
-  @ApiOperation({ summary: 'Изменение фотографии профиля пользователя' })
-  @ApiResponse({ status: 200, type: CommonResponse.Swagger.CommonResponseDto })
+  @ApiOperation({ summary: Docs.ru.SET_PROFILE_PHOTO_ENDPOINT })
+  @ApiBodyWithFile({ fileFieldName: 'image' })
+  @ApiOkResponse({ type: CommonResponse.Swagger.CommonResponseDto })
+  @ApiBadRequestResponse({ description: Docs.ru.SET_PROFILE_PHOTO_BAD_REQUcEST })
+  @ApiUnauthorizedResponse({ description: Docs.ru.SET_PROFILE_PHOTO_UNAUTHORIZED })
+  @ApiForbiddenResponse({ description: Docs.ru.SET_PROFILE_PHOTO_FORBIDDEN })
   @UseFilters(HttpExceptionFilter)
   @UseGuards(JwtAuthGuard, RefreshTokenGuard)
   @UseInterceptors(FileInterceptor('image'), ResponseInterceptor)

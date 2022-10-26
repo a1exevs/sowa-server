@@ -18,4 +18,8 @@ export namespace BanUserRequest {
       this.banReason = banReason;
     }
   }
+
+  export namespace Swagger {
+    export class BanUserRequestDto extends Dto {}
+  }
 }

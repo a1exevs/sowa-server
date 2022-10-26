@@ -18,4 +18,8 @@ export namespace AddRoleRequest {
       this.userId = userId;
     }
   }
+
+  export namespace Swagger {
+    export class AddRoleRequestDto extends Dto {}
+  }
 }

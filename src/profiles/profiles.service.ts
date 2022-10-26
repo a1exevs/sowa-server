@@ -1,4 +1,4 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 
 import { UserCommonInfo } from '@profiles/user-common-info.model';
 import { GetProfileResponse, GetUserContactResponse, GetUserAvatarResponse, SetProfileRequest } from '@profiles/dto';
@@ -79,7 +79,9 @@ export class ProfilesService {
 
   private async validateUserId(userId: number): Promise<User> {
     const user = await this.usersService.getUserById(userId);
-    if (!user) throw new HttpException(ErrorMessages.ru.USER_N_NOT_FOUND.format(userId), HttpStatus.BAD_REQUEST);
+    if (!user) {
+      throw new BadRequestException(ErrorMessages.ru.USER_N_NOT_FOUND.format(userId));
+    }
     return user;
   }
 

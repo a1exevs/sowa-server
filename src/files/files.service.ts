@@ -48,11 +48,16 @@ export class FilesService {
     try {
       relativeStaticDir = FilesService.correctRelativePath(relativeStaticDir);
 
-      if (!fileName) fileName = `${uuid.v4()}.${fileExtension}`;
-      else if (!fileName.endsWith(`.${fileExtension}`)) fileName = `${fileName}.${fileExtension}`;
+      if (!fileName) {
+        fileName = `${uuid.v4()}.${fileExtension}`;
+      } else if (!fileName.endsWith(`.${fileExtension}`)) {
+        fileName = `${fileName}.${fileExtension}`;
+      }
 
       const dirForSaving = path.resolve(__dirname, '../../', process.env.SERVER_STATIC + relativeStaticDir);
-      if (!fs.existsSync(dirForSaving)) fs.mkdirSync(dirForSaving, { recursive: true });
+      if (!fs.existsSync(dirForSaving)) {
+        fs.mkdirSync(dirForSaving, { recursive: true });
+      }
       fs.writeFileSync(path.join(dirForSaving, fileName), file.buffer);
 
       const filePath = `${dirForSaving}/${fileName}`;
@@ -75,25 +80,34 @@ export class FilesService {
   }
 
   private static correctRelativePath(pathStr: string) {
-    if (pathStr[0] !== '/') pathStr = `/${pathStr}`;
-    if (pathStr[pathStr.length - 1] !== '/') pathStr += '/';
+    if (pathStr[0] !== '/') {
+      pathStr = `/${pathStr}`;
+    }
+    if (pathStr[pathStr.length - 1] !== '/') {
+      pathStr += '/';
+    }
     return pathStr;
   }
 
   private static checkForMimeType(file: any, haystack: string) {
-    if (file.mimetype !== haystack) throw new HttpException(ErrorMessages.ru.FILE_UPLOAD_ERROR, HttpStatus.BAD_REQUEST);
+    if (file.mimetype !== haystack) {
+      throw new HttpException(ErrorMessages.ru.FILE_UPLOAD_ERROR, HttpStatus.BAD_REQUEST);
+    }
   }
 
   private static checkForSize(file: any, maxMBytes: number) {
-    if (!file.size || file.size > maxMBytes * 1000000)
+    if (!file.size || file.size > maxMBytes * 1000000) {
       throw new HttpException(
         ErrorMessages.ru.UPLOAD_FILE_SIZE_CANNOT_EXCEED_N_MBT.format(maxMBytes),
         HttpStatus.BAD_REQUEST,
       );
+    }
   }
 
   private static checkForFileSelection(file: any) {
-    if (!file) throw new HttpException(ErrorMessages.ru.FILE_NOT_SELECTED, HttpStatus.BAD_REQUEST);
+    if (!file) {
+      throw new HttpException(ErrorMessages.ru.FILE_NOT_SELECTED, HttpStatus.BAD_REQUEST);
+    }
   }
 
   private async compressImage(filePath: string): Promise<{ filePath: string; fileURL: string }> {
@@ -120,9 +134,13 @@ export class FilesService {
     const serverStaticDir = process.env.SERVER_STATIC || undefined;
     const PORT = process.env.PORT || undefined;
     const SERVER_URL = process.env.SERVER_URL || undefined;
-    if (!serverStaticDir || !PORT || !SERVER_URL) return '';
+    if (!serverStaticDir || !PORT || !SERVER_URL) {
+      return '';
+    }
     const list = fullFilePath.split(serverStaticDir);
-    if (list.length !== 2) return '';
+    if (list.length !== 2) {
+      return '';
+    }
     return `${SERVER_URL}:${PORT}${list[1]}`;
   }
 }
