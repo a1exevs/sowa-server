@@ -11,7 +11,7 @@ import { UsersService } from '@users/users.service';
 import { sendPseudoError } from '@test/unit/helpers';
 import { ErrorMessages } from '@common/constants';
 import { User } from '@users/users.model';
-import { FindOptions } from 'sequelize/dist/lib/model';
+import { FindOptions } from 'sequelize';
 
 jest.mock('./followers.model');
 
@@ -193,7 +193,7 @@ describe('FollowersService', () => {
       expect(findOneFn).toBeCalledTimes(1);
       expect(findOneFn).toBeCalledWith({ where: unfollowData });
       expect(destroyFn).toBeCalledTimes(1);
-      expect(destroyFn).toBeCalledWith({ where: unfollowData });
+      expect(destroyFn).toBeCalledWith({ where: { uuid } });
     });
     it('should throw exception (user Id and follower Id are equals)', async () => {
       const followerId = 1;
