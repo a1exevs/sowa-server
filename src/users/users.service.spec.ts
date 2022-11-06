@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/sequelize';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { UpdateOptions } from 'sequelize';
-import { FindOptions } from 'sequelize/dist/lib/model';
+import { FindOptions } from 'sequelize';
 
 import { ProfilesService } from '@profiles/profiles.service';
 import { UsersService } from '@users/users.service';
@@ -408,11 +408,12 @@ describe('UsersService', () => {
         } else return Promise.resolve(null);
       });
       const result = await usersService.setStatus(dto, userId);
+
       expect(result[0]).toBe(updatedRowsCount);
       expect(result[1][0].id).toBe(userId);
       expect(result[1][0].status).toBe(status);
       expect(model.update).toBeCalledTimes(1);
-      expect(model.update).toBeCalledWith({ status: dto.status }, { where: { id: userId } });
+      expect(model.update).toBeCalledWith({ status: dto.status }, { where: { id: userId }, returning: true });
     });
   });
 });

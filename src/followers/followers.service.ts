@@ -32,7 +32,7 @@ export class FollowersService {
       );
     }
 
-    return !!(await this.followerRepository.destroy({ where: unfollowData }));
+    return !!(await this.followerRepository.destroy({ where: { uuid } }));
   }
 
   public async findFollowRows(followerId: number, userIds: number[]): Promise<Follower[]> {
@@ -45,7 +45,9 @@ export class FollowersService {
   }
 
   private async validateFollowRequest(followData: IFollower): Promise<string | null> {
-    if (followData.followerId === followData.userId) throw new BadRequestException();
+    if (followData.followerId === followData.userId) {
+      throw new BadRequestException();
+    }
 
     const follower = await this.usersService.getUserById(followData.followerId);
     const user = await this.usersService.getUserById(followData.userId);
@@ -57,7 +59,7 @@ export class FollowersService {
   }
 
   private async existRow(followData: IFollower): Promise<string | null> {
-    const row: Follower = await this.followerRepository.findOne({ where: followData });
+    const row: Follower = await this.followerRepository.findOne({ where: { ...followData } });
     return row ? row.uuid : null;
   }
 }

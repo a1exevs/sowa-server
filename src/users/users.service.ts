@@ -125,6 +125,6 @@ export class UsersService {
   }
 
   public async setStatus(dto: SetUserStatusRequest.Dto, userId: number) {
-    return this.userRepository.update({ status: dto.status }, { where: { id: userId } });
+    return this.userRepository.update({ status: dto.status }, { where: { id: userId }, returning: true });
   }
 }
