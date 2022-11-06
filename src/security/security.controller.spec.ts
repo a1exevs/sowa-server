@@ -1,8 +1,9 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { SecurityController } from "./security.controller";
-import { SecurityService } from "./security.service";
-import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
-import { createRequest } from "node-mocks-http";
+import { Test, TestingModule } from '@nestjs/testing';
+import { createRequest } from 'node-mocks-http';
+
+import { SecurityController } from '@security/security.controller';
+import { SecurityService } from '@security/security.service';
+import { ResponseInterceptor } from '@common/interceptors';
 
 describe('SecurityController', () => {
   let securityController: SecurityController;
@@ -18,10 +19,10 @@ describe('SecurityController', () => {
         {
           provide: SecurityService,
           useValue: {
-            getCaptchaURL: jest.fn(x => x)
-          }
-        }
-      ]
+            getCaptchaURL: jest.fn(x => x),
+          },
+        },
+      ],
     }).compile();
     securityController = moduleRef.get<SecurityController>(SecurityController);
     securityService = moduleRef.get<SecurityService>(SecurityService);
@@ -47,13 +48,13 @@ describe('SecurityController', () => {
       const captchaText = '1234';
       request._setSessionVariable('captcha', '');
       jest.spyOn(securityService, 'getCaptchaURL').mockImplementation(() => {
-        return Promise.resolve({ captchaURL, captchaText })
-      })
+        return Promise.resolve({ captchaURL, captchaText });
+      });
       const result = await securityController.getCaptchaURL(request);
 
       expect(result.captchaURL).toBe(captchaURL);
       expect(request.session['captcha']).toBe(captchaText);
       expect(securityService.getCaptchaURL).toBeCalledTimes(1);
-    })
-  })
+    });
+  });
 });

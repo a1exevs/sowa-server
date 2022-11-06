@@ -1,13 +1,13 @@
-import { forwardRef, Module } from "@nestjs/common";
+import { forwardRef, Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { UsersController } from './users.controller';
-import { User } from './users.model';
-import { UsersService } from './users.service';
-import { RolesModule } from "../roles/roles.module";
-import { AuthModule } from "../auth/auth.module";
-import { FollowersModule } from "../followers/followers.module";
-import { FollowersService } from "../followers/followers.service";
-import { ProfileModule } from "../profile/profile.module";
+
+import { UsersController } from '@users/users.controller';
+import { User } from '@users/users.model';
+import { UsersService } from '@users/users.service';
+import { RolesModule } from '@roles/roles.module';
+import { AuthModule } from '@auth/auth.module';
+import { FollowersModule } from '@followers/followers.module';
+import { ProfilesModule } from '@profiles/profiles.module';
 
 @Module({
   controllers: [UsersController],
@@ -17,10 +17,8 @@ import { ProfileModule } from "../profile/profile.module";
     RolesModule,
     forwardRef(() => AuthModule),
     forwardRef(() => FollowersModule),
-    forwardRef( () => ProfileModule)
+    forwardRef(() => ProfilesModule),
   ],
-  exports: [
-    UsersService
-  ]
+  exports: [UsersService],
 })
 export class UsersModule {}

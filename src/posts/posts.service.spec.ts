@@ -1,17 +1,14 @@
-import { FilesService } from "../files/files.service";
-import { Test, TestingModule } from "@nestjs/testing";
-import {
-  loadTestFile,
-  removeTestStaticDir,
-  TEST_FILE_ORIGINAL_NAME,
-  TEST_FILE_PATH
-} from "../../test-helpers/files-helper.spec";
-import { PostsService } from "./posts.service";
-import { Post } from "./posts.model";
-import { getModelToken } from "@nestjs/sequelize";
-import { CreatePostDTO } from "./DTO/CreatePostDTO";
-import { HttpException, HttpStatus } from "@nestjs/common";
-import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
+import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/sequelize';
+import { HttpException, HttpStatus } from '@nestjs/common';
+
+import { FilesService } from '@files/files.service';
+import { loadTestFile, removeTestStaticDir, TEST_FILE_ORIGINAL_NAME, TEST_FILE_PATH } from '@test/unit/helpers';
+import { PostsService } from '@posts/posts.service';
+import { Post } from '@posts/posts.model';
+import { CreatePostRequest } from '@posts/dto';
+import { sendPseudoError } from '@test/unit/helpers';
+import { ErrorMessages } from '@common/constants';
 
 describe('PostsService', () => {
   let postsService: PostsService;
@@ -24,13 +21,13 @@ describe('PostsService', () => {
         PostsService,
         {
           provide: getModelToken(Post),
-          useValue: { create: jest.fn(x => x) }
+          useValue: { create: jest.fn(x => x) },
         },
         {
           provide: FilesService,
-          useValue: { createFile: jest.fn(x => x) }
-        }
-      ]
+          useValue: { createFile: jest.fn(x => x) },
+        },
+      ],
     }).compile();
 
     postsService = module.get<PostsService>(PostsService);
@@ -39,8 +36,8 @@ describe('PostsService', () => {
   });
 
   afterEach(async () => {
-    removeTestStaticDir()
-  })
+    removeTestStaticDir();
+  });
 
   describe('PostsService - definition', () => {
     it('PostsService - should be defined', () => {
@@ -60,22 +57,21 @@ describe('PostsService', () => {
       const postId = 1;
       const title = 'It is test post';
       const content = 'It is content of test post';
-      const dto: CreatePostDTO = { title, content };
+      const dto: CreatePostRequest.Dto = { title, content };
       const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
-      const imageURL = 'test-server.com/posts-images/sowa.jpg'
+      const imageURL = 'test-server.com/posts-images/sowa.jpg';
 
       jest.spyOn(filesService, 'createFile').mockImplementation(async () => {
         return Promise.resolve({ filePath: 'test', fileURL: imageURL });
-      })
-      // @ts-ignore
+      });
       jest.spyOn(model, 'create').mockImplementation(async () => {
         return Promise.resolve({
           id: postId,
           userId,
           title,
           content,
-          image: imageURL
-        })
+          image: imageURL,
+        } as Post);
       });
 
       const post = await postsService.createPost(dto, file, userId);
@@ -89,23 +85,22 @@ describe('PostsService', () => {
         userId,
         title,
         content,
-        image: imageURL
-      })
+        image: imageURL,
+      });
     });
     it('should throw exception when try to create a post', async () => {
       expect.assertions(5);
       const userId = 1;
       const title = 'It is test post';
       const content = 'It is content of test post';
-      const dto: CreatePostDTO = { title, content };
+      const dto: CreatePostRequest.Dto = { title, content };
       const file = loadTestFile(TEST_FILE_PATH, 20000000, 'image/jpeg', TEST_FILE_ORIGINAL_NAME);
-      const imageURL = 'test-server.com/posts-images/sowa.jpg'
-      const errorMessage = "DB Error";
+      const imageURL = 'test-server.com/posts-images/sowa.jpg';
+      const errorMessage = 'DB Error';
 
       jest.spyOn(filesService, 'createFile').mockImplementation(async () => {
         return Promise.resolve({ filePath: 'test', fileURL: imageURL });
-      })
-      // @ts-ignore
+      });
       jest.spyOn(model, 'create').mockImplementation(async () => {
         throw new HttpException(errorMessage, HttpStatus.BAD_REQUEST);
       });
@@ -115,16 +110,16 @@ describe('PostsService', () => {
         sendPseudoError();
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.message).toBe(`Не удалось создать пост. ${errorMessage}`)
+        expect(error.message).toBe(`${ErrorMessages.ru.FAILED_TO_CREATE_POST}. ${errorMessage}`);
         expect(filesService.createFile).toBeCalledTimes(1);
         expect(model.create).toBeCalledTimes(1);
         expect(model.create).toBeCalledWith({
           userId,
           title,
           content,
-          image: imageURL
-        })
+          image: imageURL,
+        });
       }
     });
   });
-})
+});

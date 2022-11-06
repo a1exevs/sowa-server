@@ -1,10 +1,16 @@
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { ValidationPipe } from "./common/pipes/validation.pipe";
+import 'module-alias/register';
+
+import '@root/string.extensions';
+
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { INestApplication } from '@nestjs/common';
+
+import { AppModule } from '@src/app.module';
+import { ValidationPipe } from '@common/pipes';
+import { LoggerService } from '@src/logger';
+
 import * as cookieParser from 'cookie-parser';
-import {Logger} from "./common/logs/Logger";
-import {INestApplication} from "@nestjs/common";
 import * as session from 'express-session';
 
 async function start() {
@@ -24,55 +30,49 @@ async function start() {
 
   setupSession(app);
 
+  // eslint-disable-next-line no-console
   await app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 }
 
-function setupDocsModule(app: INestApplication)
-{
+function setupDocsModule(app: INestApplication) {
   const docConfig = new DocumentBuilder()
-      .setTitle("SOWA-Server")
-      .setDescription("This is an API for messengers SOWA")
-      .setVersion("1.0.0")
-      .addTag("SOWA JS")
-      .build();
+    .setTitle('SOWA-Server')
+    .setDescription('This is an API for messengers SOWA')
+    .setVersion('1.0.0')
+    .addTag('SOWA')
+    .build();
   const document = SwaggerModule.createDocument(app, docConfig);
   SwaggerModule.setup('/api/docs', app, document);
 }
 
-function setupCORS(app: INestApplication, whiteList: string[])
-{
+function setupCORS(app: INestApplication, whiteList: string[]) {
   app.enableCors({
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
       if (!origin || whiteList.indexOf(origin) !== -1) {
-        console.log("allowed cors for:", origin)
-        callback(null, true)
+        callback(null, true);
       } else {
-        console.log("blocked cors for:", origin)
-        callback(new Error('Not allowed by CORS'), false)
+        callback(new Error('Not allowed by CORS'), false);
       }
     },
     allowedHeaders: 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
-    methods: "GET,PUT,POST,DELETE,UPDATE,OPTIONS",
+    methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
     credentials: true,
-    maxAge: 600
+    maxAge: 600,
   });
 }
 
-function setupLogger(app: INestApplication)
-{
-  app.useLogger(app.get(Logger));
+function setupLogger(app: INestApplication) {
+  app.useLogger(app.get(LoggerService));
 }
 
-function setupSession(app: INestApplication)
-{
+function setupSession(app: INestApplication) {
   app.use(
     session({
       secret: process.env.SESSION_SECRET_KEY || 'my-secret',
       resave: false,
-      saveUninitialized: false
+      saveUninitialized: false,
     }),
   );
 }
 
 start();
-

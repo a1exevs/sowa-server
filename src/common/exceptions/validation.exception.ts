@@ -1,6 +1,6 @@
-import { HttpException, HttpStatus } from "@nestjs/common";
+import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class ValidationException extends HttpException{
+export class ValidationException extends HttpException {
   public readonly message: any;
 
   constructor(response) {

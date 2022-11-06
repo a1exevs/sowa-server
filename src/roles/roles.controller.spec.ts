@@ -1,13 +1,14 @@
-import { RolesController } from "./roles.controller";
-import { RolesService } from "./roles.service";
-import { RolesGuard } from "../auth/guards/roles.quard";
-import { RefreshTokenGuard } from "../auth/guards/refreshToken.guard";
-import { JwtService } from "@nestjs/jwt";
-import { Test, TestingModule } from "@nestjs/testing";
-import { CreateRoleDTO } from "./DTO/CreateRoleDTO";
-import { Role } from "./roles.model";
-import { HttpException, HttpStatus } from "@nestjs/common";
-import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
+
+import { RolesController } from '@roles/roles.controller';
+import { RolesService } from '@roles/roles.service';
+import { RolesGuard, RefreshTokenGuard } from '@common/guards';
+import { CreateRoleRequest } from '@roles/dto';
+import { Role } from '@roles/roles.model';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { sendPseudoError } from '@test/unit/helpers';
+import { ErrorMessages } from '@common/constants';
 
 describe('RolesController', () => {
   let rolesController: RolesController;
@@ -27,11 +28,11 @@ describe('RolesController', () => {
           provide: RolesService,
           useValue: {
             createRole: jest.fn(x => x),
-            getRoleByValue: jest.fn(x => x)
-          }
+            getRoleByValue: jest.fn(x => x),
+          },
         },
-        jwtService
-      ]
+        jwtService,
+      ],
     }).compile();
     rolesController = moduleRef.get<RolesController>(RolesController);
     rolesService = moduleRef.get<RolesService>(RolesService);
@@ -56,26 +57,24 @@ describe('RolesController', () => {
 
   describe('RolesController - create', () => {
     it('should be successful result', async () => {
-      const reqDto: CreateRoleDTO = { value: 'super star', description: 'Super user' };
-      const createdRole: Partial<Role> = { id: 1, ...reqDto }
-      // @ts-ignore
+      const reqDto: CreateRoleRequest.Dto = { value: 'super star', description: 'Super user' };
+      const createdRole: Partial<Role> = { id: 1, ...reqDto };
       jest.spyOn(rolesService, 'createRole').mockImplementation(() => {
-        return Promise.resolve(createdRole)
-      })
+        return Promise.resolve(createdRole as Role);
+      });
       const result = await rolesController.create(reqDto);
 
       expect(result).toEqual(createdRole);
       expect(rolesService.createRole).toBeCalledTimes(1);
       expect(rolesService.createRole).toBeCalledWith(reqDto);
-    })
+    });
     it('should throw exception (error creating role)', async () => {
-      const reqDto: CreateRoleDTO = { value: 'super star', description: 'Super user' };
-      const errorMessage = 'Не удалось создать роль.';
+      const reqDto: CreateRoleRequest.Dto = { value: 'super star', description: 'Super user' };
+      const errorMessage = ErrorMessages.ru.FAILED_TO_CREATE_ROLE;
       const errorStatus = HttpStatus.BAD_REQUEST;
-      // @ts-ignore
       jest.spyOn(rolesService, 'createRole').mockImplementation(() => {
         throw new HttpException(errorMessage, errorStatus);
-      })
+      });
 
       try {
         await rolesController.create(reqDto);
@@ -86,22 +85,21 @@ describe('RolesController', () => {
         expect(rolesService.createRole).toBeCalledTimes(1);
         expect(rolesService.createRole).toBeCalledWith(reqDto);
       }
-    })
+    });
   });
 
   describe('RolesController - getByValue', () => {
     it('should be successful result', async () => {
       const request = 'admin';
-      const mockServiceResponse: Partial<Role> = { id: 1, value: request, description: 'Admin role' }
-      // @ts-ignore
+      const mockServiceResponse: Partial<Role> = { id: 1, value: request, description: 'Admin role' };
       jest.spyOn(rolesService, 'getRoleByValue').mockImplementation(() => {
-        return Promise.resolve(mockServiceResponse)
-      })
+        return Promise.resolve(mockServiceResponse as Role);
+      });
       const result = await rolesController.getByValue(request);
 
       expect(result).toEqual(mockServiceResponse);
       expect(rolesService.getRoleByValue).toBeCalledTimes(1);
       expect(rolesService.getRoleByValue).toBeCalledWith(request);
-    })
+    });
   });
 });

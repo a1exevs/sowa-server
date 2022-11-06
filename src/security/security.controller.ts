@@ -1,28 +1,29 @@
-import { Controller, Get, Req, UseInterceptors } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { SecurityService } from "./security.service";
-import { CommonResDTO } from "../common/ResDTO/CommonResDTO";
-import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
-import { ISession } from "../auth/interfaces/ISession";
-import { Routes } from "../common/constants/routes";
+import { Controller, Get, Req, UseInterceptors } from '@nestjs/common';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@ApiTags("Безопасность")
+import { SecurityService } from '@security/security.service';
+import { CommonResponse } from '@common/dto';
+import { ResponseInterceptor } from '@common/interceptors';
+import { Isession } from '@auth/interfaces';
+import { Routes, Docs } from '@common/constants';
+
+@ApiTags(Docs.ru.SECURITY_CONTROLLER)
 @Controller(Routes.ENDPOINT_SECURITY)
 export class SecurityController {
   constructor(private securityService: SecurityService) {}
 
-  @ApiOperation({summary: "Получение ссылки на Капчу"})
-  @ApiResponse({status: 200, type: CommonResDTO})
+  @ApiOperation({ summary: Docs.ru.GET_CAPTCHA_URL_ENDPOINT })
+  @ApiOkResponse({ type: CommonResponse.Swagger.CommonResponseDto })
   @UseInterceptors(ResponseInterceptor)
   @Get('get-captcha-url')
-  public async getCaptchaURL(@Req() request) {
+  async getCaptchaURL(@Req() request) {
     const { captchaURL, captchaText } = await this.securityService.getCaptchaURL();
     SecurityController.setSessionCaptchaText(request, captchaText);
     return { captchaURL };
   }
 
   private static setSessionCaptchaText(request, captchaText: string) {
-    const session: ISession = request.session;
+    const session: Isession = request.session;
     session.captcha = captchaText;
   }
 }

@@ -1,50 +1,48 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { AuthService } from './auth.service';
-import { AuthController } from "./auth.controller";
-import { JwtService } from "@nestjs/jwt";
-import { createResponse, createRequest } from "node-mocks-http";
-import { AuthenticationResponse } from "./DTO/AuthenticationResponse";
-import { UsersService } from "../users/users.service";
-import { TokensService } from "./tokens.service";
-import { AuthenticationResDto } from "./DTO/AuthenticationResDto";
-import { ValidationPipe } from "../common/pipes/validation.pipe";
-import { ArgumentMetadata, HttpException, HttpStatus, UnauthorizedException } from "@nestjs/common";
-import { RegisterDto } from "./DTO/RegisterDto";
-import { LoginDto } from "./DTO/LoginDto";
-import { UnauthorizedExceptionFilter } from "./exceptionfilters/unauthorizedexceptionfilter";
-import { SvgCaptchaGuard } from "./guards/svgcaptcha.guard";
-import { ResultCodes } from "../common/constants/resultcodes";
-import { GetCurrentUserResponse } from "./DTO/get-current-user.response";
-import { JwtAuthGuard } from "./guards/jwtAuth.guard";
-import { RefreshTokenGuard } from "./guards/refreshToken.guard";
-import { HttpExceptionFilter } from "../common/exceptions/filters/httpexceptionfilter";
-import { ResponseInterceptor } from "../common/interceptors/ResponseInterceptor";
-import { sendPseudoError } from "../../test-helpers/tests-helper.spec";
-import { getMockArgumentsHostData } from "../../test-helpers/context-helper.spec";
+import '@root/string.extensions';
 
-const getValidationPipeDataForUserRegistration  = function(email, password) {
-  let target: ValidationPipe = new ValidationPipe();
-  const registerDto: RegisterDto = { email, password};
-  const metadata: ArgumentMetadata = { type: 'body', metatype: RegisterDto };
-  return {target, metadata, registerDto};
-}
+import { Test, TestingModule } from '@nestjs/testing';
+import { JwtService } from '@nestjs/jwt';
+import { createResponse, createRequest } from 'node-mocks-http';
+import { ArgumentMetadata, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
 
-const getMockAuthenticationResponse = function(userId, accessToken, refreshToken): AuthenticationResponse {
+import { AuthController } from '@auth/auth.controller';
+import { AuthService } from '@auth/auth.service';
+import { TokensService } from '@auth/tokens.service';
+import { IAuthenticationResult } from '@auth/interfaces';
+import { UsersService } from '@users/users.service';
+import { AuthenticationResponse, RegisterRequest, LoginRequest, GetCurrentUserResponse } from '@auth/dto';
+import { ValidationPipe } from '@common/pipes';
+import { UnauthorizedExceptionFilter } from '@auth/exception-filters';
+import { SvgCaptchaGuard } from '@auth/guards';
+import { JwtAuthGuard, RefreshTokenGuard } from '@common/guards';
+import { HttpExceptionFilter } from '@common/exception-filters';
+import { ResponseInterceptor } from '@common/interceptors';
+import { sendPseudoError } from '@test/unit/helpers';
+import { ErrorMessages } from '@common/constants';
+
+const getValidationPipeDataForUserRegistration = function (email, password) {
+  const target: ValidationPipe = new ValidationPipe();
+  const registerDto: RegisterRequest.Dto = { email, password };
+  const metadata: ArgumentMetadata = { type: 'body', metatype: RegisterRequest.Dto };
+  return { target, metadata, registerDto };
+};
+
+const getMockAuthenticationResponse = function (userId, accessToken, refreshToken): IAuthenticationResult {
   return {
     status: 'success',
     data: {
       user: {
-        id: userId
+        id: userId,
       },
       payload: {
         type: 'bearer',
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        refresh_token_expiration: new Date()
-      }
-    }
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        refreshToken_expiration: new Date(),
+      },
+    },
   };
-}
+};
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -62,7 +60,7 @@ describe('AuthController', () => {
 
     const userService = { provide: UsersService, useValue: {} };
     const jwtService = { provide: JwtService, useValue: {} };
-    const tokenService = { provide: TokensService, useValue: {} }
+    const tokenService = { provide: TokensService, useValue: {} };
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
@@ -74,13 +72,13 @@ describe('AuthController', () => {
             login: jest.fn(x => x),
             refresh: jest.fn(x => x),
             me: jest.fn(x => x),
-            logout: jest.fn(x => x)
-          }
+            logout: jest.fn(x => x),
+          },
         },
         userService,
         jwtService,
-        tokenService
-      ]
+        tokenService,
+      ],
     }).compile();
     authController = moduleRef.get<AuthController>(AuthController);
     authService = moduleRef.get<AuthService>(AuthService);
@@ -121,44 +119,44 @@ describe('AuthController', () => {
 
   describe('AuthController - registration', () => {
     it('Input params validation: should return bad request (incorrect email)', async () => {
-      const {target, metadata, registerDto} =
-        getValidationPipeDataForUserRegistration('useryandex.ru', '12345678');
+      const { target, metadata, registerDto } = getValidationPipeDataForUserRegistration('useryandex.ru', '12345678');
       try {
         await target.transform(registerDto, metadata);
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(400);
-        expect(err.getResponse()).toContainEqual('email - Некорректный email');
+        expect(err.getResponse()).toContainEqual(`email - ${ErrorMessages.ru.MUST_HAS_EMAIL_FORMAT}`);
       }
     });
     it('Input params validation: should return bad request (incorrect small password)', async () => {
-      const {target, metadata, registerDto} =
-        getValidationPipeDataForUserRegistration('useryandex.ru', '1234567')
+      const { target, metadata, registerDto } = getValidationPipeDataForUserRegistration('useryandex.ru', '1234567');
       try {
         await target.transform(registerDto, metadata);
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(400);
-        expect(err.getResponse()).toContainEqual('password - Длина должна быть больше 8 и меньше 50 символов');
+        expect(err.getResponse()).toContainEqual(
+          `password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}`,
+        );
       }
     });
     it('Input params validation: should return bad request (incorrect large password)', async () => {
-      const {target, metadata, registerDto} =
-        getValidationPipeDataForUserRegistration(
+      const { target, metadata, registerDto } = getValidationPipeDataForUserRegistration(
         'useryandex.ru',
-        '123456789012345678901234567890123456789012345678901'
-      )
+        '123456789012345678901234567890123456789012345678901',
+      );
       try {
         await target.transform(registerDto, metadata);
         sendPseudoError();
       } catch (err) {
         expect(err.status).toBe(400);
-        expect(err.getResponse()).toContainEqual('password - Длина должна быть больше 8 и меньше 50 символов');
+        expect(err.getResponse()).toContainEqual(
+          `password - ${ErrorMessages.ru.STRING_LENGTH_MUST_NOT_BE_LESS_THAN_M_AND_GREATER_THAN_N.format(8, 50)}`,
+        );
       }
     });
     it('Input params validation: should be successful', async () => {
-      const {target, metadata, registerDto} =
-        getValidationPipeDataForUserRegistration('user@yandex.ru', '12345678')
+      const { target, metadata, registerDto } = getValidationPipeDataForUserRegistration('user@yandex.ru', '12345678');
       try {
         await target.transform(registerDto, metadata);
         sendPseudoError();
@@ -172,22 +170,23 @@ describe('AuthController', () => {
       const userId = 1;
       const accessToken = '12345fsagasdsfasdfsdf';
       const refreshToken = '12345fsagasdsdfsdf';
-      const serviceRegisterResponseMock =
-        getMockAuthenticationResponse(userId, accessToken, refreshToken);
-      const registerDto = { email: "user@yandex.ru", password: '12345678' };
-      const mockRegistrationF = jest.spyOn(authService, 'registration').mockImplementation(async () => serviceRegisterResponseMock);
-      const controllerRegisterResponse = new AuthenticationResDto(userId, accessToken);
+      const serviceRegisterResponseMock = getMockAuthenticationResponse(userId, accessToken, refreshToken);
+      const registerDto = { email: 'user@yandex.ru', password: '12345678' };
+      const mockRegistrationF = jest
+        .spyOn(authService, 'registration')
+        .mockImplementation(async () => serviceRegisterResponseMock);
+      const controllerRegisterResponse = new AuthenticationResponse.Dto({ userId, accessToken });
       const response = await authController.registration(registerDto, res);
       expect(response).toEqual(controllerRegisterResponse);
-      expect(res.cookies.refresh_token.value).toBe(refreshToken);
-      expect(res.cookies.refresh_token.options.httpOnly).toBe(true);
+      expect(res.cookies.refreshToken.value).toBe(refreshToken);
+      expect(res.cookies.refreshToken.options.httpOnly).toBe(true);
       expect(mockRegistrationF).toBeCalledTimes(1);
       expect(mockRegistrationF).toBeCalledWith(registerDto);
     });
     it('Registration method: should return bad request (user already exists)', async () => {
       const res = createResponse();
-      const exceptionMessage = 'Пользователь уже существует';
-      const registerDto = { email: "user@yandex.ru", password: '12345678' };
+      const exceptionMessage = ErrorMessages.ru.USER_ALREADY_EXISTS;
+      const registerDto = { email: 'user@yandex.ru', password: '12345678' };
       jest.spyOn(authService, 'registration').mockImplementation(async () => {
         throw new HttpException(exceptionMessage, HttpStatus.BAD_REQUEST);
       });
@@ -205,20 +204,21 @@ describe('AuthController', () => {
   describe('AuthController - login', () => {
     it('Login method: should be successful result', async () => {
       const req = createRequest();
-      req._setSessionVariable('authFailedCount', '5')
+      req._setSessionVariable('authFailedCount', '5');
       const res = createResponse();
       const userId = 1;
       const accessToken = '12345fsagasdsfasdfsdf';
       const refreshToken = '12345fsagasdsdfsdf';
-      const serviceLoginResponseMock =
-        getMockAuthenticationResponse(userId, accessToken, refreshToken);
-      const loginDto: LoginDto = { email: "user@yandex.ru", password: '0000' };
-      const mockLoginF = jest.spyOn(authService, 'login').mockImplementation(async () => Promise.resolve(serviceLoginResponseMock));
-      const controllerLoginResponse = new AuthenticationResDto(userId, accessToken);
+      const serviceLoginResponseMock = getMockAuthenticationResponse(userId, accessToken, refreshToken);
+      const loginDto: LoginRequest.Dto = { email: 'user@yandex.ru', password: '0000' };
+      const mockLoginF = jest
+        .spyOn(authService, 'login')
+        .mockImplementation(async () => Promise.resolve(serviceLoginResponseMock));
+      const controllerLoginResponse = new AuthenticationResponse.Dto({ userId, accessToken });
       const response = await authController.login(loginDto, res, req);
       expect(response).toEqual(controllerLoginResponse);
-      expect(res.cookies.refresh_token.value).toBe(refreshToken);
-      expect(res.cookies.refresh_token.options.httpOnly).toBe(true);
+      expect(res.cookies.refreshToken.value).toBe(refreshToken);
+      expect(res.cookies.refreshToken.options.httpOnly).toBe(true);
       expect(req.session['authFailedCount']).toBeNull();
       expect(mockLoginF).toBeCalledTimes(1);
       expect(mockLoginF).toBeCalledWith(loginDto);
@@ -228,9 +228,9 @@ describe('AuthController', () => {
       const authFailedCount = '5';
       req._setSessionVariable('authFailedCount', authFailedCount);
       const res = createResponse();
-      const loginDto = { email: "user@yandex.ru", password: '12345678' };
-      const exceptionMessage = 'Неверный email или пароль';
-      const errorObject = {message: exceptionMessage};
+      const loginDto = { email: 'user@yandex.ru', password: '12345678' };
+      const exceptionMessage = ErrorMessages.ru.INVALID_EMAIL_OR_PASSWORD;
+      const errorObject = { message: exceptionMessage };
       jest.spyOn(authService, 'login').mockImplementation(async () => {
         throw new UnauthorizedException(errorObject);
       });
@@ -238,9 +238,9 @@ describe('AuthController', () => {
       try {
         await authController.login(loginDto, res, req);
         sendPseudoError();
-      } catch(err) {
+      } catch (err) {
         expect(err.status).toBe(401);
-        expect(res.cookies.refresh_token).toBeUndefined();
+        expect(res.cookies.refreshToken).toBeUndefined();
         expect(req.session['authFailedCount']).toBe(authFailedCount);
         expect(err.getResponse()).toMatchObject(errorObject);
         expect(authService.login).toBeCalledTimes(1);
@@ -255,16 +255,17 @@ describe('AuthController', () => {
       const oldRefreshToken = '54321fsagasdsdfsdf';
       const newRefreshToken = '12345fsagasdsdfsdf';
       const req = createRequest();
-      req._setCookiesVariable('refresh_token', oldRefreshToken);
+      req._setCookiesVariable('refreshToken', oldRefreshToken);
       const res = createResponse();
-      const mockAuthenticationResponse =
-        getMockAuthenticationResponse(userId, accessToken, newRefreshToken);
-      const mockRefreshF = jest.spyOn(authService, 'refresh').mockImplementation(async () => Promise.resolve(mockAuthenticationResponse));
-      const controllerLoginResponse = new AuthenticationResDto(userId, accessToken);
+      const mockAuthenticationResponse = getMockAuthenticationResponse(userId, accessToken, newRefreshToken);
+      const mockRefreshF = jest
+        .spyOn(authService, 'refresh')
+        .mockImplementation(async () => Promise.resolve(mockAuthenticationResponse));
+      const controllerLoginResponse = new AuthenticationResponse.Dto({ userId, accessToken });
       const response = await authController.refresh(req, res);
       expect(response).toEqual(controllerLoginResponse);
-      expect(res.cookies.refresh_token.value).toBe(newRefreshToken);
-      expect(res.cookies.refresh_token.options.httpOnly).toBe(true);
+      expect(res.cookies.refreshToken.value).toBe(newRefreshToken);
+      expect(res.cookies.refreshToken.options.httpOnly).toBe(true);
       expect(mockRefreshF).toBeCalledTimes(1);
       expect(mockRefreshF).toBeCalledWith(oldRefreshToken);
     });
@@ -275,18 +276,20 @@ describe('AuthController', () => {
       const userId = 1;
       const req = {
         user: {
-          id: userId
-        }
+          id: userId,
+        },
       };
 
-      const mockGetCurrentUserResponseUser: GetCurrentUserResponse.User = {
+      const mockGetCurrentUserResponseDto: GetCurrentUserResponse.Dto = {
         id: userId,
-        email: 'user@yandex.ru'
-      }
-      const mockMeF = jest.spyOn(authService, 'me').mockImplementation(async () => Promise.resolve(mockGetCurrentUserResponseUser));
+        email: 'user@yandex.ru',
+      };
+      const mockMeF = jest
+        .spyOn(authService, 'me')
+        .mockImplementation(async () => Promise.resolve(mockGetCurrentUserResponseDto));
 
       const response = await authController.me(req);
-      expect(response).toEqual(mockGetCurrentUserResponseUser);
+      expect(response).toEqual(mockGetCurrentUserResponseDto);
       expect(mockMeF).toBeCalledTimes(1);
       expect(mockMeF).toBeCalledWith(userId);
     });
@@ -297,14 +300,16 @@ describe('AuthController', () => {
       const refreshToken = '12345fsagasdsdfsdf';
       const req = createRequest();
       const res = createResponse();
-      req._setCookiesVariable('refresh_token', refreshToken);
+      req._setCookiesVariable('refreshToken', refreshToken);
       const mockServiceLogoutResponse = false;
-      const mockLogoutF = jest.spyOn(authService, 'logout').mockImplementation(async () => Promise.resolve(mockServiceLogoutResponse));
+      const mockLogoutF = jest
+        .spyOn(authService, 'logout')
+        .mockImplementation(async () => Promise.resolve(mockServiceLogoutResponse));
 
       const response = await authController.logout(req, res);
 
       expect(response.result).toEqual(mockServiceLogoutResponse);
-      expect(res.cookies.refresh_token.value).toBe("");
+      expect(res.cookies.refreshToken.value).toBe('');
       expect(mockLogoutF).toBeCalledTimes(1);
       expect(mockLogoutF).toBeCalledWith(refreshToken);
     });

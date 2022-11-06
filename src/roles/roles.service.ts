@@ -1,24 +1,25 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
-import { Role } from "./roles.model";
-import { CreateRoleDTO } from "./DTO/CreateRoleDTO";
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+
+import { Role } from '@roles/roles.model';
+import { CreateRoleRequest } from '@roles/dto';
+import { ErrorMessages } from '@common/constants';
 
 @Injectable()
 export class RolesService {
   constructor(@InjectModel(Role) private roleRepository: typeof Role) {}
 
-  async createRole(DTO: CreateRoleDTO) {
+  async createRole(dto: CreateRoleRequest.Dto) {
     let role: Role;
     try {
-      role = await this.roleRepository.create(DTO);
-    }
-    catch (e) {
-      throw new HttpException(`Не удалось создать роль. ${e.message}`, HttpStatus.BAD_REQUEST);
+      role = await this.roleRepository.create(dto);
+    } catch (e) {
+      throw new BadRequestException(`${ErrorMessages.ru.FAILED_TO_CREATE_ROLE}. ${e.message}`);
     }
     return role;
   }
 
   async getRoleByValue(value: string) {
-    return await this.roleRepository.findOne({ where: { value } });
+    return this.roleRepository.findOne({ where: { value } });
   }
 }
